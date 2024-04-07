@@ -19,12 +19,19 @@
         <!-- HTML part is done by WTF-->
         {{ form.username.label}} <br>  <!-- field label -->
         {{ form.username(size=32) }}  <!-- actual field -->
+        <!-- Error handling; errors are aleady recorded and just have to be displayed-->
+        {% for error in form.username.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
         <!-- attributes are given to the form - e.g. CSS class-->
     </p>
     
     <p>
         {{ form.password.label}} <br>
         {{ form.password(size=32) }}
+        {% for error in form.password.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
     </p>
     <p> {{ form.remember_me() }}  {{ form.remember_me.label }} </p>
     <p> {{ form.submit }} </p>
