@@ -13,9 +13,10 @@ Tree:
         * base.html (basis for default templates with header, flash messages etc. to inherit)
         * index.html (landing page)
         * login.html (login form)
-* __init__.py
-* routes.py
-* forms.py
+* __init__.py (helps setting up the appliation)
+* routes.py (used to start appliation)
+* forms.py (place to put forms such as login)
+* models.py (place to define DB models)
 
 ## Getting Started
 
