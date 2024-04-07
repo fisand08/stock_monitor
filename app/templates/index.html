@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+<!-- Start page; inherits from base.html -->
+{% block content %}
+<!-- Actual content of this page comes here: -->
+        <h1>Hallo, {{ user['username'] }}!</h1>
+        
+        {% for a in alt_names %}
+        <div><p>Alternative name <b> {{ a }}  </b> for {{ user['username'] }}</p></div>
+        {% endfor %}
+        
+{% endblock %}

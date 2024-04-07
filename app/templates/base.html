@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+    <!-- this is a base template for other pages to inherit -->
+    <head>
+        <!-- HTML top title; displays alt title if none supplied -->
+        {% if title %}
+        <title>{{ title }} - Stock site</title>
+        {% else %}
+        <title>Stock base</title>
+        {% endif %}
+    </head>
+    <body>
+    <div>
+        <!-- menu -->
+        Stocks 
+        <a href="/index">Home</a>
+        <a href="/login">Login</a>
+    </div>
+    <!-- block here is the custom content of other pages if base is inherited -->
+    <hr>
+    <!-- flash message part -->
+    {% with messages = get_flashed_messages() %} <!-- get_flashed_messages() is from Flask -->
+    {% if messages %}
+    <ul>
+        {% for message in messages %}
+        <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %}
+    <!-- block here is the custom content of other pages if base is inherited -->
+    {% block content%}{% endblock %} <!-- the block is called "content" -->
+    </body>
+</html>
