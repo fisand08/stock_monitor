@@ -1,6 +1,6 @@
 # Stock monitor
 
-Interface to check a stock portfolio against stock data to check for profit/losses
+Interface to check a stock portfolio against stock data to check for profit/losses.
 
 ## Description
 
