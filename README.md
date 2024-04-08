@@ -27,6 +27,7 @@ Tree:
 * flask-wtf  (for forms)
 * flask-sqlalchemy (for DB; supports SQLite, MySQL, and PostreSQL)
 * flask-migrate (to migrate DB)
+
 ### Executing program
 
 * Run Anacoda console
@@ -51,4 +52,15 @@ activate
 * Run app
 ```
 flask run --reload
+```
+
+## Notes
+
+* To allow database migrations, flask-migrate was installed. Initially, "flask db init" is used as initialization of the migration directory". If changes to the DB model have been done, they can be commited similar to "git" like:
+```
+flask db migrate -m "your comment"
+```
+And then to make the database upgrade:
+```
+flask db upgrade
 ```
