@@ -1,9 +1,10 @@
 from typing import Optional
 import sqlalchemy as sa
 import sqlalchemy.orm as so
-from app import db
+from app import db, login
 from datetime import datetime, timezone
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import UserMixin
 
 
 """
@@ -11,7 +12,8 @@ Definition of DB
     - Classes correspond to tables
 """
 
-class User(db.Model):  # inherts from db.Model, the bas lass for all models in SQLAlhemy
+class User(UserMixin, db.Model):  # inherts from db.Model, the bas lass for all models in SQLAlhemy
+    # also inhertis from UserMixin from flask-login covering the required functions is_authenticated, is_ative is_anonymus and get_id()
     """
     - Each field is assigned a type or type hint
     - mapped_column provides additional configuration; e.g. if it's unique or indexed
@@ -30,6 +32,7 @@ class User(db.Model):  # inherts from db.Model, the bas lass for all models in S
     """
     - password hash is used instead of password to not store them as plain text if DB is comprimised
     - optional typing allows empty or "None"
+    - from werkzeug, password hashing and it's checking are added as methods
     """
     password_hash: so.Mapped[Optional[str]] = so.mapped_column(sa.String(256))
     def set_password(self, password):
@@ -37,12 +40,21 @@ class User(db.Model):  # inherts from db.Model, the bas lass for all models in S
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
     
+
     def __repr__(self):
         """
         - Tells python how to print objets of this class (e.g. good for debugging)
         """
         return '<User {}>'.format(self.username)
     
+
+@login.user_loader  # user loader is registered with decorator
+def load_user(id):
+    """
+    - flask-login needs to know about the DB, user is loaded via id
+    """
+    return db.session.get(User, int(id)) # needs to be converted to int as string 
+
 
 class Portfolio(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)

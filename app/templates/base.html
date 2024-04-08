@@ -14,7 +14,14 @@
         <!-- menu -->
         Stocks 
         <a href="/index">Home</a>  <!-- one way for internal link is just html name-->
-        <a href="{{url_for('login')}}">Login</a> <!-- another one is url_for('function_name') which makes use of view function name-->
+        <!-- conditional: login visible if not logged in -->
+        {% if current_user.is_anonymous %}
+        <a href="{{ url_for('login') }}">Login</a> <!-- another one is url_for('function_name') which makes use of view function name-->
+        {% else %}
+        <!-- User is logged in, so logout button is visible-->
+        <a href="{{ url_for('logout') }}">Logout</a> <!-- another one is url_for('function_name') which makes use of view function name-->
+        {% endif %}
+    
     </div>
     <!-- block here is the custom content of other pages if base is inherited -->
     <hr>

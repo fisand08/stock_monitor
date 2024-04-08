@@ -1,5 +1,5 @@
 from app import app, db
-from flask import render_template, flash, redirect
+from flask import render_template, flash, redirect, url_for
 from app.forms import LoginForm
 from app.models import User
 import sqlalchemy as sa
@@ -25,7 +25,7 @@ def login():
 
     form = LoginForm()
     if form.validate_on_submit():
-        user = db.session.scalar(sa.select(User).where(User.username == form.username)) # query user from DB
+        user = db.session.scalar(sa.select(User).where(User.username == form.username.data)) # query user from DB
         if user is None or not user.check_password(form.password.data): # password check
             flash('Invalid username or password') # flash field response if wrong password
             return redirect(url_for('login'))
@@ -34,7 +34,7 @@ def login():
         Adding some logic to bring user to page that he wanted to access before he got
         forced to login; request variable contains information of initial request
         """
-        next_page = request.arg.get('next')
+        next_page = request.args.get('next')
         if not next_page or urlsplit(next_page).netloc != '':
             next_page = url_for('index')
         
