@@ -2,7 +2,7 @@ from typing import Optional
 import sqlalchemy as sa
 import sqlalchemy.orm as so
 from app import db
-
+from datetime import datetime, timezone, timedelta
 
 class User(db.Model):  # inherts from db.Model, the bas lass for all models in SQLAlhemy
     """
@@ -19,9 +19,28 @@ class User(db.Model):  # inherts from db.Model, the bas lass for all models in S
     - optional typing allows empty or "None"
     """
     password_hash: so.Mapped[Optional[str]] = so.mapped_column(sa.String(256))
+    """
+    Relationship to new class Portfolio "author" object; so.relationship() is model class that represents the other side of the relationship;
+    the "back_populates" arguments reference the name of the relationship attribute on the other side
+    """
+    posts: so.WriteOnlyMapped['Post'] = so.relationship(back_populates='author')
 
     def __repr__(self):
         """
         - Tells python how to print objets of this class (e.g. good for debugging)
         """
         return '<User {}>'.format(self.username)
+    
+
+class Portfolio(db.Model):
+    id: so.Mapped[int] = so.mapped_column(primary_key=True)
+    name: so.Mapped[Optional[str]] = so.mapped_column(sa.String(256))  # each portfolio has a name which is Optional
+    timestamp: so.Mapped[datetime] = so.mapped_column(index=True, default=lambda: datetime.now(timezone.utc))  # use Datetime to get Swiss time
+    """
+    Map to foreign key of "User" class
+    """
+    user_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id),  index=True)
+    author: so.Mapped[User] = so.relationship(back_populates='posts')
+
+    def __repr__(self):
+        return '<Post {}>'.format()
