@@ -2,7 +2,9 @@ from typing import Optional
 import sqlalchemy as sa
 import sqlalchemy.orm as so
 from app import db
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timezone
+from werkzeug.security import generate_password_hash, check_password_hash
+
 
 """
 Definition of DB
@@ -18,18 +20,23 @@ class User(db.Model):  # inherts from db.Model, the bas lass for all models in S
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
     username: so.Mapped[str] = so.mapped_column(sa.String(64), index=True,  unique=True)
     email: so.Mapped[str] = so.mapped_column(sa.String(120), index=True, unique=True)
-    #gender: so.Mapped[str] = so.mapped_column(sa.String(120), index=True, unique=True)
-    """
-    - password hash is used instead of password to not store them as plain text if DB is comprimised
-    - optional typing allows empty or "None"
-    """
-    password_hash: so.Mapped[Optional[str]] = so.mapped_column(sa.String(256))
+
     """
     Relationship to new class Portfolio "author" object; so.relationship() is model class that represents the other side of the relationship;
     the "back_populates" arguments reference the name of the relationship attribute on the other side
     """
     posts: so.WriteOnlyMapped['Portfolio'] = so.relationship(back_populates='author')
 
+    """
+    - password hash is used instead of password to not store them as plain text if DB is comprimised
+    - optional typing allows empty or "None"
+    """
+    password_hash: so.Mapped[Optional[str]] = so.mapped_column(sa.String(256))
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+    
     def __repr__(self):
         """
         - Tells python how to print objets of this class (e.g. good for debugging)

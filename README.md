@@ -65,3 +65,10 @@ And then to make the database upgrade:
 ```
 flask db upgrade
 ```
+
+### Command line checking
+
+* Use flask shell to avoid importing your app and DB models
+```
+flask shell
+```
