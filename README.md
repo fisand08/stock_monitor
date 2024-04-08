@@ -56,6 +56,7 @@ flask run --reload
 
 ## Notes
 
+### Database Migrations (Commits)
 * To allow database migrations, flask-migrate was installed. Initially, "flask db init" is used as initialization of the migration directory". If changes to the DB model have been done, they can be commited similar to "git" like:
 ```
 flask db migrate -m "your comment"
