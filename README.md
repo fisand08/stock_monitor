@@ -27,6 +27,7 @@ Tree:
 * flask-wtf  (for forms)
 * flask-sqlalchemy (for DB; supports SQLite, MySQL, and PostreSQL)
 * flask-migrate (to migrate DB)
+* flask-login (login management)
 
 ### Executing program
 
