@@ -17,6 +17,7 @@ class User(UserMixin, db.Model):  # inherts from db.Model, the bas lass for all 
     """
     - Each field is assigned a type or type hint
     - mapped_column provides additional configuration; e.g. if it's unique or indexed
+    - "unique" modified gives error if values is added twice to DB
     """
     
     id: so.Mapped[int] = so.mapped_column(primary_key=True)

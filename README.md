@@ -48,7 +48,7 @@ activate
 
 * Set ENV variable
 ```
-"set FLASK_APP=stocks.py
+set FLASK_APP=stocks.py  (export in Linux)
 ```
 
 * Run app
@@ -74,4 +74,11 @@ flask db upgrade
 * Use flask shell to avoid importing your app and DB models
 ```
 flask shell
+```
+
+### Activate debugger
+
+* During development, debugging mode can be activated by:
+```
+set FLASK_DEBUG=1   (export in Linux)
 ```
