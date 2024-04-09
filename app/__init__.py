@@ -3,6 +3,8 @@ from config import Config
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
+import logging
+from logging.handlers import RotatingFileHandler
 
 
 """
@@ -18,6 +20,26 @@ login = LoginManager(app) # initializiation of flask-login
 The following statement tells flask which view function is used to login (name of the funtion)
 Like that, pages can be restrited to logged-in users with the @login_required decorator
 """
-login.login_view = 'login' 
+login.login_view = 'login'
+
+
+if not app.debug:
+    
+    # Place where email logging might sit #
+
+    """
+    error logging
+    """
+    if not os.path.exists('logs'):
+        os.mkdir('logs')
+    file_handler = RotatingFileHandler('logs/applog.log', maxBytes=10240,
+                                       backupCount=10)
+    file_handler.setFormatter(logging.Formatter(
+        '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'))
+    file_handler.setLevel(logging.INFO)
+    app.logger.addHandler(file_handler)
+
+    app.logger.setLevel(logging.INFO)
+    app.logger.info('App startup')
 
 from app import routes, models, errors
