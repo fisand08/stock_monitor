@@ -18,7 +18,8 @@
         {% if current_user.is_anonymous %}
         <a href="{{ url_for('login') }}">Login</a> <!-- another one is url_for('function_name') which makes use of view function name-->
         {% else %}
-        <!-- User is logged in, so logout button is visible-->
+        <!-- User is logged in, so logout button and "Profile page" is visible-->
+        <a href="{{ url_for('user', username=current_user.username) }}">Profile</a>
         <a href="{{ url_for('logout') }}">Logout</a> <!-- another one is url_for('function_name') which makes use of view function name-->
         {% endif %}
     

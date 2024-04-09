@@ -5,7 +5,7 @@ from app import db, login
 from datetime import datetime, timezone
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
-
+from app.bin import get_random_color
 
 """
 Definition of DB
@@ -40,6 +40,21 @@ class User(UserMixin, db.Model):  # inherts from db.Model, the bas lass for all 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
     
+    about_me: so.Mapped[Optional[str]] = so.mapped_column(sa.String(140))
+    last_seen: so.Mapped[Optional[datetime]] = so.mapped_column(
+        default=lambda: datetime.now(timezone.utc))
+
+
+    def avatar(self,size):
+        """
+        Alternative to Gravatar
+        Example:  https://ui-avatars.com/api/?name=Andre+Fischer&?background=0D8ABC&color=fff 
+        Returns URL to avatar image
+        """
+        bg_color = get_random_color(self.username)
+        return f'https://ui-avatars.com/api/?name={self.username[0]}+{self.username[1]}&?background={bg_color}&color=fff&?size={size}'
+        
+
 
     def __repr__(self):
         """

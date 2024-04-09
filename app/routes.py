@@ -3,7 +3,7 @@ from flask import render_template, flash, redirect, url_for
 from app.forms import LoginForm, RegistrationForm
 from app.models import User
 import sqlalchemy as sa
-from flask_login import current_user, login_user, logout_user
+from flask_login import current_user, login_user, logout_user, login_required
 from flask import request
 from urllib.parse import urlsplit
 
@@ -60,3 +60,12 @@ def register():
         flash('Congratulations, you are now a registered user!')
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
+
+
+@app.route('/user/<username>')  # <> brackets allow dynamic URL like youtube.com/FarioStalking
+@login_required # only accessible to logged-in users
+def user(username):
+    user = db.first_or_404(sa.select(User).where(User.username == username))
+    alt_names = ['profil_' + x for x in ['guati','schatzi','schatzus','schatzo']]
+
+    return render_template('user.html', user=user, alt_names=alt_names)
