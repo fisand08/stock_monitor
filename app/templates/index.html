@@ -2,11 +2,55 @@
 <!-- Start page; inherits from base.html -->
 {% block content %}
 <!-- Actual content of this page comes here: -->
+
         {% if not current_user.is_anonymous %} <!-- propmt only for logged in users -->
-        <h1> Hallo, eingeloggter {{ current_user.username}}</h1>
+        <h1> Hallo, {{ current_user.username}} (eingeloggt)</h1>
         {% endif %}
+
         {% for a in alt_names %}
         <div><p>Alternative name <b> {{ a }}  </b> for {{ user['username'] }}</p></div>
         {% endfor %}
-        
+
+
+
+        <h1> Enter Portfolio </h1>
+        <form action="", method="post"> 
+                {{ form.hidden_tag() }}
+                <p>
+                        {{ form.portfolio.label }} <br>
+                        {{ form.portfolio(cols=32,rows=4)}}
+                        <span style="color: red;">[{{ error }}]</span>
+
+                </p>
+                <p>{{ form.submit() }}</p>
+        </form>
+
+        <br>
+        <h1> User Portfolios </h1>
+        {% for p in portfolios %}
+        <tr valign="top">
+                <div><td>{{p.author.username}} watches {{p.stock_list}}</td></div>
+        </tr>
+        {% endfor %}
+
 {% endblock %}
+
+<!--
+    {% for post in posts %}
+        <table>
+                <tr valign="top">
+                <td><img src="{{ post.author.avatar(36) }}"></td>
+                <td><a href="{{ url_for('user', username=post.author.username) }}">{{ post.author.username }}</a> says:<br>{{ post.body }}</td>
+                </tr>
+        </table>
+    {% endfor %}
+
+-->
+
+
+<!--
+
+        {% for post in posts %}
+        <div><p>{{ post.author.username }} says: <b>{{ post.body }}</b></p></div>
+        {% endfor %}
+-->

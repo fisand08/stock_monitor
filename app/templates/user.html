@@ -14,12 +14,15 @@
             
         </tr>
     </table>
-    <!-- some random other content -->
     <hr>
     {% if user == current_user %}
     <p><a href="{{ url_for('edit_profile') }}">Edit your profile</a></p>
     {% endif %}
     <hr>
+    {% for p in portfolios %}
+    <div><p>Portfolio <b> {{ p }}  </b> for {{user.username}}</p></div>
+    {% endfor %}
+
     <hr>
     {% for a in alt_names %}
     <div><p>Alternative name <b> {{ a }}  </b> for Rikarda'</p></div>

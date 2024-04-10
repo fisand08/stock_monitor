@@ -28,7 +28,7 @@ class User(UserMixin, db.Model):  # inherts from db.Model, the bas lass for all 
     Relationship to new class Portfolio "author" object; so.relationship() is model class that represents the other side of the relationship;
     the "back_populates" arguments reference the name of the relationship attribute on the other side
     """
-    posts: so.WriteOnlyMapped['Portfolio'] = so.relationship(back_populates='author')
+    portfolios: so.WriteOnlyMapped['Portfolio'] = so.relationship(back_populates='author')
 
     """
     - password hash is used instead of password to not store them as plain text if DB is comprimised
@@ -81,7 +81,7 @@ class Portfolio(db.Model):
     Map to foreign key of "User" class
     """
     user_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id),  index=True)
-    author: so.Mapped[User] = so.relationship(back_populates='posts')
+    author: so.Mapped[User] = so.relationship(back_populates='portfolios')
 
     def __repr__(self):
         return '<Portfolio {}>'.format(self.stock_list)
@@ -126,5 +126,19 @@ posts = db.session.scalars(query).all()
 print(posts)
 ```
 
+"""
+
 
 """
+example for association table - does not need "class" as it only contains foreign keys from other tables
+
+followers = sa.Table(
+    'followers',
+    db.metadata,
+    sa.Column('follower_id', sa.Integer, sa.ForeignKey('user.id'),
+              primary_key=True),
+    sa.Column('followed_id', sa.Integer, sa.ForeignKey('user.id'),
+              primary_key=True)
+)
+"""
+

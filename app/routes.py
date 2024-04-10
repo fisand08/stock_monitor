@@ -1,7 +1,7 @@
 from app import app, db
 from flask import render_template, flash, redirect, url_for
-from app.forms import LoginForm, RegistrationForm, EditProfileForm
-from app.models import User
+from app.forms import LoginForm, RegistrationForm, EditProfileForm, PostPortfolio
+from app.models import User, Portfolio
 import sqlalchemy as sa
 from flask_login import current_user, login_user, logout_user, login_required
 from flask import request
@@ -17,12 +17,26 @@ def before_request():
         current_user.last_seen = datetime.now(timezone.utc) # adding to db - no .add() needed here
         db.session.commit() # committing to db
 
-@app.route('/')  # decorator for following function
-@app.route('/index')  # 2nd decorator
+@app.route('/', methods=['GET', 'POST'])  # decorator for following function
+@app.route('/index', methods=['GET', 'POST'])  # 2nd decorator
+@login_required  # although it's index, we can set that here - not logged in person will be sent to login function
 def index():
     mock_user = {'username':'Rikarda'}
     alt_names = ['guati','schatzi','schatzus','schatzo']
-    return render_template('index.html',user=mock_user, alt_names=alt_names)
+    form = PostPortfolio()
+    if form.validate_on_submit():  # forms always are POST requests
+        portfolio = Portfolio(stock_list=form.portfolio.data, author=current_user)
+        db.session.add(portfolio)
+        db.session.commit()
+        flash('Your portfolio is now stored in database!')
+        return redirect(url_for('index')) # it's recommended to have a redirect at the end of a post request
+
+    portfolio_query = sa.select(Portfolio)
+    portfolios = db.session.scalars(portfolio_query).all()
+
+
+    return render_template('index.html',user=mock_user, alt_names=alt_names, portfolios=portfolios, form=form)
+
     #return render_template('index.html',title='Starting page',user=mock_user)
 
 @app.route('/login', methods=['GET','POST'])  # view function accepts "methods" (POST: browser to webserver)
@@ -77,8 +91,8 @@ def register():
 def user(username):
     user = db.first_or_404(sa.select(User).where(User.username == username))
     alt_names = ['profil_' + x for x in ['guati','schatzi','schatzus','schatzo']]
-
-    return render_template('user.html', user=user, alt_names=alt_names)
+    portfolios = ['NVS.SW,APPLE,DOWJON','ROG.SW,NVS.SW']
+    return render_template('user.html', user=user, alt_names=alt_names, portfolios=portfolios)
 
 
 @app.route('/edit_profile', methods=['GET', 'POST'])
