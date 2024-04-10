@@ -32,6 +32,9 @@ if not app.debug:
     """
     if not os.path.exists('logs'):
         os.mkdir('logs')
+    """
+    backupCount: last n log files are kept; maxBytes: maximal size of the log file
+    """
     file_handler = RotatingFileHandler('logs/applog.log', maxBytes=10240,
                                        backupCount=10)
     file_handler.setFormatter(logging.Formatter(
