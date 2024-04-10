@@ -4,11 +4,11 @@
 <!-- Actual content of this page comes here: -->
 
         {% if not current_user.is_anonymous %} <!-- propmt only for logged in users -->
-        <h1> Hallo, {{ current_user.username}} (eingeloggt)</h1>
+        <h3> Hallo, {{ current_user.username}} (eingeloggt)</h3>
         {% endif %}
 
 
-        <h1> Enter Portfolio </h1>
+        <h5> Enter Portfolio </h5>
         <form action="", method="post"> 
                 {{ form.hidden_tag() }}
                 <p>
@@ -21,7 +21,7 @@
         </form>
 
         <br>
-        <h1> User Portfolios </h1>
+        <h5> User Portfolios </h5>
         {% for p in portfolios %}
         <tr valign="top">
                 <div><td>{{p.author.username}} watches {{p.stock_list}}</td></div>
