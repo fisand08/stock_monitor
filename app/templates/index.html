@@ -7,11 +7,6 @@
         <h1> Hallo, {{ current_user.username}} (eingeloggt)</h1>
         {% endif %}
 
-        {% for a in alt_names %}
-        <div><p>Alternative name <b> {{ a }}  </b> for {{ user['username'] }}</p></div>
-        {% endfor %}
-
-
 
         <h1> Enter Portfolio </h1>
         <form action="", method="post"> 
@@ -32,8 +27,12 @@
                 <div><td>{{p.author.username}} watches {{p.stock_list}}</td></div>
         </tr>
         {% endfor %}
-
-{% endblock %}
+        {% if prev_url %}
+        <a href="{{ prev_url }}">Older portfolios</a>
+        {% endif %}
+        {% if next_url %}
+        <a href="{{ next_url }}">Newer portfolios</a>
+        {% endif %}{% endblock %}
 
 <!--
     {% for post in posts %}

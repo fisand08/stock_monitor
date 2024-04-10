@@ -32,10 +32,23 @@ def index():
         return redirect(url_for('index')) # it's recommended to have a redirect at the end of a post request
 
     portfolio_query = sa.select(Portfolio)
-    portfolios = db.session.scalars(portfolio_query).all()
+    """
+    Instead of db.session.scalars() we can call db.paginate().items to prohibit overflow of one page
+    and make the DB requests smaller; takes several arguments:
+        page: the page number, starting from 1; per_page: the number of items per page
+        error_out: an error flag. If True, when an out of range page is requested a 404 error will be 
+        automatically returned to the client. If False, an empty list will be returned for out of range pages.
+    """
+    page = request.args.get('page', 1, type=int)
+    portfolios = db.paginate(portfolio_query, page=page, per_page=app.config['POSTS_PER_PAGE'], error_out=False)
+    next_url = url_for('index', page=portfolios.next_num) \
+        if portfolios.has_next else None
+    prev_url = url_for('index', page=portfolios.prev_num) \
+        if portfolios.has_prev else None
 
-
-    return render_template('index.html',user=mock_user, alt_names=alt_names, portfolios=portfolios, form=form)
+    return render_template('index.html',user=mock_user, alt_names=alt_names, 
+                           portfolios=portfolios.items, form=form, 
+                           next_url=next_url, prev_url=prev_url)
 
     #return render_template('index.html',title='Starting page',user=mock_user)
 

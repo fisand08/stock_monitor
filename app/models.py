@@ -5,7 +5,7 @@ from app import db, login
 from datetime import datetime, timezone
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
-from app.bin import get_random_color
+from app.bin import get_random_color # import of self-coded routine
 
 """
 Definition of DB
