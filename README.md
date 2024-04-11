@@ -28,7 +28,7 @@ Tree:
 * flask-sqlalchemy (for DB; supports SQLite, MySQL, and PostreSQL)
 * flask-migrate (to migrate DB)
 * flask-login (login management)
-* email-validator
+* flask-moment (timezone management)
 
 ### Executing program
 
