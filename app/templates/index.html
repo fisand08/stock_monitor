@@ -24,7 +24,8 @@
         <h5> User Portfolios </h5>
         {% for p in portfolios %}
         <tr valign="top">
-                <div><td>{{p.author.username}} watches {{p.stock_list}}</td></div>
+                <!-- The span tag here does not change the look but allows to give an identifier, e.g. stocklist_1 -->
+                <span id=stocklist_{{p.id}}><div><td>{{p.author.username}} watches {{p.stock_list}}</td></div></span>
         </tr>
         {% endfor %}
         {% if prev_url %}
