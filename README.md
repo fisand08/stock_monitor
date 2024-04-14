@@ -18,7 +18,9 @@ Tree:
 * forms.py (place to put forms such as login)
 * models.py (place to define DB models)
 
+```
 <p style="color:red;">This text is red</p>
+```
 
 ## Getting Started
 
