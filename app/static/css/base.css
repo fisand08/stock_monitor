@@ -1,3 +1,5 @@
+
+/*
 div#banner:before {
     position: absolute;
     content: '';
@@ -5,10 +7,20 @@ div#banner:before {
     left: 0;
     width:  100%;
     height: 100%;
-    z-index: 0;
-    background-image: linear-gradient(to bottom, rgba(0, 0, 85, 0.8) 5%, rgba(0, 0, 85, 0.2) 80%);
+    z-index: -1;
   }
-  
+*/
+
+div#banner {
+    position: relative; /* Ensure positioning context */
+    width: 100%; /* Adjust width as needed */
+    height: 300px; /* Adjust height as needed */
+    background-image: url('/static/img/stock_header.png'); /* Add background image */
+    background-size: cover; /* Adjust background size as needed */
+    background-position: center; /* Adjust background position as needed */
+    background-repeat: no-repeat; /* Ensure background image isn't repeated */
+  }
+
   input.form-control, select.form-control {
       width: 80%;
   }
