@@ -9,18 +9,29 @@ Currently in development along Flask tutorial from https://blog.miguelgrinberg.c
 Tree:
 
 * app
-    * templates (HTML templates)
-        * base.html (basis for default templates with header, flash messages etc. to inherit)
-        * index.html (landing page)
-        * login.html (login form)
-* __init__.py (helps setting up the appliation)
-* routes.py (used to start appliation)
-* forms.py (place to put forms such as login)
-* models.py (place to define DB models)
+	* templates
+		* 404.html
+		* 500.html
+		* bootstrap_wtf.html
+		* edit_profil.html
+		* index.html
+		* login.html
+		* register.html
+		* user.html
+	* static
+		* img
+			* dsmf_dots.png
+			* loading.gif
+		
+	* __init__.py
+	* bin.py
+	* errors.py
+	* forms.py
+	* models.py
+	* routes.py
+config.py
+stocks.py
 
-```
-<p style="color:red;">This text is red</p>
-```
 
 ## Getting Started
 
