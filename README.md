@@ -2,6 +2,14 @@
 
 Interface to check a stock portfolio against stock data to check for profit/losses.
 
+## Development:
+- make sure just two CSS files and simify JS
+    - check bootstrap css code - what is used from it; port it to separate file
+    - check if all those "moments" and other js code parts can be really ommented out
+
+- looks: add same header functionality as alex
+
+
 ## Description
 
 Currently in development along Flask tutorial from https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-iii-web-forms

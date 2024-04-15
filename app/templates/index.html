@@ -6,9 +6,11 @@
         {% if not current_user.is_anonymous %} <!-- propmt only for logged in users -->
         <h3> Hallo, {{ current_user.username}} (eingeloggt)</h3>
         {% endif %}
+        <br>
 
 
         <h5> Enter Portfolio </h5>
+        <br>
         <form action="", method="post"> 
                 {{ form.hidden_tag() }}
                 <p>

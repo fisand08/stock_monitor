@@ -1,106 +1,212 @@
-<!doctype html>
+
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="copyright" content="DSM-Firmenich">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <!-- HTML top title; displays alt title if none supplied -->
-        {% if title %}
-        <title>{{ title }} - Stock site</title>
-        {% else %}
-        <title>Stock base</title>
-        {% endif %}
-    
-    <!-- CSS includes-->
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-        rel="stylesheet"
-        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
-        crossorigin="anonymous">
-
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/DSMF.css') }}" type="text/css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}" type="text/css">
-
-    <!-- img inludes -->    
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="copyright" content="Andre Fischer">
+	
+	<!-- HTML top title; displays alt title if none supplied -->
+	{% if title %}
+	<title>{{ title }} -  Webpage </title>
+	{% else %}
+	<title> Webpage </title>
+	{% endif %}
+	<!-- Img includes -->
     <link rel="icon" sizes="192x192" href="{{ url_for('static', filename='img/stock_icon.png') }}">
-  
-    <!-- JS includes-->
 
-    <!-- speific CSS-->
-
-  </head>
+	<!-- CSS includes -->
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/DSMF.css') }}" type="text/css">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/aspf.css') }}" type="text/css">
 
 
-  <body>
-    <div id="banner"></div>
+	<!-- JavaScript includes -->
+	<script type="text/javascript" src="{{ url_for('static', filename='js/jquery.js') }}"></script>
+	<script type="text/javascript" src="{{ url_for('static', filename='js/aspf.js') }}"></script>
 
-    <!-- Navigation bar -->
-    <nav class="navbar navbar-expand-lg bg-body-tertiary">
-      <div class="container">
-        <a class="navbar-brand" href="{{ url_for('index') }}">Stock Portfolio </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <li class="nav-item">
-              <a class="nav-link" aria-current="page" href="{{ url_for('index') }}">Home</a>
-            </li>
-          </ul>
-          <ul class="navbar-nav mb-2 mb-lg-0">
-            {% if current_user.is_anonymous %}
-            <li class="nav-item">
-              <a class="nav-link" aria-current="page" href="{{ url_for('login') }}">Login</a>
-            </li>
-            {% else %}
-            <li class="nav-item">
-              <a class="nav-link" aria-current="page" href="{{ url_for('user', username=current_user.username) }}">Profile</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" aria-current="page" href="{{ url_for('logout') }}">Logout</a>
-            </li>
-            {% endif %}
-          </ul>
+	<!-- Local JavaScript-->
+	<script type="text/javascript">
+		$(document).ready(function(){
+					jQuery.noConflict();
+
+		(function($){
+
+				var b = 0;
+
+				$("header").hover(function(a) {
+			        b = $("header").hasClass("show-top-nav") ? !0 : !1;
+			        $("header").addClass("show-top-nav");
+			    }, function() {
+			        b || $("header").removeClass("show-top-nav");
+			    });
+			})(jQuery);
+		});
+	</script>
+
+	<script type="text/javascript">
+		
+		const static = "/static/";
+
+		const font_DMSans = new FontFace("DM Sans","url("+static+"fonts/DMSans-Regular.ttf)",{
+			weight: "400",
+			style: "normal"
+		});
+
+		const font_DMSansM = new FontFace("DM Sans","url("+static+"fonts/DMSans-Medium.ttf)",{
+			weight: "500",
+			style: "normal"
+		});
+
+		const font_DMSansB = new FontFace("DM Sans","url("+static+"fonts/DMSans-Bold.ttf)",{
+			weight: "700",
+			style: "normal"
+		});
+
+		document.fonts.add(font_DMSans);
+		document.fonts.add(font_DMSansM);
+		document.fonts.add(font_DMSansB);
+	</script>
+</head>
+
+<body>
+	<!-- header and navigation -->
+	<section id="mainContainer">
+	<div id="banner"></div>
+	<div class="overlay headline">
+		<div class="container">
+			<div class="content">
+				<div class="headline">
+					<h1>Stock monitor</h1>
+				</div>
+			</div>
+			
+			<div class="content">
+				<div class="slogan">We bring progress to life™</div>
+			</div>
+		</div>
+	</div>
+	<header>
+		<div class="overlay" style="z-index: 100;">
+			<div class="content">
+				<div class="header-right">
+
+					<!-- Top nagivation bar-->
+					<span><a href="{{ url_for('index') }}">Page 1</a></span>
+					<span><a href="{{ url_for('index') }}">Page 2</a></span>
+					<span><a href="{{ url_for('index') }}">Page 3</a></span>
+				</div>	
+			</div>
+		</div>
+		<div class="overlay">
+			<div class="container">
+				<div class="content">
+					<div class="header-left  logo white">
+						<img class="logo" src="{{ url_for('static', filename='img/stock_placeholder_white.svg') }}" alt="stock tools">
+					</div>
+					<div class="header-left logo black">
+						<img class="logo" src="{{ url_for('static', filename='img/stock_placeholder_black.svg') }}" alt="stock tools">
+					</div>
+					<div class="header-right">
+						<!-- 
+							Lower navigation bar 
+						-->
+
+						<div>
+							<span><a href="{{ url_for('index') }}"> Home							</a></span>
+						</div>
+
+						
+						<!-- User area-->
+						{% if current_user.is_anonymous %}
+						<div>
+							<span><a href="{{ url_for('login') }}">Login</a></span>
+						</div>
+						{% else %}
+						<div>
+							<span><a href="{{ url_for('user', username=current_user.username) }}">Profile</a></span>
+						</div>
+						<div>
+							<span><a href="{{ url_for('logout') }}">Logout</a></span>
+						</div>
+						{% endif %}
+						
+						<div>
+							<span><a href="{{ url_for('index') }}">Admin</a></span>
+						</div>
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</header>
+	
+	<!-- Popup messages -->
+	<div class='pop-up-alert popup'>
+				<div class='pop-up-content'>
+					<div class='pop-up-header'>ATTENTION !<i class="material-icons close close_popup">X</i></div>
+					<div class='pop-up-info-small'>
+						<br>
+						<span></span>
+						<div class='pop-up-buttons'>
+							<button class='blue active cancel' style='width: 100px'>OK</button>
+						</div>
+					</div>
+			</div>
+	</div>
+
+	<div class='pop-up-dialog popup'>
+				<div class='pop-up-content'>
+					<div class='pop-up-header'>COMPLETED ?<i class="material-icons close close_popup">X</i></div>
+					<div class='pop-up-info-small'>
+						<br>
+						<span></span>
+						<div class='pop-up-buttons'>
+							<button class='blue active cancel' style='width: 100px'>YES</button>
+							<button class='blue active cancel' style='width: 100px'>NO</button>
+						</div>
+					</div>
+			</div>
+	</div>
+
+
+	<div id="mainTool">
+		{% block content %}{% endblock %}
+	</div>
+	<!-- Footer -->
+	<footer>
+		<div class="content">
+			<div class="logo">
+				<img class="logo" src="{{ url_for('static', filename='img/stock_placeholder_white.svg') }}" alt="stock tools">
+			</div>
+            <div class="footer-links-wrapper ">
+                <div class="footer-links">
+                    <div class="footer-navigation">
+						<nav class="cmp">
+    						<ul class="cmp_group">
+															<li class="cmp">
+    								<a href="www.google.com">Google</a>
+								</li>        	
+								<li class="cmp">		
+    								<a href="www.github.com">GitHub</a>
+								</li>
+								<li class="cmp">
+    								<a href="www.youtube.com">Youtube</a>
+								</li>
+							</ul>
+						</nav>
+ 					</div>                    
+                </div>
+           </div>
         </div>
-      </div>
-    </nav>
-    <div class="container mt-3">
-      <!-- Flash messages -->
-      {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        {% for message in messages %}
-        <div class="alert alert-info" role="alert">{{ message }}</div>
-        {% endfor %}
-      {% endif %}
-      {% endwith %}
-      <!-- Place for content -->
-      {% block content %}{% endblock %}
-    </div>
-
-
-  <!-- JS includes (slow stuff)-->
-    {{ moment.include_moment() }}  <!-- flask-moment include of moment.js;  Includes for general JS applications -->
-    <!-- bootstrap include -->
-    <script
-    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
-    crossorigin="anonymous">
-    </script>
-    <!-- jquery import -->
-    <script type="text/javascript" src="{{ url_for('static', filename='js/jquery.js') }}"></script>
-
-    <!-- background-->
-    <script>
-      // JavaScript to set the background image dynamically
-      document.addEventListener('DOMContentLoaded', function() {
-          var banner = document.getElementById('banner');
-          banner.style.backgroundImage = "url('{{ url_for('static', filename='img/stock_header.png') }}')";
-      });
-    </script>
-
-  
-  
-  </body>
+        <div class="descriptor">
+        	<div class="content">
+            	<p>©2024 Andre Fischer - All rights reserved</p>
+        	</div>
+        </div>
+	</footer>
+</body>
+<script type="text/javascript">
+	var banner = document.getElementById('banner');
+	banner.style.backgroundImage = "url('{{ url_for('static', filename='img/stock_header.png') }}')";
+</script>
 </html>

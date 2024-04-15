@@ -11,6 +11,20 @@ div#banner:before {
   }
 */
 
+
+.navbar {
+    position: absolute; /* Position navbar */
+    top: 0; /* Place at the top */
+    left: 0; /* Align with the left edge */
+    right: 0; /* Extend to the right edge */
+    z-index: 2; /* Ensure navbar is above banner */
+  }
+  
+  .container {
+    position: relative; /* Ensure positioning context */
+    z-index: 1; /* Ensure content is above banner */
+  }
+
 div#banner {
     position: relative; /* Ensure positioning context */
     width: 100%; /* Adjust width as needed */
@@ -20,7 +34,8 @@ div#banner {
     background-position: center; /* Adjust background position as needed */
     background-repeat: no-repeat; /* Ensure background image isn't repeated */
   }
-
+    
+  
   input.form-control, select.form-control {
       width: 80%;
   }
