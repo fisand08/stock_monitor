@@ -235,7 +235,60 @@ div.section {
 }
 
 #mainTool {
-    padding: 20px;
-    background: #307297;
+    padding: 25px;
+    background: #6f7070;   /*#1c615a */
     color: #fff;
 }
+
+
+/* 
+
+
+        Andre Additions 
+
+
+*/
+header div.overlay a {
+    color: #fff; /* Default font color for hyperlinks in the header */
+}
+
+/* Overwrite default color when hovering */
+header.show-top-nav div.overlay {
+    color: #000; /* Font color */
+}
+
+header.show-top-nav div.overlay a {
+    color: #000; /* Font color */
+}
+
+header.show-top-nav div.overlay:first-child {
+    background-color: #f6f6f6; /* Background color */
+}
+
+header.show-top-nav div.black,
+header.show-top-nav div.black a {
+    display: block;
+}
+
+header.show-top-nav div.white,
+header.show-top-nav div.white a {
+    display: none;
+}
+
+/* Custom table with grid */
+    .custom-table {
+        border-collapse: collapse;
+        width: 35%;
+    }
+
+        /* Define styles for table cells and headers within the custom table */
+    .custom-table td, .custom-table th {
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+    }
+
+        /* Define styles for table headers within the custom table */
+    .custom-table th {
+        background-color: #f2f2f2;
+    }

@@ -201,7 +201,7 @@
     height: 36px;
   }
   
-  
+ 
   header.show-top-nav div.overlay {
     color: #000;
     background-color: #fff;
@@ -368,12 +368,14 @@
       }
   }
   
+ 
   #mainTool {
-      display: inline-flex;
+      /*      display: inline-flex; */
       justify-content: start;
       grid-area: tx;
   }
-  
+
+
   div#banner {
     position: relative;
     grid-area: hd;
