@@ -7,9 +7,9 @@
 	
 	<!-- HTML top title; displays alt title if none supplied -->
 	{% if title %}
-	<title>{{ title }} -  Webpage </title>
+	<title>{{ title }} -  Stock monitor </title>
 	{% else %}
-	<title> Webpage </title>
+	<title> Stock monitor </title>
 	{% endif %}
 	<!-- Img includes -->
     <link rel="icon" sizes="192x192" href="{{ url_for('static', filename='img/stock_icon.png') }}">
@@ -87,7 +87,7 @@
 				<div class="header-right">
 
 					<!-- Top nagivation bar-->
-					<span><a href="{{ url_for('index') }}">Page 1</a></span>
+					<span><a href="{{ url_for('portfolio_manager') }}">Manage Portfolios</a></span>
 					<span><a href="{{ url_for('index') }}">Page 2</a></span>
 					<span><a href="{{ url_for('index') }}">Page 3</a></span>
 				</div>	
@@ -179,14 +179,8 @@
                     <div class="footer-navigation">
 						<nav class="cmp">
     						<ul class="cmp_group">
-															<li class="cmp">
-    								<a href="www.google.com">Google</a>
-								</li>        	
 								<li class="cmp">		
     								<a href="www.github.com">GitHub</a>
-								</li>
-								<li class="cmp">
-    								<a href="www.youtube.com">Youtube</a>
 								</li>
 							</ul>
 						</nav>

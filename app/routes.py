@@ -123,6 +123,6 @@ def edit_profile():
         form.about_me.data = current_user.about_me
     return render_template('edit_profile.html', title='Edit Profile', form=form)
 
-@app.route('/pca_base')
-def pca_base():
-    return render_template('pca_base.html')
+@app.route('/portfolio_manager')
+def portfolio_manager():
+    return render_template('portfolio_manager.html')
