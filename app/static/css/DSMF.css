@@ -370,7 +370,8 @@
   
  
   #mainTool {
-      /*      display: inline-flex; */
+      display: inline-flex; 
+      
       justify-content: start;
       grid-area: tx;
   }

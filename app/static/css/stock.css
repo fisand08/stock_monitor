@@ -1,0 +1,22 @@
+.container {
+    display: flex;
+    flex-wrap: wrap; /* Allow columns to wrap to the next line if necessary */
+  }
+  
+  .column {
+    flex: 1; /* Each column takes up an equal amount of space */
+    padding: 20px;
+    border: 1px solid #ccc;
+    box-sizing: border-box; /* Include padding and border in the width calculation */
+  }
+  
+
+  header .container .content {
+    display: flex;
+    flex-direction: column; /* Ensure items are stacked vertically */
+    align-items: flex-start; /* Align items to the start of each column */
+    min-width: 300px;
+    /* height: 50px; */
+    margin: 0 auto;
+  }
+  

@@ -11,12 +11,14 @@
 	{% else %}
 	<title> Stock monitor </title>
 	{% endif %}
+
 	<!-- Img includes -->
     <link rel="icon" sizes="192x192" href="{{ url_for('static', filename='img/stock_icon.png') }}">
 
 	<!-- CSS includes -->
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/DSMF.css') }}" type="text/css">
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/aspf.css') }}" type="text/css">
+	<!--<link rel="stylesheet" href="{{ url_for('static', filename='css/stocks.css') }}" type="text/css">-->
 
 
 	<!-- JavaScript includes -->
@@ -68,107 +70,105 @@
 </head>
 
 <body>
-	<!-- header and navigation -->
-	<section id="mainContainer">
-	<div id="banner"></div>
-	<div class="overlay headline">
-		<div class="container">
-			<div class="content">
-				<div class="headline">
-					<h1>Stock monitor</h1>
-				</div>
-			</div>
-			
-		</div>
-	</div>
-	<header>
-		<div class="overlay" style="z-index: 100;">
-			<div class="content">
-				<div class="header-right">
-
-					<!-- Top nagivation bar-->
-					<span><a href="{{ url_for('portfolio_manager') }}">Manage Portfolios</a></span>
-					<span><a href="{{ url_for('index') }}">Page 2</a></span>
-					<span><a href="{{ url_for('index') }}">Page 3</a></span>
-				</div>	
-			</div>
-		</div>
-		<div class="overlay">
+	<!-- ///// header and navigation ///// -->
+	<section id="mainContainer" class="'Toolsimple">
+		<div id="banner"></div>
+		<div class="overlay headline">
 			<div class="container">
 				<div class="content">
-					<div class="header-left  logo white">
-						<!--<img class="logo" src="{{ url_for('static', filename='img/stock_placeholder_white.svg') }}" alt="stock tools">-->
-					</div>
-					<div class="header-left logo black">
-						<!--<img class="logo" src="{{ url_for('static', filename='img/stock_placeholder_black.svg') }}" alt="stock tools">-->
-					</div>
-					<div class="header-right">
-						<!-- 
-							Lower navigation bar 
-						-->
-
-						<div>
-							<span><a href="{{ url_for('index') }}"> Home							</a></span>
-						</div>
-
-						
-						<!-- User area-->
-						{% if current_user.is_anonymous %}
-						<div>
-							<span><a href="{{ url_for('login') }}">Login</a></span>
-						</div>
-						{% else %}
-						<div>
-							<span><a href="{{ url_for('user', username=current_user.username) }}">Profile</a></span>
-						</div>
-						<div>
-							<span><a href="{{ url_for('logout') }}">Logout</a></span>
-						</div>
-						{% endif %}
-						
-						<div>
-							<span><a href="{{ url_for('index') }}">Admin</a></span>
-						</div>
-
+					<div class="headline">
+							<h1>Test app</h1>
 					</div>
 				</div>
 			</div>
 		</div>
-	</header>
+		<header>
+			<div class="overlay" style="z-index: 100;">
+				<div class="content">
+					<div class="header-right">
+						<!-- ///// Top nagivation bar ///// -->
+						<span><a href="{{ url_for('portfolio_manager') }}">Manage Portfolios</a></span>
+						<span><a href="{{ url_for('index') }}">Page 2</a></span>
+						<span><a href="{{ url_for('index') }}">Page 3</a></span>
+					</div>	
+				</div>
+			</div>
+			<div class="overlay">
+				<div class="container">
+					<div class="content">
+						<div class="header-left  logo white">
+							<!--<img class="logo" src="{{ url_for('static', filename='img/stock_placeholder_white.svg') }}" alt="stock tools">-->
+						</div>
+						<div class="header-left logo black">
+							<!--<img class="logo" src="{{ url_for('static', filename='img/stock_placeholder_black.svg') }}" alt="stock tools">-->
+						</div>
+						<div class="header-right">
+							<!-- ///// Lower navigation bar ///// -->
+							<div>
+								<span><a href="{{ url_for('index') }}"> Home </a></span>
+							</div>
+							<!-- ///// User area /////-->
+							{% if current_user.is_anonymous %}
+							<div>
+								<span><a href="{{ url_for('login') }}">Login</a></span>
+							</div>
+							{% else %}
+							<div>
+								<span><a href="{{ url_for('user', username=current_user.username) }}">Profile</a></span>
+							</div>
+							<div>
+								<span><a href="{{ url_for('logout') }}">Logout</a></span>
+							</div>
+							{% endif %}
+							
+							<div>
+								<span><a href="{{ url_for('index') }}">Admin</a></span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</header>
 	
-	<!-- Popup messages -->
-	<div class='pop-up-alert popup'>
-				<div class='pop-up-content'>
-					<div class='pop-up-header'>ATTENTION !<i class="material-icons close close_popup">X</i></div>
-					<div class='pop-up-info-small'>
-						<br>
-						<span></span>
-						<div class='pop-up-buttons'>
-							<button class='blue active cancel' style='width: 100px'>OK</button>
-						</div>
+		<!-- ///// Popup messages ///// -->
+		<div class='pop-up-alert popup'>
+			<div class='pop-up-content'>
+				<div class='pop-up-header'>ATTENTION !<i class="material-icons close close_popup">X</i></div>
+				<div class='pop-up-info-small'>
+					<br>
+					<span></span>
+					<div class='pop-up-buttons'>
+						<button class='blue active cancel' style='width: 100px'>OK</button>
 					</div>
+				</div>
 			</div>
-	</div>
-
-	<div class='pop-up-dialog popup'>
-				<div class='pop-up-content'>
-					<div class='pop-up-header'>COMPLETED ?<i class="material-icons close close_popup">X</i></div>
-					<div class='pop-up-info-small'>
-						<br>
-						<span></span>
-						<div class='pop-up-buttons'>
-							<button class='blue active cancel' style='width: 100px'>YES</button>
-							<button class='blue active cancel' style='width: 100px'>NO</button>
-						</div>
+		</div>
+		<div class='pop-up-dialog popup'>
+			<div class='pop-up-content'>
+				<div class='pop-up-header'>COMPLETED ?<i class="material-icons close close_popup">X</i></div>
+				<div class='pop-up-info-small'>
+					<br>
+					<span></span>
+					<div class='pop-up-buttons'>
+						<button class='blue active cancel' style='width: 100px'>YES</button>
+						<button class='blue active cancel' style='width: 100px'>NO</button>
 					</div>
+				</div>
 			</div>
-	</div>
+		</div>
 
+		<!-- /////////////////////////////
+			///// Main tool container ////
+			//////////////////////////////-->
+		<div id="mainTool">
+			
+				{% block content %}{% endblock %}
+			
+		</div>
 
-	<div id="mainTool">
-		{% block content %}{% endblock %}
-	</div>
-	<!-- Footer -->
+	</section>
+
+	<!--  /////  Footer  ///// -->
 	<footer>
 		<div class="content">
 			<div class="logo">
@@ -195,8 +195,11 @@
         </div>
 	</footer>
 </body>
+
+<!--  /////  JS includes  ///// -->
 <script type="text/javascript">
 	var banner = document.getElementById('banner');
 	banner.style.backgroundImage = "url('{{ url_for('static', filename='img/stock_header.png') }}')";
 </script>
+
 </html>
