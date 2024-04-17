@@ -31,6 +31,13 @@ def index():
         flash('Your portfolio is now stored in database!')
         return redirect(url_for('index')) # it's recommended to have a redirect at the end of a post request
 
+
+    u = db.session.get(User, 1)
+    query = u.portfolios.select()
+    user_portfolios = db.session.scalars(query).all()
+    options = ['portfolio1','portfolio2','portfolio3']
+
+
     portfolio_query = sa.select(Portfolio)
     """
     Instead of db.session.scalars() we can call db.paginate().items to prohibit overflow of one page
@@ -48,9 +55,11 @@ def index():
 
     return render_template('index.html',user=mock_user, alt_names=alt_names, 
                            portfolios=portfolios.items, form=form, 
-                           next_url=next_url, prev_url=prev_url)
+                           next_url=next_url, prev_url=prev_url,options=options,user_portfolios=user_portfolios)
 
     #return render_template('index.html',title='Starting page',user=mock_user)
+
+
 
 @app.route('/login', methods=['GET','POST'])  # view function accepts "methods" (POST: browser to webserver)
 def login():
@@ -125,4 +134,42 @@ def edit_profile():
 
 @app.route('/portfolio_manager')
 def portfolio_manager():
+
     return render_template('portfolio_manager.html')
+
+
+
+
+
+@ app.route('/old_index')
+def old_index():
+
+    mock_user = {'username':'Rikarda'}
+    alt_names = ['guati','schatzi','schatzus','schatzo']
+    form = PostPortfolio()
+    if form.validate_on_submit():  # forms always are POST requests
+        portfolio = Portfolio(stock_list=form.portfolio.data, author=current_user)
+        db.session.add(portfolio)
+        db.session.commit()
+        flash('Your portfolio is now stored in database!')
+        return redirect(url_for('index')) # it's recommended to have a redirect at the end of a post request
+
+    portfolio_query = sa.select(Portfolio)
+    """
+    Instead of db.session.scalars() we can call db.paginate().items to prohibit overflow of one page
+    and make the DB requests smaller; takes several arguments:
+        page: the page number, starting from 1; per_page: the number of items per page
+        error_out: an error flag. If True, when an out of range page is requested a 404 error will be 
+        automatically returned to the client. If False, an empty list will be returned for out of range pages.
+    """
+    page = request.args.get('page', 1, type=int)
+    portfolios = db.paginate(portfolio_query, page=page, per_page=app.config['POSTS_PER_PAGE'], error_out=False)
+    next_url = url_for('index', page=portfolios.next_num) \
+        if portfolios.has_next else None
+    prev_url = url_for('index', page=portfolios.prev_num) \
+        if portfolios.has_prev else None
+
+    return render_template('index.html',user=mock_user, alt_names=alt_names, 
+                           portfolios=portfolios.items, form=form, 
+                           next_url=next_url, prev_url=prev_url)
+    return render_template('old_index.html')

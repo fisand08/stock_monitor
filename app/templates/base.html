@@ -88,7 +88,7 @@
 					<div class="header-right">
 						<!-- ///// Top nagivation bar ///// -->
 						<span><a href="{{ url_for('portfolio_manager') }}">Manage Portfolios</a></span>
-						<span><a href="{{ url_for('index') }}">Page 2</a></span>
+						<span><a href="{{ url_for('old_index') }}">Form</a></span>
 						<span><a href="{{ url_for('index') }}">Page 3</a></span>
 					</div>	
 				</div>
@@ -201,5 +201,8 @@
 	var banner = document.getElementById('banner');
 	banner.style.backgroundImage = "url('{{ url_for('static', filename='img/stock_header.png') }}')";
 </script>
+ <!-- Includes for general JS applications-->
+{{ moment.include_moment() }}  <!-- flask-moment include of moment.js -->
+
 
 </html>

@@ -29,22 +29,27 @@
 
 
 <!--
-    <h5> some title</h5>
-    
+    <div class="section">
+        {% if not current_user.is_anonymous %} propmt only for logged in users 
+        <h3> Hallo, {{ current_user.username}} (eingeloggt)</h3>
+        {% endif %}
+        
 
-    <div classs="section"> 
-        <p> some text A1</p>
+        <h5> Title Section B </h5>
+        <br>
         <img src="{{ url_for('static', filename='img/stock_icon.png') }}", width="100", height="100">
-        <p> some text A2</p>
+
+
     </div>
-    <div classs="section"> 
-        <p> some text B1</p>
-        <p> some text B2</p>
-    </div>
-    <div classs="section"> </div>
-        <p> some text C1</p>
-        <p> some text C2</p>
-    </div>
+
+    <div class="section">
+
+        <h5> Title Section B </h5>
+        <br>
+
+
+    </div>                
+
 -->
 
 

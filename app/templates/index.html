@@ -3,41 +3,34 @@
 {% block content %}
 <!-- Actual content of this page comes here: -->
 
+        <!-- left field-->
         <div class="section">
-                {% if not current_user.is_anonymous %} <!-- propmt only for logged in users -->
-                <h3> Hallo, {{ current_user.username}} (eingeloggt)</h3>
-                {% endif %}
-                
-        
-                <h5> Enter Portfolio </h5>
+                <h3> Select portfolio</h3>
+                <select id="dropdown">
+                        {% for option in options %}
+                            <option value="{{ option }}">{{ option }}</option>
+                        {% endfor %}
+                </select>
                 <br>
-                <form action="", method="post"> 
-                        {{ form.hidden_tag() }}
-                        <p>
-                                {{ form.portfolio.label }} <br>
-                                {{ form.portfolio(cols=32,rows=4)}}
-                                <span style="color: red;">[{{ error }}]</span>
 
-                        </p>
-                        <p>{{ form.submit() }}</p>
-                </form>
+                <h3>Portfolio add</h3>
+                <button id="internal-link">Add Portfolio</button>
         </div>
+        <!-- middle field-->
         <div class="section">
-
-                <h5> User Portfolios </h5>
-                {% for p in portfolios %}
-                <tr valign="top">
-                        <!-- The span tag here does not change the look but allows to give an identifier, e.g. stocklist_1 -->
-                        <span id=stocklist_{{p.id}}><div><td>{{p.author.username}} watches {{p.stock_list}}</td></div></span>
-                </tr>
-                {% endfor %}
-                {% if prev_url %}
-                <a href="{{ prev_url }}">Older portfolios</a>
-                {% endif %}
-                {% if next_url %}
-                <a href="{{ next_url }}">Newer portfolios</a>
-                {% endif %}
+                <table>
+                        <tr>
+                                <td>Protfit</td>
+                                <td>Date</td>
+                        </tr>
+                </table>
         </div>                
+        <!-- right field -->
+        <div class="section">
+                <h3>Buy/Sell</h3>
+                <button id="internal-link">Buy or sell</button>
+        </div>             
+        
 {% endblock %}
 
 <!--
