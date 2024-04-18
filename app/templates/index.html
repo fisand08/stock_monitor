@@ -3,32 +3,27 @@
 {% block content %}
 <!-- Actual content of this page comes here: -->
 
-        <!-- left field-->
-        <div class="section">
+        <!-- main field-->
+        <div class="middle-section section">
+                <h3>Portfolio overview</h3>
+                <table class="custom-table">
+                        <tr> <td>Protfit</td> <td>127.02 CHF</td></tr>
+                        <tr> <td>Stocks</td> <td>some stocks</td></tr>
+                        <tr> <td>Creation</td> <td>12.12.2012 13:21</td></tr>
+                </table>
+        </div>                
+        <!-- right field -->
+        <div class="right-section section">
                 <h3> Select portfolio</h3>
                 <select id="dropdown">
-                        {% for option in options %}
-                            <option value="{{ option }}">{{ option }}</option>
+                        {% for user_portfolio in user_portfolios %}
+                            <option value="Portfolio {{ user_portfolio.id }}">{{ user_portfolio.id }}</option>
                         {% endfor %}
                 </select>
                 <br>
 
-                <h3>Portfolio add</h3>
-                <button id="internal-link">Add Portfolio</button>
-        </div>
-        <!-- middle field-->
-        <div class="section">
-                <table>
-                        <tr>
-                                <td>Protfit</td>
-                                <td>Date</td>
-                        </tr>
-                </table>
-        </div>                
-        <!-- right field -->
-        <div class="section">
-                <h3>Buy/Sell</h3>
-                <button id="internal-link">Buy or sell</button>
+                <h3>Portfolio history</h3>
+                <p> History...</p>
         </div>             
         
 {% endblock %}

@@ -18,7 +18,7 @@
 	<!-- CSS includes -->
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/DSMF.css') }}" type="text/css">
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/aspf.css') }}" type="text/css">
-	<!--<link rel="stylesheet" href="{{ url_for('static', filename='css/stocks.css') }}" type="text/css">-->
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/stocks.css') }}" type="text/css">
 
 
 	<!-- JavaScript includes -->
@@ -88,8 +88,8 @@
 					<div class="header-right">
 						<!-- ///// Top nagivation bar ///// -->
 						<span><a href="{{ url_for('portfolio_manager') }}">Manage Portfolios</a></span>
-						<span><a href="{{ url_for('old_index') }}">Form</a></span>
-						<span><a href="{{ url_for('index') }}">Page 3</a></span>
+						<span><a href="{{ url_for('add_portfolio') }}">Add Portfolio</a></span>
+						<span><a href="{{ url_for('index') }}">Home</a></span>
 					</div>	
 				</div>
 			</div>

@@ -141,6 +141,25 @@ def portfolio_manager():
 
 
 
+@ app.route('/add_portfolio')
+@login_required
+def add_portfolio():
+
+    form = PostPortfolio()
+    if form.validate_on_submit():  # forms always are POST requests
+        portfolio = Portfolio(stock_list=form.portfolio.data, author=current_user)
+        db.session.add(portfolio)
+        db.session.commit()
+        flash('Your portfolio is now stored in database!')
+        return redirect(url_for('index')) # it's recommended to have a redirect at the end of a post request
+
+
+    return render_template('old_index.html',
+                           form=form, 
+                           )
+
+
+
 @ app.route('/old_index')
 def old_index():
 
@@ -169,7 +188,7 @@ def old_index():
     prev_url = url_for('index', page=portfolios.prev_num) \
         if portfolios.has_prev else None
 
-    return render_template('index.html',user=mock_user, alt_names=alt_names, 
+    return render_template('old_index.html',user=mock_user, alt_names=alt_names, 
                            portfolios=portfolios.items, form=form, 
                            next_url=next_url, prev_url=prev_url)
-    return render_template('old_index.html')
+    #return render_template('old_index.html')

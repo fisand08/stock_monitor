@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+<!-- Start page; inherits from base.html -->
+{% block content %}
+<!-- Actual content of this page comes here: -->
+
+        <!-- main field-->
+        <div class="middle-section section">
+            <h5> Enter Portfolio </h5>
+            <br>
+            <form action="", method="post"> 
+                    {{ form.hidden_tag() }}
+                    <p>
+                            {{ form.portfolio.label }} <br>
+                            {{ form.portfolio(cols=32,rows=4)}}
+                            <span style="color: red;">[{{ error }}]</span>
+
+                    </p>
+                    <p>{{ form.submit() }}</p>
+            </form>
+        </div>           
+
+        <!-- right field -->
+        <div class="right-section section">
+            <p> right</p>
+        </div>             
+        
+{% endblock %}

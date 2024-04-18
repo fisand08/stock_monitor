@@ -1,22 +1,37 @@
-.container {
-    display: flex;
-    flex-wrap: wrap; /* Allow columns to wrap to the next line if necessary */
-  }
-  
-  .column {
-    flex: 1; /* Each column takes up an equal amount of space */
-    padding: 20px;
-    border: 1px solid #ccc;
-    box-sizing: border-box; /* Include padding and border in the width calculation */
-  }
-  
+.custom-table {
+  border-collapse: collapse;
+  width: 35%;
+}
 
-  header .container .content {
-    display: flex;
-    flex-direction: column; /* Ensure items are stacked vertically */
-    align-items: flex-start; /* Align items to the start of each column */
-    min-width: 300px;
-    /* height: 50px; */
-    margin: 0 auto;
-  }
-  
+  /* Define styles for table cells and headers within the custom table */
+.custom-table td, .custom-table th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+  /* Define styles for table headers within the custom table */
+.custom-table th {
+  background-color: #f2f2f2;
+}
+
+
+.left-section {
+  width: 20%; /* Adjust this percentage as needed */
+  float: left;
+}
+
+.middle-section {
+  width: 60%; /* Adjust this percentage as needed */
+  float: left;
+}
+
+.right-section {
+  width: 20%; /* Adjust this percentage as needed */
+  float: right;
+}
+
+/* Clear floats after the sections */
+.clear {
+  clear: both;
+}
