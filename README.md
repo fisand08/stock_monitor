@@ -3,11 +3,15 @@
 Interface to check a stock portfolio against stock data to check for profit/losses.
 
 ## Development:
-- make sure just two CSS files and simify JS
-    - check bootstrap css code - what is used from it; port it to separate file
-    - check if all those "moments" and other js code parts can be really ommented out
-
-- looks: add same header functionality as alex
+- improve css and looks (e.g. yahoo portfolio manager)
+* database
+	* make sure stock prices are added from stocks csv files
+	* general stock data read from general stock csv file
+* portfolio manager
+	* finish form, show (if not new) all stocks on the side
+* modify index tab
+* scraping manager: allow new stocks to be added, allow update (run scraper once, update database) with the click of a button
+* admin panel
 
 
 ## Description

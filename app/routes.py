@@ -1,7 +1,7 @@
 from app import app, db
 from flask import render_template, flash, redirect, url_for, request
 from app.forms import LoginForm, RegistrationForm, EditProfileForm, PostPortfolio, PortfolioForm
-from app.models import User, Portfolio, PortfolioStock
+from app.models import User, Portfolio, PortfolioStock, Stock
 import sqlalchemy as sa
 from flask_login import current_user, login_user, logout_user, login_required
 from flask import request
@@ -161,48 +161,63 @@ def add_portfolio():
 @ app.route('/add_portfolio', methods=['GET', 'POST'])
 @login_required
 def add_portfolio():
-    portfolios = Portfolio.query.all()
     form = PortfolioForm()
 
-    # Predefined list of stocks for the dropdown
-    form.stock.choices = [('NVS', 'NVS'), ('ROG.SW', 'ROG.SW')]  # Add more choices as needed
+    # Populate the portfolio field choices with existing portfolios
+    portfolios = Portfolio.query.all()
+    form.portfolio.choices = [(portfolio.id, portfolio.name) for portfolio in portfolios]
+
+    # Populate the stock field choices with available stocks
+    stocks = Stock.query.all()
+    form.stock.choices = [(stock.abbreviation, stock.full_name) for stock in stocks]
 
     if form.validate_on_submit():
-        portfolio_id = form.portfolio.data
-        name = form.name.data
-        stock = form.stock.data
+        portfolio_name = form.name.data
+        stock_abbreviation = form.stock.data
         action = form.action.data
         amount = form.amount.data
 
-        # Create a new portfolio if selected from the dropdown or specified
-        if portfolio_id == '':
-            if name == '':
-                return "Please enter a name for the new portfolio."
-            portfolio = Portfolio(name=name, creator_id=1)  # Assuming user ID 1
-            db.session.add(portfolio)
+        # Retrieve the selected portfolio
+        selected_portfolio_id = form.portfolio.data
+        selected_portfolio = None
+
+        # If a portfolio is selected, get it from the database
+        if selected_portfolio_id:
+            selected_portfolio = Portfolio.query.get(selected_portfolio_id)
+
+        # If no portfolio is selected, create a new one
+        if not selected_portfolio and portfolio_name:
+            selected_portfolio = Portfolio(name=portfolio_name)
+            db.session.add(selected_portfolio)
             db.session.commit()
-            portfolio_id = portfolio.id
+
+        if not selected_portfolio:
+            flash("Please select a portfolio or enter a new portfolio name.")
+            return redirect(url_for('add_portfolio'))
+
+        # Update portfolio stock
+        stock = Stock.query.filter_by(abbreviation=stock_abbreviation).first()
+
+        if not stock:
+            flash("Invalid stock selected.")
+            return redirect(url_for('add_portfolio'))
+
+        portfolio_stock = PortfolioStock.query.filter_by(portfolio_id=selected_portfolio.id, stock_id=stock.id).first()
+        
+        if portfolio_stock:
+            if action == 'buy':
+                portfolio_stock.amount += amount
+            elif action == 'sell':
+                portfolio_stock.amount -= amount
         else:
-            portfolio_id = int(portfolio_id)
-
-        # Buy or sell the stock
-        portfolio_stock = PortfolioStock.query.filter_by(portfolio_id=portfolio_id, stock_id=stock).first()
-        if not portfolio_stock:
-            portfolio_stock = PortfolioStock(portfolio_id=portfolio_id, stock_id=stock, amount=0)
+            portfolio_stock = PortfolioStock(portfolio_id=selected_portfolio.id, stock_id=stock.id, amount=amount)
             db.session.add(portfolio_stock)
-
-        if action == 'buy':
-            portfolio_stock.amount += amount
-        elif action == 'sell':
-            portfolio_stock.amount -= amount
-            # If amount becomes zero or negative, delete the stock from the portfolio
-            if portfolio_stock.amount <= 0:
-                db.session.delete(portfolio_stock)
-
+        
         db.session.commit()
-        return redirect(url_for('index'))
+        flash("Portfolio updated successfully.")
+        return redirect(url_for('add_portfolio'))
 
-    return render_template('add_portfolio.html', portfolios=portfolios, form=form)
+    return render_template('add_portfolio.html', form=form)
 
 @ app.route('/old_index')
 def old_index():

@@ -64,10 +64,12 @@ class PostPortfolio(FlaskForm):
                               validators=[DataRequired(), Length(min=1, max=300)])
     submit = SubmitField('Submit')
     
+
 class PortfolioForm(FlaskForm):
-    portfolio = SelectField('Select or Create Portfolio', coerce=int)
+    portfolio = SelectField('Select or Create Portfolio', coerce=int, choices=[], validate_choice=False)
     name = StringField('Portfolio Name', validators=[DataRequired()])
-    stock = SelectField('Select Stock', coerce=str)
+    # Add a placeholder option for the stock field
+    stock = SelectField('Select Stock', coerce=str, choices=[('', 'Select Stock')], validate_choice=False)
     action = SelectField('Action', choices=[('buy', 'Buy'), ('sell', 'Sell')])
     amount = IntegerField('Amount', validators=[DataRequired()])
     submit = SubmitField('Add Portfolio')
