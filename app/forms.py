@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, TextAreaField
+from wtforms import IntegerField, SelectField, PasswordField, BooleanField, SubmitField, TextAreaField, StringField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo, Length
 import sqlalchemy as sa
 from app import db
@@ -64,3 +64,10 @@ class PostPortfolio(FlaskForm):
                               validators=[DataRequired(), Length(min=1, max=300)])
     submit = SubmitField('Submit')
     
+class PortfolioForm(FlaskForm):
+    portfolio = SelectField('Select or Create Portfolio', coerce=int)
+    name = StringField('Portfolio Name', validators=[DataRequired()])
+    stock = SelectField('Select Stock', coerce=str)
+    action = SelectField('Action', choices=[('buy', 'Buy'), ('sell', 'Sell')])
+    amount = IntegerField('Amount', validators=[DataRequired()])
+    submit = SubmitField('Add Portfolio')

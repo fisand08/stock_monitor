@@ -1,27 +1,40 @@
 {% extends "base.html" %}
-<!-- Start page; inherits from base.html -->
+
 {% block content %}
-<!-- Actual content of this page comes here: -->
-
-        <!-- main field-->
-        <div class="middle-section section">
-            <h5> Enter Portfolio </h5>
-            <br>
-            <form action="", method="post"> 
-                    {{ form.hidden_tag() }}
-                    <p>
-                            {{ form.portfolio.label }} <br>
-                            {{ form.portfolio(cols=32,rows=4)}}
-                            <span style="color: red;">[{{ error }}]</span>
-
-                    </p>
-                    <p>{{ form.submit() }}</p>
-            </form>
-        </div>           
-
-        <!-- right field -->
-        <div class="right-section section">
-            <p> right</p>
-        </div>             
+    <div class="middle-section section">
         
+        <h2>Add Portfolio</h2>
+    
+        <form method="POST">
+            {{ form.csrf_token }}
+            <div class="form-group">
+                {{ form.portfolio.label }}
+                {{ form.portfolio }}
+            </div>
+            <div class="form-group">
+                {{ form.name.label }}
+                {{ form.name }}
+            </div>
+            <div class="form-group">
+                {{ form.stock.label }}
+                {{ form.stock }}
+            </div>
+            <div class="form-group">
+                {{ form.action.label }}
+                {{ form.action }}
+            </div>
+            <div class="form-group">
+                {{ form.amount.label }}
+                {{ form.amount }}
+            </div>
+            <button type="submit" class="btn btn-primary">Add Portfolio</button>
+        </form>
+    </div>
+
+
+    <div class="right-section section">
+        <p> right</p>
+    </div>             
+    
+
 {% endblock %}
