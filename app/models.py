@@ -1,12 +1,13 @@
 from typing import Optional
 import sqlalchemy as sa
 import sqlalchemy.orm as so
+from sqlalchemy.orm import relationship
+
 from app import db, login
 from datetime import datetime, timezone
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from app.bin.helpers import get_random_color
-from sqlalchemy.orm import relationship
 
 """
 Definition of DB
@@ -73,14 +74,14 @@ def load_user(id):
     return db.session.get(User, int(id)) # needs to be converted to int as string 
 
 
+
+
 class Portfolio(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
     name: so.Mapped[Optional[str]] = so.mapped_column(sa.String(256), index=True, unique=True)  # each portfolio has a name which is Optional
     timestamp: so.Mapped[datetime] = so.mapped_column(index=True, default=lambda: datetime.now(timezone.utc))  # use Datetime to get Swiss time
     stock_list: so.Mapped[str] = so.mapped_column(sa.String(256))
-    """
-    Map to foreign key of "User" class
-    """
+
     user_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id),  index=True)
     author: so.Mapped[User] = so.relationship(back_populates='portfolios')
 
@@ -94,10 +95,9 @@ class Portfolio(db.Model):
     def __repr__(self):
         return '<Portfolio {}>'.format(self.name)
     
+
 class PortfolioStock(db.Model):
-    """
-    table stores which portfolio has how much of each stock
-    """
+
     id = db.Column(db.Integer, primary_key=True)
     portfolio_id = db.Column(db.Integer, db.ForeignKey('portfolio.id'), nullable=False)
     stock_id = db.Column(db.Integer, db.ForeignKey('stock.id'), nullable=False)
@@ -109,36 +109,10 @@ class PortfolioStock(db.Model):
     def __repr__(self):
         return f"PortfolioStock(Portfolio ID: {self.portfolio_id}, Stock ID: {self.stock_id}, Amount: {self.amount})"
 
-class Stock(db.Model):
-    """
-    table stores information about each stock
-    """
-    id = db.Column(db.Integer, primary_key=True)
-    abbreviation = db.Column(db.String(10), nullable=False)
-    full_name = db.Column(db.String(100), nullable=False)
-    market = db.Column(db.String(50), nullable=False)
-    currency = db.Column(db.String(10), nullable=False)
-    # Add more attributes as needed
-    prices = relationship("StockPrice", back_populates="stock")
 
-class StockPrice(db.Model):
-    """
-    table stores prices of stocks from csv
-    """
-    id = db.Column(db.Integer, primary_key=True)
-    stock_id = db.Column(db.Integer, db.ForeignKey('stock.id'), nullable=False)
-    date = db.Column(db.Date, nullable=False)
-    current_price = db.Column(db.Float, nullable=False)
-    current_volume = db.Column(db.Integer, nullable=False)
-
-    stock = relationship("Stock", back_populates="prices")
-
-    def __repr__(self):
-        return f"StockPrice(Stock ID: {self.stock_id}, Date: {self.date}, Price: {self.current_price}, Volume: {self.current_volume})"
-
-		
 
 """
+
 __DB Syntax__
 
 * Fire up the DB (at least from CLI)

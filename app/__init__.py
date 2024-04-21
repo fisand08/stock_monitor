@@ -1,6 +1,10 @@
 from flask import Flask
 from config import Config
 from flask_sqlalchemy import SQLAlchemy
+import sqlalchemy as sa
+import sqlalchemy.orm as so
+from sqlalchemy.orm import relationship
+import csv
 from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_moment import Moment
@@ -9,26 +13,9 @@ from logging.handlers import RotatingFileHandler
 import os
 from datetime import datetime
 from apscheduler.schedulers.background import BackgroundScheduler
-#from .dbutils import populate_stock_prices_from_csv
 
 
-"""
-SCHEDULER
-"""
-def sensor():
-    """ Function for test purposes. """
-    print("Sensor function executed!")  # Debugging statement
-    f_o = open('test.txt', 'w')
-    f_o.write('test')
-    f_o.close()
-    return True
 
-sched = BackgroundScheduler(daemon=True)
-sched.add_job(sensor,'interval',minutes=60)
-# run all jobs now
-for job in sched.get_jobs():
-    job.modify(next_run_time=datetime.now())
-sched.start()
 
 """
 MAIN APP SETUP
@@ -45,9 +32,96 @@ Like that, pages can be restrited to logged-in users with the @login_required de
 """
 login.login_view = 'login'
 
+
 """
-Scheduler for automated update of stock data from csv when server is running
+DB model here to avoid circular import problem
 """
+
+class Stock(db.Model):
+    """
+    table stores information about each stock
+    """
+    id = db.Column(db.Integer, primary_key=True)
+    abbreviation = db.Column(db.String(10), nullable=False)
+    full_name = db.Column(db.String(100), nullable=False)
+    market = db.Column(db.String(50), nullable=False)
+    currency = db.Column(db.String(10), nullable=False)
+    # Add more attributes as needed
+    prices = relationship("StockPrice", back_populates="stock")
+
+class StockPrice(db.Model):
+    """
+    table stores prices of stocks from csv
+    """
+    id = db.Column(db.Integer, primary_key=True)
+    stock_id = db.Column(db.Integer, db.ForeignKey('stock.id'), nullable=False)
+    date = db.Column(db.Date, nullable=False)
+    current_price = db.Column(db.Float, nullable=False)
+    current_volume = db.Column(db.Integer, nullable=False)
+
+    stock = relationship("Stock", back_populates="prices")
+
+    def __repr__(self):
+        return f"StockPrice(Stock ID: {self.stock_id}, Date: {self.date}, Price: {self.current_price}, Volume: {self.current_volume})"
+
+		
+"""
+SCHEDULER AND RELATED FUNCTIONS
+"""
+
+
+def sensor():
+    """ Function for test purposes. """
+    print("Sensor function executed!")  # Debugging statement
+    f_o = open('test.txt', 'w')
+    f_o.write('test')
+    f_o.close()
+    return True
+
+
+
+def update_stock_prices():
+    print(f'Scheduler: running update_stock_prices()')
+
+    # Assuming your CSV files are stored in a directory
+    csv_directory = os.path.join(os.getcwd(),'stock_data')
+    # Loop through CSV files and update stock prices
+    for csv_file in os.listdir(csv_directory):
+        if csv_file.endswith('.csv'):
+            csv_file_path = os.path.join(csv_directory, csv_file)
+            populate_stock_prices_from_csv(csv_file_path)
+    print('Update cycle finished')
+
+def populate_stock_prices_from_csv(csv_file_path):
+    print(f'Scheduler: running populate_stock_prices_from_csv()')
+    with app.app_context():  # Create an application context
+        with open(csv_file_path, 'r') as file:
+            stock_id = os.path.basename(csv_file_path).replace('.csv','').replace('history','')
+            reader = csv.reader(file)
+            # Skip the header if present
+            next(reader, None)
+            for row in reader:
+                # Assuming the CSV format is: date, stock_id, current_price, current_volume
+                date_str, opening_price, closing_price, volume = row
+                date = datetime.strptime(date_str, '%Y-%m-%d')  # Corrected date format
+                # Create a StockPrice instance
+                stock_price = StockPrice(
+                    stock_id=stock_id,
+                    date=date,
+                    current_price=float(closing_price),
+                    current_volume=int(volume)
+                )
+                # Add the instance to the SQLAlchemy session
+                db.session.add(stock_price)
+        db.session.commit()
+
+sched = BackgroundScheduler(daemon=True)
+sched.add_job(sensor,'interval',minutes=60)
+sched.add_job(update_stock_prices,'interval',minutes=60)
+# run all jobs now
+for job in sched.get_jobs():
+    job.modify(next_run_time=datetime.now())
+sched.start()
 
 
 

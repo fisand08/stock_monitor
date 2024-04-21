@@ -1,7 +1,8 @@
 from app import app, db
 from flask import render_template, flash, redirect, url_for, request
 from app.forms import LoginForm, RegistrationForm, EditProfileForm, PostPortfolio, PortfolioForm
-from app.models import User, Portfolio, PortfolioStock, Stock
+from app.models import User, Portfolio, PortfolioStock
+from app import Stock, StockPrice
 import sqlalchemy as sa
 from flask_login import current_user, login_user, logout_user, login_required
 from flask import request
@@ -135,9 +136,14 @@ def edit_profile():
 
 @app.route('/portfolio_manager')
 def portfolio_manager():
+    # Query for Stock objects
+    stocks_query = db.session.query(Stock).all()
+    # Query for StockPrice objects
+    stock_prices_query = db.session.query(StockPrice).all()[:10]
 
-    return render_template('portfolio_manager.html')
 
+
+    return render_template('portfolio_manager.html', stocks=stocks_query, stock_prices=stock_prices_query)
 
 
 

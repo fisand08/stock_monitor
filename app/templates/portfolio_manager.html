@@ -19,7 +19,18 @@
     <div class="section">
 
         <h5> Title Section B </h5>
-        <br>
+        <h5>Stocks</h5>
+        <ul>
+            {% for stock in stocks %}
+                <li>{{ stock.id }} - {{ stock.abbreviation }} - {{ stock.full_name }} - {{ stock.market }} - {{ stock.currency }}</li>
+            {% endfor %}
+        </ul>
+    
+        <h5>Stock Prices</h5>
+        <ul>
+            {% for stock_price in stock_prices %}
+                <li>{{ stock_price.id }} - Stock ID: {{ stock_price.stock_id }} - Date: {{ stock_price.date }} - Price: {{ stock_price.current_price }} - Volume: {{ stock_price.current_volume }}</li>
+            {% endfor %}
 
 
     </div>                
