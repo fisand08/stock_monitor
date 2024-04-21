@@ -2,13 +2,39 @@ import csv
 import os
 from datetime import datetime
 from flask import current_app
-from app.models import StockPrice
+from .models import StockPrice
+from apscheduler.schedulers.background import BackgroundScheduler
+
+def sensor():
+    """ Function for test purposes. """
+    print("Sensor function executed!")  # Debugging statement
+    f_o = open('test.txt', 'w')
+    f_o.write('test')
+    f_o.close()
+    return True
+
+def start_scheduler():
+    scheduler = BackgroundScheduler()
+    scheduler.add_job(sensor, 'interval', seconds=60)  # Run every 60 seconds
+    scheduler.start()
+
+
+
+
+def update_stock_prices():
+    print(f'Scheduler runs update_stock_prices()')
+
+    # Assuming your CSV files are stored in a directory
+    csv_directory = os.path.join(os.getcwd(),'stock_data')
+    # Loop through CSV files and update stock prices
+    for csv_file in os.listdir(csv_directory):
+        if csv_file.endswith('.csv'):
+            csv_file_path = os.path.join(csv_directory, csv_file)
+            populate_stock_prices_from_csv(csv_file_path)
+
 
 def populate_stock_prices_from_csv(csv_file_path):
     print(f'Scheduler runs populate_stock_prices_from_csv()')
-    db = current_app.db  # Accessing db from the current application context
-    update_stock_prices = current_app.update_stock_prices  # Accessing update_stock_prices from the current application context
-
     with open(csv_file_path, 'r') as file:
         stock_id = os.path.basename(csv_file_path).replace('.csv','').replace('history','')
         reader = csv.reader(file)
@@ -27,11 +53,4 @@ def populate_stock_prices_from_csv(csv_file_path):
             )
             # Add the instance to the SQLAlchemy session
             db.session.add(stock_price)
-    
-    # Commit changes to the database after processing each CSV file
-    db.session.commit()
-    # After updating prices from all CSV files, trigger the main update_stock_prices function
-    update_stock_prices()
-
-    # Optional: Close the database session to free up resources
-    db.session.close()
+			
