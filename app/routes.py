@@ -11,6 +11,7 @@ from datetime import datetime, timezone
 """
 Logic executed before every request; executed before any view function
 """
+
 @app.before_request
 def before_request():
     if current_user.is_authenticated:

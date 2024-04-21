@@ -1,26 +1,14 @@
-import pandas as pd
-import os
 import csv
-import datetime
-
-
-def placeholder():
-    return True
-
-def update_stock_prices():
-    print(f'Scheduler runs update_stock_prices()')
-
-    # Assuming your CSV files are stored in a directory
-    csv_directory = os.path.join(os.getcwd(),'stock_data')
-    # Loop through CSV files and update stock prices
-    for csv_file in os.listdir(csv_directory):
-        if csv_file.endswith('.csv'):
-            csv_file_path = os.path.join(csv_directory, csv_file)
-            populate_stock_prices_from_csv(csv_file_path)
-
+import os
+from datetime import datetime
+from flask import current_app
+from app.models import StockPrice
 
 def populate_stock_prices_from_csv(csv_file_path):
     print(f'Scheduler runs populate_stock_prices_from_csv()')
+    db = current_app.db  # Accessing db from the current application context
+    update_stock_prices = current_app.update_stock_prices  # Accessing update_stock_prices from the current application context
+
     with open(csv_file_path, 'r') as file:
         stock_id = os.path.basename(csv_file_path).replace('.csv','').replace('history','')
         reader = csv.reader(file)
@@ -28,8 +16,8 @@ def populate_stock_prices_from_csv(csv_file_path):
         next(reader, None)
         for row in reader:
             # Assuming the CSV format is: date, stock_id, current_price, current_volume
-            date, open, close, volume = row
-            date = datetime.strptime(date_str, '%Y-%m-%d')
+            date_str, open, close, volume = row
+            date = datetime.strptime(date_str, '%m/%d/%Y')
             # Create a StockPrice instance
             stock_price = StockPrice(
                 stock_id=stock_id,
@@ -39,3 +27,11 @@ def populate_stock_prices_from_csv(csv_file_path):
             )
             # Add the instance to the SQLAlchemy session
             db.session.add(stock_price)
+    
+    # Commit changes to the database after processing each CSV file
+    db.session.commit()
+    # After updating prices from all CSV files, trigger the main update_stock_prices function
+    update_stock_prices()
+
+    # Optional: Close the database session to free up resources
+    db.session.close()

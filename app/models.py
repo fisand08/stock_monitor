@@ -136,7 +136,7 @@ class StockPrice(db.Model):
     def __repr__(self):
         return f"StockPrice(Stock ID: {self.stock_id}, Date: {self.date}, Price: {self.current_price}, Volume: {self.current_volume})"
 
-
+		
 
 """
 __DB Syntax__

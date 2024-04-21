@@ -230,14 +230,14 @@ div.flex-line div {
 div.section {
   padding-left: 20px;
   padding-right: 20px;
-  border-right: 1px solid #fff;
+  /*border-right: 1px solid #fff;*/
   width: 100%;
 }
 
 #mainTool {
     padding: 25px;
-    background: #6f7070;   /*#1c615a */
-    color: #fff;
+    background: white;   /*#1c615a */
+    color: black;
 }
 
 
