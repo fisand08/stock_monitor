@@ -115,9 +115,43 @@ def populate_stock_prices_from_csv(csv_file_path):
                 db.session.add(stock_price)
         db.session.commit()
 
+def call_overview_update():
+    csv_file_path = os.path.join(os.getcwd(),'stocks_db.csv')
+    populate_stock_overview(csv_file_path)
+
+def populate_stock_overview(csv_file_path):
+    print(f'Scheduler: running populate_stock_overview()')
+    with app.app_context():
+        with open(csv_file_path,'r') as file:
+            reader = csv.reader(file)
+            next(reader, None)
+            for row in reader:  # STOCK_ID	STOCK_NAME	MARKET	CURRENCY
+                stock_id, stock_name, market, currency = row
+
+                stock = Stock(
+                    abbreviation=stock_id,
+                    full_name = stock_name,
+                    market = market,
+                    currency = currency
+                )
+                db.session.add(stock)
+        db.session.commit()
+
+
+"""
+    id = db.Column(db.Integer, primary_key=True)
+    abbreviation = db.Column(db.String(10), nullable=False)
+    full_name = db.Column(db.String(100), nullable=False)
+    market = db.Column(db.String(50), nullable=False)
+    currency = db.Column(db.String(10), nullable=False)
+    # Add more attributes as needed
+    prices = relationship("StockPrice", back_populates="stock")
+"""
+
 sched = BackgroundScheduler(daemon=True)
 sched.add_job(sensor,'interval',minutes=60)
 sched.add_job(update_stock_prices,'interval',minutes=60)
+sched.add_job(call_overview_update,'interval',minutes=60)
 # run all jobs now
 for job in sched.get_jobs():
     job.modify(next_run_time=datetime.now())
