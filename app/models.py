@@ -30,7 +30,7 @@ class User(UserMixin, db.Model):  # inherts from db.Model, the bas lass for all 
     Relationship to new class Portfolio "author" object; so.relationship() is model class that represents the other side of the relationship;
     the "back_populates" arguments reference the name of the relationship attribute on the other side
     """
-    portfolios: so.WriteOnlyMapped['Portfolio'] = so.relationship(back_populates='author')
+    portfolios: so.WriteOnlyMapped['Portfolio'] = so.relationship(back_populates='author', cascade='all, delete-orphan', passive_deletes=True)
 
     """
     - password hash is used instead of password to not store them as plain text if DB is comprimised
@@ -44,8 +44,9 @@ class User(UserMixin, db.Model):  # inherts from db.Model, the bas lass for all 
         return check_password_hash(self.password_hash, password)
     
     about_me: so.Mapped[Optional[str]] = so.mapped_column(sa.String(140))
-    last_seen: so.Mapped[Optional[datetime]] = so.mapped_column(
-        default=lambda: datetime.now(timezone.utc))
+    #last_seen: so.Mapped[Optional[datetime]] = so.mapped_column(
+        #default=lambda: datetime.now(timezone.utc))
+    is_admin = db.Column(db.Boolean, default=False)  # New field for admin status
 
 
     def avatar(self,size):

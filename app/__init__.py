@@ -100,10 +100,22 @@ def populate_stock_prices_from_csv(csv_file_path):
             reader = csv.reader(file)
             # Skip the header if present
             next(reader, None)
+
+            # Create a list to hold the StockPrice instances
+            stock_prices = []
+
             for row in reader:
                 # Assuming the CSV format is: date, stock_id, current_price, current_volume
                 date_str, opening_price, closing_price, volume = row
                 date = datetime.strptime(date_str, '%Y-%m-%d')  # Corrected date format
+
+                # Check if the entry already exists in the database
+                existing_entry = StockPrice.query.filter_by(stock_id=stock_id, date=date).first()
+
+                if existing_entry:
+                    print(f"Entry for stock_id: {stock_id}, date: {date} already exists. Skipping insertion.")
+                    continue  # Skip insertion if the entry already exists
+
                 # Create a StockPrice instance
                 stock_price = StockPrice(
                     stock_id=stock_id,
@@ -111,9 +123,13 @@ def populate_stock_prices_from_csv(csv_file_path):
                     current_price=float(closing_price),
                     current_volume=int(volume)
                 )
-                # Add the instance to the SQLAlchemy session
-                db.session.add(stock_price)
-        db.session.commit()
+                # Add the instance to the list
+                stock_prices.append(stock_price)
+
+            # Add all the instances to the SQLAlchemy session in a single operation
+            if stock_prices:
+                db.session.add_all(stock_prices)
+                db.session.commit()
 
 def call_overview_update():
     csv_file_path = os.path.join(os.getcwd(),'stocks_db.csv')
@@ -127,6 +143,13 @@ def populate_stock_overview(csv_file_path):
             next(reader, None)
             for row in reader:  # STOCK_ID	STOCK_NAME	MARKET	CURRENCY
                 stock_id, stock_name, market, currency = row
+
+                # Check if the entry already exists in the database
+                existing_entry = Stock.query.filter_by(abbreviation=stock_id).first()
+
+                if existing_entry:
+                    print(f"Entry for stock_id: {stock_id} already exists. Skipping insertion.")
+                    continue  # Skip insertion if the entry already exists
 
                 stock = Stock(
                     abbreviation=stock_id,
@@ -152,9 +175,9 @@ sched = BackgroundScheduler(daemon=True)
 sched.add_job(sensor,'interval',minutes=60)
 sched.add_job(update_stock_prices,'interval',minutes=60)
 sched.add_job(call_overview_update,'interval',minutes=60)
-# run all jobs now
+"""# run all jobs now
 for job in sched.get_jobs():
-    job.modify(next_run_time=datetime.now())
+    job.modify(next_run_time=datetime.now())"""
 sched.start()
 
 
@@ -182,3 +205,9 @@ if not app.debug:
     app.logger.info('App startup')
 
 from app import routes, models, errors
+
+"""
+
+@app.teardown_appcontext
+sched.shutdown()
+"""

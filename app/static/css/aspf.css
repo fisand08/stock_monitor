@@ -292,3 +292,28 @@ header.show-top-nav div.white a {
     .custom-table th {
         background-color: #f2f2f2;
     }
+
+
+
+/* AF CSS for flash messages */
+#flashMessages {
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    z-index: 1000; /* Ensure flash messages are on top */
+    color: white;
+}
+
+.alert-container {
+    padding: 10px;
+}
+
+.alert {
+    margin-bottom: 10px;
+}
+
+.light-text .alert {
+    color: black; /* Change to your desired light text color */
+}

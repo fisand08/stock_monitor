@@ -16,10 +16,10 @@
     <link rel="icon" sizes="192x192" href="{{ url_for('static', filename='img/stock_icon.png') }}">
 
 	<!-- CSS includes -->
+
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/DSMF.css') }}" type="text/css">
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/aspf.css') }}" type="text/css">
-	<link rel="stylesheet" href="{{ url_for('static', filename='css/stocks.css') }}" type="text/css">
-
+	<!-- <link rel="stylesheet" href="{{ url_for('static', filename='css/stocks.css') }}" type="text/css"> -->
 
 	<!-- JavaScript includes -->
 	<script type="text/javascript" src="{{ url_for('static', filename='js/jquery.js') }}"></script>
@@ -27,21 +27,23 @@
 
 	<!-- Local JavaScript-->
 	<script type="text/javascript">
-		$(document).ready(function(){
-					jQuery.noConflict();
+   $(document).ready(function(){
+        jQuery.noConflict();
 
-		(function($){
+        (function($){
 
-				var b = 0;
+            var b = 0;
 
-				$("header").hover(function(a) {
-			        b = $("header").hasClass("show-top-nav") ? !0 : !1;
-			        $("header").addClass("show-top-nav");
-			    }, function() {
-			        b || $("header").removeClass("show-top-nav");
-			    });
-			})(jQuery);
-		});
+            $("header").hover(function(a) {
+                b = $("header").hasClass("show-top-nav") ? !0 : !1;
+                $("header").addClass("show-top-nav");
+                $("#flashMessages").addClass("light-text"); // Add class for light text color
+            }, function() {
+                b || $("header").removeClass("show-top-nav");
+                $("#flashMessages").removeClass("light-text"); // Remove class for light text color
+            });
+        })(jQuery);
+    });
 	</script>
 
 	<script type="text/javascript">
@@ -122,7 +124,7 @@
 							{% endif %}
 							
 							<div>
-								<span><a href="{{ url_for('index') }}">Admin</a></span>
+								<span><a href="{{ url_for('admin_panel') }}">Admin</a></span>
 							</div>
 						</div>
 					</div>
@@ -130,7 +132,7 @@
 			</div>
 		</header>
 	
-		<!-- ///// Popup messages ///// -->
+		<!-- ///// Popup messages (AS) ///// -->
 		<div class='pop-up-alert popup'>
 			<div class='pop-up-content'>
 				<div class='pop-up-header'>ATTENTION !<i class="material-icons close close_popup">X</i></div>
@@ -156,12 +158,31 @@
 				</div>
 			</div>
 		</div>
-
+				<!-- Flash messages -->
+		<div id="flashMessages">
+			{% with messages = get_flashed_messages() %}
+			{% if messages %}
+			<div class="alert-container">
+				{% for message in messages %}
+				<div class="alert alert-info" role="alert">{{ message }}</div>
+				{% endfor %}
+			</div>
+			{% endif %}
+			{% endwith %}
+		</div>
 		<!-- /////////////////////////////
 			///// Main tool container ////
 			//////////////////////////////-->
 		<div id="mainTool">
-			
+				<!-- Flash messages 
+				{% with messages = get_flashed_messages() %}
+				{% if messages %}
+				{% for message in messages %}
+				<div class="alert alert-info" role="alert">{{ message }}</div>
+				{% endfor %}
+				{% endif %}
+				{% endwith %}-->
+				<!-- main content -->
 				{% block content %}{% endblock %}
 			
 		</div>

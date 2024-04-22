@@ -8,17 +8,18 @@ from flask_login import current_user, login_user, logout_user, login_required
 from flask import request
 from urllib.parse import urlsplit
 from datetime import datetime, timezone
+from functools import wraps
 
 """
 Logic executed before every request; executed before any view function
 """
-
+"""
 @app.before_request
 def before_request():
     if current_user.is_authenticated:
         current_user.last_seen = datetime.now(timezone.utc) # adding to db - no .add() needed here
         db.session.commit() # committing to db
-
+"""
 @app.route('/', methods=['GET', 'POST'])  # decorator for following function
 @app.route('/index', methods=['GET', 'POST'])  # 2nd decorator
 @login_required  # although it's index, we can set that here - not logged in person will be sent to login function
@@ -34,7 +35,7 @@ def index():
         return redirect(url_for('index')) # it's recommended to have a redirect at the end of a post request
 
 
-    u = db.session.get(User, 1)
+    u = db.session.get(User, 3)
     query = u.portfolios.select()
     user_portfolios = db.session.scalars(query).all()
     options = ['portfolio1','portfolio2','portfolio3']
@@ -118,6 +119,18 @@ def user(username):
     portfolios = ['NVS.SW,APPLE,DOWJON','ROG.SW,NVS.SW']
     return render_template('user.html', user=user, alt_names=alt_names, portfolios=portfolios)
 
+@app.route('/error_404', methods=['GET', 'POST'])
+def error_404():
+    return render_template('404.html'), 404
+
+@app.route('/error_403', methods=['GET', 'POST'])
+def error_403():
+    return render_template('403.html'), 403
+
+@app.route('/error_500', methods=['GET', 'POST'])
+def error_500():
+    return render_template('500.html'), 500
+
 
 @app.route('/edit_profile', methods=['GET', 'POST'])
 @login_required
@@ -137,11 +150,9 @@ def edit_profile():
 @app.route('/portfolio_manager')
 def portfolio_manager():
     # Query for Stock objects
-    stocks_query = db.session.query(Stock).all()
+    stocks_query = db.session.query(Stock).all()[:20]
     # Query for StockPrice objects
-    stock_prices_query = db.session.query(StockPrice).all()[:10]
-
-
+    stock_prices_query = db.session.query(StockPrice).order_by(StockPrice.id.desc()).limit(10).all()
 
     return render_template('portfolio_manager.html', stocks=stocks_query, stock_prices=stock_prices_query)
 
@@ -258,3 +269,59 @@ def old_index():
                            portfolios=portfolios.items, form=form, 
                            next_url=next_url, prev_url=prev_url)
     #return render_template('old_index.html')
+
+
+
+"""
+/////////// ADMIN PANEL //////////////
+"""
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_authenticated or not current_user.is_admin:
+            return redirect(url_for('error_403'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+@app.route('/admin', methods=['GET'])
+@admin_required
+def admin_panel():
+    users = User.query.all()
+    return render_template('admin_panel.html', users=users)
+
+@app.route('/admin/clear_table/<table_name>', methods=['POST'])
+@admin_required
+def clear_table(table_name):
+    tables = {
+        'stocks': Stock,
+        'stock_prices': StockPrice,
+        'portfolio_stocks': PortfolioStock,
+        'portfolios': Portfolio
+    }
+    if table_name in tables:
+        table = tables[table_name]
+        table.query.delete()
+        db.session.commit()
+        flash(f'{table_name.capitalize()} table cleared successfully', 'success')
+    else:
+        flash('Table not found', 'error')
+    return redirect(url_for('admin_panel'))
+
+@app.route('/admin/user/<int:user_id>/edit', methods=['POST'])
+@admin_required
+def edit_user(user_id):
+    user = User.query.get_or_404(user_id)
+    is_admin = request.form.get('is_admin') == 'on'
+    user.is_admin = is_admin
+    db.session.commit()
+    flash('User privileges updated successfully', 'success')
+    return redirect(url_for('admin_panel'))
+
+@app.route('/admin/user/<int:user_id>/delete', methods=['POST'])
+@admin_required
+def delete_user(user_id):
+    user = User.query.get_or_404(user_id)
+    db.session.delete(user)
+    db.session.commit()
+    flash('User deleted successfully', 'success')
+    return redirect(url_for('admin_panel'))
