@@ -13,6 +13,7 @@ from logging.handlers import RotatingFileHandler
 import os
 from datetime import datetime
 from apscheduler.schedulers.background import BackgroundScheduler
+from sqlalchemy import func
 
 
 
@@ -81,27 +82,73 @@ def sensor():
 
 
 def update_stock_prices():
-    print(f'Scheduler: running update_stock_prices()')
-
+    task = 'stock prices'
+    print(f'*** Scheduler: Starting update cylce of: "{task}" ***')
     # Assuming your CSV files are stored in a directory
     csv_directory = os.path.join(os.getcwd(),'stock_data')
     # Loop through CSV files and update stock prices
     for csv_file in os.listdir(csv_directory):
         if csv_file.endswith('.csv'):
             csv_file_path = os.path.join(csv_directory, csv_file)
-            populate_stock_prices_from_csv(csv_file_path)
-    print('Update cycle finished')
+            populate_stock_prices_from_csv_efficient(csv_file_path)
+    print(f'*** Scheduler: Finished update cylce of: {task} ***')
+
+def populate_stock_prices_from_csv_efficient(csv_file_path):
+    print(f'Scheduler: eff processing {os.path.basename(csv_file_path)}...')
+    with app.app_context():  # Create an application context
+        with open(csv_file_path, 'r') as file:
+            stock_id = os.path.basename(csv_file_path).replace('.csv','').replace('history','')
+
+            # Query to get the latest update date for the stock
+            latest_update_date = db.session.query(func.max(StockPrice.date)).filter_by(stock_id=stock_id).scalar()
+
+            reader = csv.reader(file)
+            # Skip the header if present
+            next(reader, None)
+            stock_prices = []
+
+            for row in reader:
+                # Assuming the CSV format is: date, opening_price, closing_price, volume
+                date_str, opening_price, closing_price, volume = row
+                date = datetime.strptime(date_str, '%Y-%m-%d').date()  # Parse as datetime.date object
+
+                # Skip entries before the latest update date
+                if latest_update_date and date <= latest_update_date:
+                    #print(f"Skipping entry for stock_id: {stock_id}, date: {date} as it's already up to date.")
+                    continue
+
+                # Check if the entry already exists in the database
+                existing_entry = StockPrice.query.filter_by(stock_id=stock_id, date=date).first()
+
+                if existing_entry:
+                    #print(f"Entry for stock_id: {stock_id}, date: {date} already exists. Skipping insertion.")
+                    continue  # Skip insertion if the entry already exists
+
+                # Create a StockPrice instance
+                stock_price = StockPrice(
+                    stock_id=stock_id,
+                    date=date,
+                    current_price=float(closing_price),
+                    current_volume=int(volume)
+                )
+                # Add the instance to the list
+                stock_prices.append(stock_price)
+
+            # Add all the instances to the SQLAlchemy session in a single operation
+            if stock_prices:
+                db.session.add_all(stock_prices)
+                db.session.commit()
+            else:
+                print(f'*** Scheduler: no new data found ***')
 
 def populate_stock_prices_from_csv(csv_file_path):
-    print(f'Scheduler: running populate_stock_prices_from_csv()')
+    print(f'Scheduler: processing {os.path.basename(csv_file_path)}...')
     with app.app_context():  # Create an application context
         with open(csv_file_path, 'r') as file:
             stock_id = os.path.basename(csv_file_path).replace('.csv','').replace('history','')
             reader = csv.reader(file)
             # Skip the header if present
             next(reader, None)
-
-            # Create a list to hold the StockPrice instances
             stock_prices = []
 
             for row in reader:
@@ -132,11 +179,13 @@ def populate_stock_prices_from_csv(csv_file_path):
                 db.session.commit()
 
 def call_overview_update():
+    task = 'stock table'
+    print(f'*** Scheduler: Starting update cylce of: "{task}" ***')
     csv_file_path = os.path.join(os.getcwd(),'stocks_db.csv')
     populate_stock_overview(csv_file_path)
+    print(f'*** Scheduler: Finished update cylce of: "{task}" ***')
 
 def populate_stock_overview(csv_file_path):
-    print(f'Scheduler: running populate_stock_overview()')
     with app.app_context():
         with open(csv_file_path,'r') as file:
             reader = csv.reader(file)
@@ -175,9 +224,9 @@ sched = BackgroundScheduler(daemon=True)
 sched.add_job(sensor,'interval',minutes=60)
 sched.add_job(update_stock_prices,'interval',minutes=60)
 sched.add_job(call_overview_update,'interval',minutes=60)
-"""# run all jobs now
+# run all jobs now
 for job in sched.get_jobs():
-    job.modify(next_run_time=datetime.now())"""
+    job.modify(next_run_time=datetime.now())
 sched.start()
 
 
