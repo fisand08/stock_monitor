@@ -9,6 +9,8 @@ from flask import request
 from urllib.parse import urlsplit
 from datetime import datetime, timezone
 from functools import wraps
+from flask import jsonify
+
 
 """
 Logic executed before every request; executed before any view function
@@ -128,6 +130,54 @@ def explore():
     portfolios_query = db.session.query(Portfolio).all()
     return render_template('explore.html', portfolios = portfolios_query, stocks=stocks_query, stock_prices=stock_prices_query)
 
+
+# Update routes.py
+@app.route('/manage_portfolio', methods=['GET', 'POST'])
+@login_required
+def manage_portfolio():
+    form = PortfolioForm()
+    stocks = Stock.query.all()
+    stock_choices = [(stock.abbreviation, stock.full_name) for stock in stocks]
+
+    portfolios = Portfolio.query.all()
+    portfolio_choices = [(portfolio.id, portfolio.name) for portfolio in portfolios]
+
+    form.stock.choices = stock_choices
+    form.portfolios.choices = portfolio_choices
+
+    current_stocks = {}
+
+    if request.method == 'GET':
+        # Set a default portfolio selection if none is selected
+        if not form.portfolios.data:
+            default_portfolio = Portfolio.query.first()
+            if default_portfolio:
+                form.portfolios.data = default_portfolio.id
+
+    selected_portfolio_id = form.portfolios.data
+    if selected_portfolio_id:
+        selected_portfolio = Portfolio.query.get(selected_portfolio_id)
+        stocks_in_portfolio = selected_portfolio.stocks
+        for ps in stocks_in_portfolio:
+            current_stocks[ps.stock.full_name] = ps.amount
+
+    return render_template('manage_portfolio.html', form=form, current_stocks=current_stocks)
+
+
+@app.route('/get_portfolio_data/<int:portfolio_id>', methods=['GET'])
+@login_required
+def get_portfolio_data(portfolio_id):
+    portfolio = Portfolio.query.get(portfolio_id)
+    if portfolio:
+        current_stocks = {}
+        for ps in portfolio.stocks:
+            current_stocks[ps.stock.full_name] = ps.amount
+        # Render the template with the updated data and return as string
+        return render_template('current_stocks.html', current_stocks=current_stocks)
+    return jsonify({'error': 'Portfolio not found'}), 404
+
+
+"""
 @app.route('/manage_portfolio', methods=['GET', 'POST'])
 @login_required
 def manage_portfolio():
@@ -157,7 +207,7 @@ def manage_portfolio():
     print(f"Current Stocks: {current_stocks}")
 
     return render_template('manage_portfolio.html', form=form, current_stocks=current_stocks)
-
+"""
 
 
 """

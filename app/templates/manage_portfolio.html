@@ -3,11 +3,11 @@
 {% block content %}
     <div class="middle-section section">
         <h2>Add Portfolio</h2>
-        <form method="POST">
+        <form id="portfolio-form" method="POST">
             {{ form.hidden_tag() }}
             <div class="form-group">
                 {{ form.portfolios.label(class="form-control-label") }}
-                {{ form.portfolios(class="form-control") }}
+                {{ form.portfolios(class="form-control", id="portfolio-dropdown") }}
             </div>
             <div class="form-group">
                 {{ form.stock.label(class="form-control-label") }}
@@ -34,21 +34,29 @@
 
     <div class="right-section section">
         <h2>Current Stocks in Selected Portfolio</h2>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Stock</th>
-                    <th>Amount</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for stock, amount in current_stocks.items() %}
-                <tr>
-                    <td>{{ stock }}</td>
-                    <td>{{ amount }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>       
+        <div id="current-stocks">
+            <!-- Dynamic content will be inserted here -->
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Event listener for dropdown change
+            document.getElementById('portfolio-dropdown').addEventListener('change', function () {
+                var selectedPortfolioId = this.value;
+                if (selectedPortfolioId) {
+                    // Make AJAX request to fetch updated data
+                    var xhr = new XMLHttpRequest();
+                    xhr.open('GET', '/get_portfolio_data/' + selectedPortfolioId, true);
+                    xhr.onreadystatechange = function () {
+                        if (xhr.readyState == 4 && xhr.status == 200) {
+                            // Update content with received data
+                            document.getElementById('current-stocks').innerHTML = xhr.responseText;
+                        }
+                    };
+                    xhr.send();
+                }
+            });
+        });
+    </script>
 {% endblock %}

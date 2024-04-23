@@ -1,0 +1,16 @@
+<table class="table">
+    <thead>
+        <tr>
+            <th>Stock</th>
+            <th>Amount</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for stock, amount in current_stocks.items() %}
+        <tr>
+            <td>{{ stock }}</td>
+            <td>{{ amount }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
