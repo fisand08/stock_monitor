@@ -5,7 +5,6 @@ Interface to check a stock portfolio against stock data to check for profit/loss
 ## Development:
 
 
-1) unify css to one file
 2) finish portfolio adder (looks and functionality) - e.g. it should just show the name field for entering a name if you add a new portfolio - it should now be able to access the data from the stocks table to display stocks to choose from
 3) provide way to modify scrapers input
  ( first check if scraper dynamically checks his input.txt file to see if there is a new stock),

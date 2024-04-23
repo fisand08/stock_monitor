@@ -94,7 +94,7 @@ def update_stock_prices():
     print(f'*** Scheduler: Finished update cylce of: {task} ***')
 
 def populate_stock_prices_from_csv_efficient(csv_file_path):
-    print(f'Scheduler: eff processing {os.path.basename(csv_file_path)}...')
+    print(f'Scheduler: processing {os.path.basename(csv_file_path)}...')
     with app.app_context():  # Create an application context
         with open(csv_file_path, 'r') as file:
             stock_id = os.path.basename(csv_file_path).replace('.csv','').replace('history','')
@@ -114,14 +114,12 @@ def populate_stock_prices_from_csv_efficient(csv_file_path):
 
                 # Skip entries before the latest update date
                 if latest_update_date and date <= latest_update_date:
-                    #print(f"Skipping entry for stock_id: {stock_id}, date: {date} as it's already up to date.")
                     continue
 
                 # Check if the entry already exists in the database
                 existing_entry = StockPrice.query.filter_by(stock_id=stock_id, date=date).first()
 
                 if existing_entry:
-                    #print(f"Entry for stock_id: {stock_id}, date: {date} already exists. Skipping insertion.")
                     continue  # Skip insertion if the entry already exists
 
                 # Create a StockPrice instance
@@ -136,47 +134,11 @@ def populate_stock_prices_from_csv_efficient(csv_file_path):
 
             # Add all the instances to the SQLAlchemy session in a single operation
             if stock_prices:
+                print('*** Scheduler: updating {stock_id}***')
                 db.session.add_all(stock_prices)
                 db.session.commit()
             else:
                 print(f'*** Scheduler: no new data found ***')
-
-def populate_stock_prices_from_csv(csv_file_path):
-    print(f'Scheduler: processing {os.path.basename(csv_file_path)}...')
-    with app.app_context():  # Create an application context
-        with open(csv_file_path, 'r') as file:
-            stock_id = os.path.basename(csv_file_path).replace('.csv','').replace('history','')
-            reader = csv.reader(file)
-            # Skip the header if present
-            next(reader, None)
-            stock_prices = []
-
-            for row in reader:
-                # Assuming the CSV format is: date, stock_id, current_price, current_volume
-                date_str, opening_price, closing_price, volume = row
-                date = datetime.strptime(date_str, '%Y-%m-%d')  # Corrected date format
-
-                # Check if the entry already exists in the database
-                existing_entry = StockPrice.query.filter_by(stock_id=stock_id, date=date).first()
-
-                if existing_entry:
-                    print(f"Entry for stock_id: {stock_id}, date: {date} already exists. Skipping insertion.")
-                    continue  # Skip insertion if the entry already exists
-
-                # Create a StockPrice instance
-                stock_price = StockPrice(
-                    stock_id=stock_id,
-                    date=date,
-                    current_price=float(closing_price),
-                    current_volume=int(volume)
-                )
-                # Add the instance to the list
-                stock_prices.append(stock_price)
-
-            # Add all the instances to the SQLAlchemy session in a single operation
-            if stock_prices:
-                db.session.add_all(stock_prices)
-                db.session.commit()
 
 def call_overview_update():
     task = 'stock table'

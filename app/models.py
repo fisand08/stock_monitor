@@ -152,6 +152,26 @@ posts = db.session.scalars(query).all()
 print(posts)
 ```
 
+* Adding a portfolio
+``` 
+from app import app, db
+from app.models import User, Portfolio, PortfolioStock
+from app import Stocks
+import sqlalchemy as sa
+
+with app.app_context():
+    user_instance = User.query.first() 
+    stock_instance_1 = Stock.query.filter_by(id=1).first()
+    stock_instance_2 = Stock.query.filter_by(id=2).first()
+    quantity_1 = 10
+    quantity_2 = 20
+    portfolio = Portfolio(name="some_name", author=user_instance, stock_list='asd,asd',
+        stocks=[PortfolioStock(stock=stock_instance_1, amount=quantity_1),
+        PortfolioStock(stock=stock_instance_2, amount=quantity_2) ] )
+    db.session.add(portfolio)
+    db.session.commit()
+```
+
 """
 
 
@@ -167,4 +187,5 @@ followers = sa.Table(
               primary_key=True)
 )
 """
+
 

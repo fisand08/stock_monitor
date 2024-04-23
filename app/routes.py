@@ -24,41 +24,12 @@ def before_request():
 @app.route('/index', methods=['GET', 'POST'])  # 2nd decorator
 @login_required  # although it's index, we can set that here - not logged in person will be sent to login function
 def index():
+
     mock_user = {'username':'Rikarda'}
     alt_names = ['guati','schatzi','schatzus','schatzo']
-    form = PostPortfolio()
-    if form.validate_on_submit():  # forms always are POST requests
-        portfolio = Portfolio(stock_list=form.portfolio.data, author=current_user)
-        db.session.add(portfolio)
-        db.session.commit()
-        flash('Your portfolio is now stored in database!')
-        return redirect(url_for('index')) # it's recommended to have a redirect at the end of a post request
+    
 
-
-    u = db.session.get(User, 3)
-    query = u.portfolios.select()
-    user_portfolios = db.session.scalars(query).all()
-    options = ['portfolio1','portfolio2','portfolio3']
-
-
-    portfolio_query = sa.select(Portfolio)
-    """
-    Instead of db.session.scalars() we can call db.paginate().items to prohibit overflow of one page
-    and make the DB requests smaller; takes several arguments:
-        page: the page number, starting from 1; per_page: the number of items per page
-        error_out: an error flag. If True, when an out of range page is requested a 404 error will be 
-        automatically returned to the client. If False, an empty list will be returned for out of range pages.
-    """
-    page = request.args.get('page', 1, type=int)
-    portfolios = db.paginate(portfolio_query, page=page, per_page=app.config['POSTS_PER_PAGE'], error_out=False)
-    next_url = url_for('index', page=portfolios.next_num) \
-        if portfolios.has_next else None
-    prev_url = url_for('index', page=portfolios.prev_num) \
-        if portfolios.has_prev else None
-
-    return render_template('index.html',user=mock_user, alt_names=alt_names, 
-                           portfolios=portfolios.items, form=form, 
-                           next_url=next_url, prev_url=prev_url,options=options,user_portfolios=user_portfolios)
+    return render_template('index.html',user=mock_user, alt_names=alt_names)
 
     #return render_template('index.html',title='Starting page',user=mock_user)
 
@@ -147,130 +118,72 @@ def edit_profile():
         form.about_me.data = current_user.about_me
     return render_template('edit_profile.html', title='Edit Profile', form=form)
 
-@app.route('/portfolio_manager')
-def portfolio_manager():
+@app.route('/explore')
+def explore():
     # Query for Stock objects
     stocks_query = db.session.query(Stock).all()[:20]
     # Query for StockPrice objects
     stock_prices_query = db.session.query(StockPrice).order_by(StockPrice.id.desc()).limit(10).all()
+    # Portfolios
+    portfolios_query = db.session.query(Portfolio).all()
+    return render_template('explore.html', portfolios = portfolios_query, stocks=stocks_query, stock_prices=stock_prices_query)
 
-    return render_template('portfolio_manager.html', stocks=stocks_query, stock_prices=stock_prices_query)
-
-
-
-"""
-@ app.route('/add_portfolio')
+@app.route('/manage_portfolio', methods=['GET', 'POST'])
 @login_required
-def add_portfolio():
-
-    form = PostPortfolio()
-    if form.validate_on_submit():  # forms always are POST requests
-        portfolio = Portfolio(stock_list=form.portfolio.data, author=current_user)
-        db.session.add(portfolio)
-        db.session.commit()
-        flash('Your portfolio is now stored in database!')
-        return redirect(url_for('index')) # it's recommended to have a redirect at the end of a post request
-
-
-    return render_template('add_portfolio.html',
-                           form=form, 
-                           )
-"""
-@ app.route('/add_portfolio', methods=['GET', 'POST'])
-@login_required
-def add_portfolio():
+def manage_portfolio():
     form = PortfolioForm()
-
-    # Populate the portfolio field choices with existing portfolios
-    portfolios = Portfolio.query.all()
-    form.portfolio.choices = [(portfolio.id, portfolio.name) for portfolio in portfolios]
-
-    # Populate the stock field choices with available stocks
     stocks = Stock.query.all()
-    form.stock.choices = [(stock.abbreviation, stock.full_name) for stock in stocks]
+    stock_choices = [(stock.abbreviation, stock.full_name) for stock in stocks]
+
+    portfolios = Portfolio.query.all()
+    portfolio_choices = [(portfolio.id, portfolio.name) for portfolio in portfolios]
+
+    form.stock.choices = stock_choices
+    form.portfolios.choices = portfolio_choices
 
     if form.validate_on_submit():
-        portfolio_name = form.name.data
-        stock_abbreviation = form.stock.data
-        action = form.action.data
-        amount = form.amount.data
+        print(f"Form data: {form.data}")
 
-        # Retrieve the selected portfolio
-        selected_portfolio_id = form.portfolio.data
-        selected_portfolio = None
+    current_stocks = {}
 
-        # If a portfolio is selected, get it from the database
-        if selected_portfolio_id:
-            selected_portfolio = Portfolio.query.get(selected_portfolio_id)
+    selected_portfolio_id = form.portfolios.data
+    if selected_portfolio_id:
+        selected_portfolio = Portfolio.query.get(selected_portfolio_id)
+        stocks_in_portfolio = selected_portfolio.stocks
+        for ps in stocks_in_portfolio:
+            current_stocks[ps.stock.full_name] = ps.amount
 
-        # If no portfolio is selected, create a new one
-        if not selected_portfolio and portfolio_name:
-            selected_portfolio = Portfolio(name=portfolio_name)
-            db.session.add(selected_portfolio)
-            db.session.commit()
+    print(f"Selected Portfolio ID: {selected_portfolio_id}")
+    print(f"Current Stocks: {current_stocks}")
 
-        if not selected_portfolio:
-            flash("Please select a portfolio or enter a new portfolio name.")
-            return redirect(url_for('add_portfolio'))
-
-        # Update portfolio stock
-        stock = Stock.query.filter_by(abbreviation=stock_abbreviation).first()
-
-        if not stock:
-            flash("Invalid stock selected.")
-            return redirect(url_for('add_portfolio'))
-
-        portfolio_stock = PortfolioStock.query.filter_by(portfolio_id=selected_portfolio.id, stock_id=stock.id).first()
-        
-        if portfolio_stock:
-            if action == 'buy':
-                portfolio_stock.amount += amount
-            elif action == 'sell':
-                portfolio_stock.amount -= amount
-        else:
-            portfolio_stock = PortfolioStock(portfolio_id=selected_portfolio.id, stock_id=stock.id, amount=amount)
-            db.session.add(portfolio_stock)
-        
-        db.session.commit()
-        flash("Portfolio updated successfully.")
-        return redirect(url_for('add_portfolio'))
-
-    return render_template('add_portfolio.html', form=form)
-
-@ app.route('/old_index')
-def old_index():
-
-    mock_user = {'username':'Rikarda'}
-    alt_names = ['guati','schatzi','schatzus','schatzo']
-    form = PostPortfolio()
-    if form.validate_on_submit():  # forms always are POST requests
-        portfolio = Portfolio(stock_list=form.portfolio.data, author=current_user)
-        db.session.add(portfolio)
-        db.session.commit()
-        flash('Your portfolio is now stored in database!')
-        return redirect(url_for('index')) # it's recommended to have a redirect at the end of a post request
-
-    portfolio_query = sa.select(Portfolio)
-    """
-    Instead of db.session.scalars() we can call db.paginate().items to prohibit overflow of one page
-    and make the DB requests smaller; takes several arguments:
-        page: the page number, starting from 1; per_page: the number of items per page
-        error_out: an error flag. If True, when an out of range page is requested a 404 error will be 
-        automatically returned to the client. If False, an empty list will be returned for out of range pages.
-    """
-    page = request.args.get('page', 1, type=int)
-    portfolios = db.paginate(portfolio_query, page=page, per_page=app.config['POSTS_PER_PAGE'], error_out=False)
-    next_url = url_for('index', page=portfolios.next_num) \
-        if portfolios.has_next else None
-    prev_url = url_for('index', page=portfolios.prev_num) \
-        if portfolios.has_prev else None
-
-    return render_template('old_index.html',user=mock_user, alt_names=alt_names, 
-                           portfolios=portfolios.items, form=form, 
-                           next_url=next_url, prev_url=prev_url)
-    #return render_template('old_index.html')
+    return render_template('manage_portfolio.html', form=form, current_stocks=current_stocks)
 
 
+
+"""
+@app.route('/manage_portfolio', methods=['GET', 'POST'])
+@login_required
+def manage_portfolio():
+    form = PortfolioForm()
+    stocks = Stock.query.all()
+    stock_choices = [(stock.abbreviation, stock.full_name) for stock in stocks]
+
+    portfolios = Portfolio.query.all()
+    portfolio_choices = [(portfolio.id, portfolio.name) for portfolio in portfolios]
+
+    form.stock.choices = stock_choices
+    form.portfolios.choices = portfolio_choices
+
+    current_stocks = {}
+    if form.validate_on_submit():
+        selected_portfolio_id = form.portfolios.data
+        selected_portfolio = Portfolio.query.get(selected_portfolio_id)
+        stocks_in_portfolio = selected_portfolio.stocks
+        for ps in stocks_in_portfolio:
+            current_stocks[ps.stock.full_name] = ps.amount
+
+    return render_template('manage_portfolio.html', form=form, current_stocks=current_stocks)
+"""
 
 """
 /////////// ADMIN PANEL //////////////
