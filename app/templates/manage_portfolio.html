@@ -41,22 +41,33 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // Event listener for dropdown change
-            document.getElementById('portfolio-dropdown').addEventListener('change', function () {
-                var selectedPortfolioId = this.value;
-                if (selectedPortfolioId) {
-                    // Make AJAX request to fetch updated data
-                    var xhr = new XMLHttpRequest();
-                    xhr.open('GET', '/get_portfolio_data/' + selectedPortfolioId, true);
-                    xhr.onreadystatechange = function () {
-                        if (xhr.readyState == 4 && xhr.status == 200) {
-                            // Update content with received data
-                            document.getElementById('current-stocks').innerHTML = xhr.responseText;
-                        }
-                    };
-                    xhr.send();
+            // Set default selection to the first portfolio
+            var portfolioDropdown = document.getElementById('portfolio-dropdown');
+            if (portfolioDropdown) {
+                if (portfolioDropdown.selectedIndex === -1) {
+                    portfolioDropdown.selectedIndex = 0;
                 }
-            });
+                
+                // Event listener for dropdown change
+                portfolioDropdown.addEventListener('change', function () {
+                    var selectedPortfolioId = this.value;
+                    if (selectedPortfolioId) {
+                        // Make AJAX request to fetch updated data
+                        var xhr = new XMLHttpRequest();
+                        xhr.open('GET', '/get_portfolio_data/' + selectedPortfolioId, true);
+                        xhr.onreadystatechange = function () {
+                            if (xhr.readyState == 4 && xhr.status == 200) {
+                                // Update content with received data
+                                document.getElementById('current-stocks').innerHTML = xhr.responseText;
+                            }
+                        };
+                        xhr.send();
+                    }
+                });
+                
+                // Trigger change event to load initial stocks
+                portfolioDropdown.dispatchEvent(new Event('change'));
+            }
         });
     </script>
 {% endblock %}

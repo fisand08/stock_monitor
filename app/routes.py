@@ -129,8 +129,6 @@ def explore():
     # Portfolios
     portfolios_query = db.session.query(Portfolio).all()
     return render_template('explore.html', portfolios = portfolios_query, stocks=stocks_query, stock_prices=stock_prices_query)
-
-
 # Update routes.py
 @app.route('/manage_portfolio', methods=['GET', 'POST'])
 @login_required
@@ -147,12 +145,17 @@ def manage_portfolio():
 
     current_stocks = {}
 
-    if request.method == 'GET':
-        # Set a default portfolio selection if none is selected
-        if not form.portfolios.data:
-            default_portfolio = Portfolio.query.first()
-            if default_portfolio:
-                form.portfolios.data = default_portfolio.id
+    # Set default selection to the first portfolio if no selection is made
+    if not form.portfolios.data and portfolio_choices:
+        default_portfolio_id = portfolio_choices[0][0]
+        form.portfolios.data = default_portfolio_id
+        selected_portfolio = Portfolio.query.get(default_portfolio_id)
+        if selected_portfolio:
+            for ps in selected_portfolio.stocks:
+                current_stocks[ps.stock.full_name] = ps.amount
+
+    if form.validate_on_submit():
+        print(f"Form data: {form.data}")
 
     selected_portfolio_id = form.portfolios.data
     if selected_portfolio_id:
@@ -162,7 +165,6 @@ def manage_portfolio():
             current_stocks[ps.stock.full_name] = ps.amount
 
     return render_template('manage_portfolio.html', form=form, current_stocks=current_stocks)
-
 
 @app.route('/get_portfolio_data/<int:portfolio_id>', methods=['GET'])
 @login_required
