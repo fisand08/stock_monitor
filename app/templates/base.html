@@ -132,32 +132,6 @@
 			</div>
 		</header>
 	
-		<!-- ///// Popup messages (AS) ///// -->
-		<div class='pop-up-alert popup'>
-			<div class='pop-up-content'>
-				<div class='pop-up-header'>ATTENTION !<i class="material-icons close close_popup">X</i></div>
-				<div class='pop-up-info-small'>
-					<br>
-					<span></span>
-					<div class='pop-up-buttons'>
-						<button class='blue active cancel' style='width: 100px'>OK</button>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class='pop-up-dialog popup'>
-			<div class='pop-up-content'>
-				<div class='pop-up-header'>COMPLETED ?<i class="material-icons close close_popup">X</i></div>
-				<div class='pop-up-info-small'>
-					<br>
-					<span></span>
-					<div class='pop-up-buttons'>
-						<button class='blue active cancel' style='width: 100px'>YES</button>
-						<button class='blue active cancel' style='width: 100px'>NO</button>
-					</div>
-				</div>
-			</div>
-		</div>
 				<!-- Flash messages -->
 		<div id="flashMessages">
 			{% with messages = get_flashed_messages() %}
@@ -224,6 +198,32 @@
 </script>
  <!-- Includes for general JS applications-->
 {{ moment.include_moment() }}  <!-- flask-moment include of moment.js -->
+<!--
+/// Script to hide flash message upon scrolling (so it does not move all over the place)
+-->
+	
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Function to hide flash messages after 10 seconds
+        setTimeout(function() {
+            var flashMessages = document.getElementById("flashMessages");
+            if (flashMessages) {
+                flashMessages.style.display = "none";
+            }
+        }, 10000); // 10000 milliseconds = 10 seconds
 
+        // Function to hide flash messages when scrolling
+        window.addEventListener("scroll", function() {
+            // Check if the user has scrolled
+            if (window.scrollY > 0) {
+                // If scrolled, hide the flash message
+                var flashMessages = document.getElementById("flashMessages");
+                if (flashMessages) {
+                    flashMessages.style.display = "none";
+                }
+            }
+        });
+    });
+</script>
 
 </html>
