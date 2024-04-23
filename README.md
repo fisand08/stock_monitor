@@ -4,22 +4,19 @@ Interface to check a stock portfolio against stock data to check for profit/loss
 
 ## Development:
 
+* Urgent
+	* Change portfolio manager:
+		* make sure currently selected portfolio is displayed in table in right section
+		* make two tabls within the page - one for modification, one for adding a new one (only changing left tab)
+		* add a 3rd tab showing the current progression of the selected stock (plot) - give the plot some options
 
-2) finish portfolio adder (looks and functionality) - e.g. it should just show the name field for entering a name if you add a new portfolio - it should now be able to access the data from the stocks table to display stocks to choose from
-3) provide way to modify scrapers input
- ( first check if scraper dynamically checks his input.txt file to see if there is a new stock),
-this will allow to add new stocks to the tool
+* General
 
-* improve css and looks (e.g. yahoo portfolio manager)
-* database
-	* make sure stock prices are added from stocks csv files
-	* general stock data read from general stock csv file
-* portfolio manager
-	* finish form, show (if not new) all stocks on the side
-* modify index tab
-* scraping manager: allow new stocks to be added, allow update (run scraper once, update database) with the click of a button
-* admin panel
-
+	* modify index tab: make it lake yahoo
+	* improve css and looks (e.g. yahoo portfolio manager)
+	* Scraping manager
+		* check if the scraper dynamically checks input_stocks.txt 
+		* add functionality to portfolio manager to change this text file (also give some checking functionality visiting yahoo stocks if the provided code is valid)
 
 ## Description
 

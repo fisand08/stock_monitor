@@ -65,6 +65,7 @@ class PostPortfolio(FlaskForm):
     submit = SubmitField('Submit')
     
 
+
 class PortfolioForm(FlaskForm):
     portfolios = SelectField('Select Portfolio', choices=[])
     stock = SelectField('Select Stock', choices=[])
