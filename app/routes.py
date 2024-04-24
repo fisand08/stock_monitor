@@ -129,13 +129,14 @@ def explore():
     # Portfolios
     portfolios_query = db.session.query(Portfolio).all()
     return render_template('explore.html', portfolios = portfolios_query, stocks=stocks_query, stock_prices=stock_prices_query)
-# Update routes.py
+
+
 @app.route('/manage_portfolio', methods=['GET', 'POST'])
 @login_required
 def manage_portfolio():
     form = PortfolioForm()
     stocks = Stock.query.all()
-    stock_choices = [(stock.abbreviation, stock.full_name) for stock in stocks]
+    stock_choices = [(stock.id, stock.full_name) for stock in stocks]  # Change to use stock id as value
 
     portfolios = Portfolio.query.all()
     portfolio_choices = [(portfolio.id, portfolio.name) for portfolio in portfolios]
@@ -155,7 +156,29 @@ def manage_portfolio():
                 current_stocks[ps.stock.full_name] = ps.amount
 
     if form.validate_on_submit():
-        print(f"Form data: {form.data}")
+        # Get form data
+        portfolio_id = form.portfolios.data
+        stock_id = form.stock.data
+        amount = form.amount.data
+        action = form.action.data
+
+        # Update PortfolioStock table based on form submission
+        if action == 'buy':
+            portfolio_stock = PortfolioStock.query.filter_by(portfolio_id=portfolio_id, stock_id=stock_id).first()
+            if portfolio_stock:
+                portfolio_stock.amount += amount
+            else:
+                portfolio_stock = PortfolioStock(portfolio_id=portfolio_id, stock_id=stock_id, amount=amount)
+                db.session.add(portfolio_stock)
+        elif action == 'sell':
+            portfolio_stock = PortfolioStock.query.filter_by(portfolio_id=portfolio_id, stock_id=stock_id).first()
+            if portfolio_stock:
+                portfolio_stock.amount -= amount
+                if portfolio_stock.amount <= 0:
+                    db.session.delete(portfolio_stock)
+
+        db.session.commit()
+        return redirect(url_for('manage_portfolio'))
 
     selected_portfolio_id = form.portfolios.data
     if selected_portfolio_id:
@@ -165,6 +188,7 @@ def manage_portfolio():
             current_stocks[ps.stock.full_name] = ps.amount
 
     return render_template('manage_portfolio.html', form=form, current_stocks=current_stocks)
+
 
 @app.route('/get_portfolio_data/<int:portfolio_id>', methods=['GET'])
 @login_required
@@ -178,64 +202,6 @@ def get_portfolio_data(portfolio_id):
         return render_template('current_stocks.html', current_stocks=current_stocks)
     return jsonify({'error': 'Portfolio not found'}), 404
 
-
-"""
-@app.route('/manage_portfolio', methods=['GET', 'POST'])
-@login_required
-def manage_portfolio():
-    form = PortfolioForm()
-    stocks = Stock.query.all()
-    stock_choices = [(stock.abbreviation, stock.full_name) for stock in stocks]
-
-    portfolios = Portfolio.query.all()
-    portfolio_choices = [(portfolio.id, portfolio.name) for portfolio in portfolios]
-
-    form.stock.choices = stock_choices
-    form.portfolios.choices = portfolio_choices
-
-    if form.validate_on_submit():
-        print(f"Form data: {form.data}")
-
-    current_stocks = {}
-
-    selected_portfolio_id = form.portfolios.data
-    if selected_portfolio_id:
-        selected_portfolio = Portfolio.query.get(selected_portfolio_id)
-        stocks_in_portfolio = selected_portfolio.stocks
-        for ps in stocks_in_portfolio:
-            current_stocks[ps.stock.full_name] = ps.amount
-
-    print(f"Selected Portfolio ID: {selected_portfolio_id}")
-    print(f"Current Stocks: {current_stocks}")
-
-    return render_template('manage_portfolio.html', form=form, current_stocks=current_stocks)
-"""
-
-
-"""
-@app.route('/manage_portfolio', methods=['GET', 'POST'])
-@login_required
-def manage_portfolio():
-    form = PortfolioForm()
-    stocks = Stock.query.all()
-    stock_choices = [(stock.abbreviation, stock.full_name) for stock in stocks]
-
-    portfolios = Portfolio.query.all()
-    portfolio_choices = [(portfolio.id, portfolio.name) for portfolio in portfolios]
-
-    form.stock.choices = stock_choices
-    form.portfolios.choices = portfolio_choices
-
-    current_stocks = {}
-    if form.validate_on_submit():
-        selected_portfolio_id = form.portfolios.data
-        selected_portfolio = Portfolio.query.get(selected_portfolio_id)
-        stocks_in_portfolio = selected_portfolio.stocks
-        for ps in stocks_in_portfolio:
-            current_stocks[ps.stock.full_name] = ps.amount
-
-    return render_template('manage_portfolio.html', form=form, current_stocks=current_stocks)
-"""
 
 """
 /////////// ADMIN PANEL //////////////
