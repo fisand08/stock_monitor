@@ -1,6 +1,6 @@
 from app import app, db
 from flask import render_template, flash, redirect, url_for, request
-from app.forms import LoginForm, RegistrationForm, EditProfileForm, PostPortfolio, PortfolioForm
+from app.forms import LoginForm, RegistrationForm, EditProfileForm, PortfolioForm
 from app.models import User, Portfolio, PortfolioStock
 from app import Stock, StockPrice
 import sqlalchemy as sa

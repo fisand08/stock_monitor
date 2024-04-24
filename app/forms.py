@@ -58,13 +58,7 @@ class EditProfileForm(FlaskForm):
                 User.username == self.username.data))
             if user is not None:
                 raise ValidationError('Please use a different username.')
-            
-class PostPortfolio(FlaskForm):
-    portfolio = TextAreaField('Type comma-separated string of stocks',
-                              validators=[DataRequired(), Length(min=1, max=300)])
-    submit = SubmitField('Submit')
-    
-
+        
 
 class PortfolioForm(FlaskForm):
     portfolios = SelectField('Select Portfolio', choices=[])
