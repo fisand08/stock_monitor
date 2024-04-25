@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div class="middle-section section">
+    <div class="left-section section">
         <h2>Add Portfolio</h2>
         <form id="portfolio-form" method="POST">
             {{ form.hidden_tag() }}
@@ -32,11 +32,17 @@
         </form>
     </div>
 
-    <div class="right-section section">
+    <div class="middle-section section">
         <h2>Current Stocks in Selected Portfolio</h2>
         <div id="current-stocks">
             <!-- Dynamic content will be inserted here -->
         </div>
+    </div>
+
+
+    <div class="right-section section">
+        <h2>Plot</h2>
+        <p>place to add a plot</p>
     </div>
 
     <script>
