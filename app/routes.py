@@ -130,6 +130,7 @@ def edit_profile():
         form.about_me.data = current_user.about_me
     return render_template('edit_profile.html', title='Edit Profile', form=form)
 
+
 @app.route('/explore')
 def explore():
     # Query for Stock objects
@@ -146,7 +147,7 @@ def explore():
 def manage_portfolio():
     form = PortfolioForm()
     stocks = Stock.query.all()
-    stock_choices = [(stock.id, stock.full_name) for stock in stocks]  # Change to use stock id as value
+    stock_choices = [(stock.id, stock.full_name) for stock in stocks]
 
     portfolios = Portfolio.query.all()
     portfolio_choices = [(portfolio.id, portfolio.name) for portfolio in portfolios]
@@ -156,7 +157,6 @@ def manage_portfolio():
 
     current_stocks = {}
 
-    # Set default selection to the first portfolio if no selection is made
     if not form.portfolios.data and portfolio_choices:
         default_portfolio_id = portfolio_choices[0][0]
         form.portfolios.data = default_portfolio_id
@@ -188,16 +188,21 @@ def manage_portfolio():
                     db.session.delete(portfolio_stock)
 
         db.session.commit()
-        return redirect(url_for('manage_portfolio'))
 
-    selected_portfolio_id = form.portfolios.data
+        # Preserve the selected portfolio ID
+        selected_portfolio_id = form.portfolios.data
+        return redirect(url_for('manage_portfolio', selected_portfolio_id=selected_portfolio_id))
+
+    # Load the previously selected portfolio if available
+    selected_portfolio_id = request.args.get('selected_portfolio_id')
     if selected_portfolio_id:
+        form.portfolios.data = int(selected_portfolio_id)
         selected_portfolio = Portfolio.query.get(selected_portfolio_id)
-        stocks_in_portfolio = selected_portfolio.stocks
-        for ps in stocks_in_portfolio:
-            current_stocks[ps.stock.full_name] = ps.amount
+        if selected_portfolio:
+            for ps in selected_portfolio.stocks:
+                current_stocks[ps.stock.full_name] = ps.amount
 
-    return render_template('manage_portfolio.html', form=form, current_stocks=current_stocks)
+    return render_template('manage_portfolio.html', form=form, current_stocks=current_stocks, selected_portfolio_id=selected_portfolio_id)
 
 
 @app.route('/get_portfolio_data/<int:portfolio_id>', methods=['GET'])
@@ -220,6 +225,19 @@ def get_selected_stock_name(stock_id):
         return jsonify({'stock_name': stock.full_name})
     else:
         return jsonify({'error': 'Stock not found'}), 404
+    
+@app.route('/get_stock_prices/<int:stock_id>', methods=['GET'])
+def get_stock_prices(stock_id):
+    stock = Stock.query.get(stock_id)
+    stock_abbrev = stock.abbreviation + '_'
+    #print(f'Stock selected: ID "{stock}" Abbreviation "{stock.abbreviation}"')
+    if stock:
+        stock_prices = db.session.query(StockPrice).filter_by(stock_id=stock_abbrev).all()
+        #print(f'stock prices: {stock_prices}')
+        prices_data = [{'date': price.date.strftime('%Y-%m-%d'), 'price': price.current_price} for price in stock_prices]
+        #print(prices_data)
+        return jsonify(prices_data)
+    return jsonify({'error': 'Stock not found'}), 404
 
 
 """

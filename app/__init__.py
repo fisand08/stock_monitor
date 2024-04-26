@@ -49,7 +49,8 @@ class Stock(db.Model):
     currency = db.Column(db.String(10), nullable=False)
     # Add more attributes as needed
     prices = relationship("StockPrice", back_populates="stock")
-
+    def __repr__(self):
+        return f"Stock(abbreviation: {self.abbreviation}, full_name {self.full_name}"
 class StockPrice(db.Model):
     """
     table stores prices of stocks from csv
@@ -118,8 +119,8 @@ def populate_stock_prices_from_csv_efficient(csv_file_path):
 
                 # Check if the entry already exists in the database
                 existing_entry = StockPrice.query.filter_by(stock_id=stock_id, date=date).first()
-
-                if existing_entry:
+                existing_entry_alt =  StockPrice.query.filter_by(stock_id=stock_id + '_', date=date).first()
+                if existing_entry or existing_entry_alt:
                     continue  # Skip insertion if the entry already exists
 
                 # Create a StockPrice instance
@@ -183,12 +184,15 @@ def populate_stock_overview(csv_file_path):
 """
 
 sched = BackgroundScheduler(daemon=True)
-sched.add_job(sensor,'interval',minutes=60)
-sched.add_job(update_stock_prices,'interval',minutes=60)
-sched.add_job(call_overview_update,'interval',minutes=60)
+sched.add_job(sensor,'interval',minutes=60, start_date=datetime.now())
+sched.add_job(update_stock_prices,'interval',minutes=60, start_date=datetime.now())
+sched.add_job(call_overview_update,'interval',minutes=60, start_date=datetime.now())
 # run all jobs now
+"""
 for job in sched.get_jobs():
     job.modify(next_run_time=datetime.now())
+"""
+
 sched.start()
 
 
