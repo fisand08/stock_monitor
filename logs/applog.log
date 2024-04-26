@@ -1,6 +1,17 @@
-2024-04-23 20:07:43,115 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
-2024-04-23 20:07:44,309 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
-2024-04-23 20:07:56,971 ERROR: Exception on /index [GET] [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\venv\Lib\site-packages\flask\app.py:828]
+2024-04-25 21:45:26,505 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
+2024-04-25 21:45:27,536 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
+2024-04-26 08:20:58,722 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
+2024-04-26 08:21:00,055 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
+2024-04-26 08:28:08,307 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
+2024-04-26 08:28:09,459 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
+2024-04-26 08:41:54,086 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
+2024-04-26 08:41:55,628 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
+2024-04-26 08:44:09,246 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
+2024-04-26 08:44:10,424 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
+2024-04-26 08:46:44,737 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
+2024-04-26 08:46:49,836 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
+2024-04-26 08:46:50,984 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
+2024-04-26 08:46:53,304 ERROR: Exception on /user/andrefischer1 [GET] [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\venv\Lib\site-packages\flask\app.py:828]
 Traceback (most recent call last):
   File "C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\venv\Lib\site-packages\flask\app.py", line 1463, in wsgi_app
     response = self.full_dispatch_request()
@@ -17,61 +28,69 @@ Traceback (most recent call last):
   File "C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\venv\Lib\site-packages\flask_login\utils.py", line 290, in decorated_view
     return current_app.ensure_sync(func)(*args, **kwargs)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\routes.py", line 49, in index
-    return render_template('index.html',user=mock_user, alt_names=alt_names,
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\venv\Lib\site-packages\flask\templating.py", line 150, in render_template
-    return _render(app, template, context)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\venv\Lib\site-packages\flask\templating.py", line 131, in _render
-    rv = template.render(context)
-         ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\venv\Lib\site-packages\jinja2\environment.py", line 1301, in render
-    self.environment.handle_exception()
-  File "C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\venv\Lib\site-packages\jinja2\environment.py", line 936, in handle_exception
-    raise rewrite_traceback_stack(source=source)
-  File "C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\templates\index.html", line 40, in top-level template code
-    {% for post in posts %}
-  File "C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\templates\base.html", line 92, in top-level template code
-    <span><a href="{{ url_for('explore') }}">Explore</a></span>
-    ^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\venv\Lib\site-packages\flask\app.py", line 1074, in url_for
-    return self.handle_url_build_error(error, endpoint, values)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\venv\Lib\site-packages\flask\app.py", line 1063, in url_for
-    rv = url_adapter.build(  # type: ignore[union-attr]
-         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\venv\Lib\site-packages\werkzeug\routing\map.py", line 926, in build
-    raise BuildError(endpoint, values, method, self)
-werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'explore'. Did you mean 'edit_profile' instead?
-2024-04-23 20:08:30,350 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
-2024-04-23 20:08:31,664 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
-2024-04-24 19:42:21,734 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
-2024-04-24 19:42:23,944 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
-2024-04-24 20:04:30,767 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
-2024-04-24 20:04:32,437 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
-2024-04-24 20:07:14,128 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
-2024-04-24 20:07:47,584 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
-2024-04-24 20:07:53,405 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
-2024-04-24 20:07:55,353 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
-2024-04-24 21:40:38,956 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
-2024-04-24 21:40:50,790 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
-2024-04-24 21:40:52,496 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
-2024-04-24 21:41:58,611 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
-2024-04-24 21:42:08,821 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
-2024-04-24 21:42:10,530 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
-2024-04-24 21:43:09,825 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
-2024-04-24 21:43:24,701 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
-2024-04-24 21:44:06,877 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
-2024-04-24 21:44:08,938 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
-2024-04-24 21:45:25,095 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
-2024-04-25 19:26:30,918 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
-2024-04-25 19:26:31,831 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
-2024-04-25 19:30:12,357 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
-2024-04-25 19:30:14,209 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
-2024-04-25 19:33:19,912 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
-2024-04-25 19:33:21,253 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
-2024-04-25 19:37:24,126 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
-2024-04-25 19:37:25,286 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
-2024-04-25 19:37:54,470 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
-2024-04-25 19:37:55,662 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
+  File "C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\routes.py", line 102, in user
+    form.email.data = current_user.email
+    ^^^^^^^^^^
+AttributeError: 'EditProfileForm' object has no attribute 'email'
+2024-04-26 08:47:34,438 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
+2024-04-26 08:47:35,754 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
+2024-04-26 08:47:50,336 ERROR: Exception on /edit_profile [GET] [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\venv\Lib\site-packages\flask\app.py:828]
+Traceback (most recent call last):
+  File "C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\venv\Lib\site-packages\flask\app.py", line 1463, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\venv\Lib\site-packages\flask\app.py", line 872, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\venv\Lib\site-packages\flask\app.py", line 870, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\venv\Lib\site-packages\flask\app.py", line 855, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\venv\Lib\site-packages\flask_login\utils.py", line 290, in decorated_view
+    return current_app.ensure_sync(func)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\routes.py", line 120, in edit_profile
+    form = EditProfileForm(current_user.username)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\venv\Lib\site-packages\wtforms\form.py", line 208, in __call__
+    return type.__call__(cls, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: EditProfileForm.__init__() missing 1 required positional argument: 'original_email'
+2024-04-26 08:48:45,380 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
+2024-04-26 08:48:46,606 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
+2024-04-26 08:49:04,723 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
+2024-04-26 08:49:08,871 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
+2024-04-26 08:49:36,109 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
+2024-04-26 08:49:52,624 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
+2024-04-26 08:49:54,174 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
+2024-04-26 08:50:28,744 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
+2024-04-26 08:50:37,682 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
+2024-04-26 08:50:47,308 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
+2024-04-26 08:50:48,654 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
+2024-04-26 08:51:08,257 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
+2024-04-26 08:51:18,684 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
+2024-04-26 08:51:24,391 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
+2024-04-26 08:51:29,790 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
+2024-04-26 08:51:31,788 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
+2024-04-26 08:52:53,307 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
+2024-04-26 08:52:54,920 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
+2024-04-26 08:53:39,604 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
+2024-04-26 08:54:56,544 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
+2024-04-26 08:55:33,705 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
+2024-04-26 09:00:40,564 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
+2024-04-26 09:01:00,984 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
+2024-04-26 09:01:02,274 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
+2024-04-26 09:02:35,010 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
+2024-04-26 09:02:36,325 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
+2024-04-26 09:03:44,170 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
+2024-04-26 09:03:45,461 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
+2024-04-26 09:04:18,719 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
+2024-04-26 09:04:20,167 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
+2024-04-26 09:07:34,346 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
+2024-04-26 09:07:35,520 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
+2024-04-26 09:08:44,098 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
+2024-04-26 09:08:45,771 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
+2024-04-26 09:11:27,090 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]
+2024-04-26 09:11:28,537 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:216]

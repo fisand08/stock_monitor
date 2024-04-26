@@ -84,13 +84,23 @@ def register():
     return render_template('register.html', title='Register', form=form)
 
 
-@app.route('/user/<username>')  # <> brackets allow dynamic URL like youtube.com/FarioStalking
+@app.route('/user/<username>',methods=['GET', 'POST'])  # <> brackets allow dynamic URL
 @login_required # only accessible to logged-in users
 def user(username):
     user = db.first_or_404(sa.select(User).where(User.username == username))
-    alt_names = ['profil_' + x for x in ['guati','schatzi','schatzus','schatzo']]
-    portfolios = ['NVS.SW,APPLE,DOWJON','ROG.SW,NVS.SW']
-    return render_template('user.html', user=user, alt_names=alt_names, portfolios=portfolios)
+    form = EditProfileForm(current_user.username, current_user.email)
+    if form.validate_on_submit():
+        current_user.username = form.username.data
+        current_user.email = form.email.data
+        if form.password.data:  # Only update password if it's not empty
+            current_user.set_password(form.password.data)
+        db.session.commit()
+        flash('Your changes have been saved.')
+        #return redirect('user.html')
+    elif request.method == 'GET':
+        form.username.data = current_user.username
+        form.email.data = current_user.email
+    return render_template('user.html', user=user, title='User Home', form=form)
 
 @app.route('/error_404', methods=['GET', 'POST'])
 def error_404():
@@ -201,6 +211,15 @@ def get_portfolio_data(portfolio_id):
         # Render the template with the updated data and return as string
         return render_template('current_stocks.html', current_stocks=current_stocks)
     return jsonify({'error': 'Portfolio not found'}), 404
+
+
+@app.route('/get_selected_stock_name/<int:stock_id>', methods=['GET'])
+def get_selected_stock_name(stock_id):
+    stock = Stock.query.get(stock_id)
+    if stock:
+        return jsonify({'stock_name': stock.full_name})
+    else:
+        return jsonify({'error': 'Stock not found'}), 404
 
 
 """

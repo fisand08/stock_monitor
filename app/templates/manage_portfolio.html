@@ -1,28 +1,36 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div class="left-section section">
+    <div class="left-section">
         <h2>Add Portfolio</h2>
         <form id="portfolio-form" method="POST">
             {{ form.hidden_tag() }}
             <div class="form-group">
-                {{ form.portfolios.label(class="form-control-label") }}
-                {{ form.portfolios(class="form-control", id="portfolio-dropdown") }}
+                <div class="label-wrapper">
+                    {{ form.portfolios.label(class="form-control-label") }}
+                </div>
+                {{ form.portfolios(class="form-control narrow", id="portfolio-dropdown") }}
             </div>
             <div class="form-group">
-                {{ form.stock.label(class="form-control-label") }}
-                {{ form.stock(class="form-control") }}
+                <div class="label-wrapper">
+                    {{ form.stock.label(class="form-control-label") }}
+                </div>
+                {{ form.stock(class="form-control narrow", id="stock-dropdown") }}
             </div>
             <div class="form-group">
-                {{ form.amount.label(class="form-control-label") }}
-                {{ form.amount(class="form-control") }}
+                <div class="label-wrapper">
+                    {{ form.amount.label(class="form-control-label") }}
+                </div>
+                {{ form.amount(class="form-control narrow") }}
             </div>
             <div class="form-group">
-                {{ form.action.label(class="form-control-label") }}
-                <div>
+                <div class="label-wrapper">
+                    {{ form.action.label(class="form-control-label") }}
+                </div>        
+            <div>
                     {% for subfield in form.action %}
                         <div class="form-check form-check-inline">
-                            {{ subfield }}
+                            {{ subfield(class="form-check-input") }}
                             {{ subfield.label(class="form-check-label") }}
                         </div>
                     {% endfor %}
@@ -32,48 +40,66 @@
         </form>
     </div>
 
-    <div class="middle-section section">
-        <h2>Current Stocks in Selected Portfolio</h2>
+    <div class="middle-section">
+        <h2>Stocks in portfolio</h2>
         <div id="current-stocks">
             <!-- Dynamic content will be inserted here -->
         </div>
     </div>
 
 
-    <div class="right-section section">
-        <h2>Plot</h2>
-        <p>place to add a plot</p>
+    <div class="right-section">
+        <h2>Stock data</h2>
+        <p id="current_stock">  </p>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // Set default selection to the first portfolio
             var portfolioDropdown = document.getElementById('portfolio-dropdown');
-            if (portfolioDropdown) {
-                if (portfolioDropdown.selectedIndex === -1) {
-                    portfolioDropdown.selectedIndex = 0;
-                }
-                
-                // Event listener for dropdown change
+            var stockDropdown = document.getElementById('stock-dropdown');
+            var currentStockElement = document.getElementById('current_stock');
+            
+            function updateCurrentStock(selectedStockId) {
+                // Make AJAX request to fetch selected stock's name
+                var stockXhr = new XMLHttpRequest();
+                stockXhr.open('GET', '/get_selected_stock_name/' + selectedStockId, true);
+                stockXhr.onreadystatechange = function () {
+                    if (stockXhr.readyState == 4 && stockXhr.status == 200) {
+                        var responseData = JSON.parse(stockXhr.responseText);
+                        var stockName = responseData.stock_name;
+                        currentStockElement.innerHTML = stockName;
+                    }
+                };
+                stockXhr.send();
+            }
+            
+            if (portfolioDropdown && stockDropdown) {
                 portfolioDropdown.addEventListener('change', function () {
                     var selectedPortfolioId = this.value;
                     if (selectedPortfolioId) {
-                        // Make AJAX request to fetch updated data
                         var xhr = new XMLHttpRequest();
                         xhr.open('GET', '/get_portfolio_data/' + selectedPortfolioId, true);
                         xhr.onreadystatechange = function () {
                             if (xhr.readyState == 4 && xhr.status == 200) {
-                                // Update content with received data
                                 document.getElementById('current-stocks').innerHTML = xhr.responseText;
+                                var selectedStockId = stockDropdown.value;
+                                updateCurrentStock(selectedStockId);
                             }
                         };
                         xhr.send();
                     }
                 });
                 
-                // Trigger change event to load initial stocks
+                stockDropdown.addEventListener('change', function () {
+                    var selectedStockId = this.value;
+                    updateCurrentStock(selectedStockId);
+                });
+                
                 portfolioDropdown.dispatchEvent(new Event('change'));
             }
         });
     </script>
+    
+    
+    
 {% endblock %}
