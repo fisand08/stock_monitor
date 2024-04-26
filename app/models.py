@@ -156,7 +156,7 @@ print(posts)
 ``` 
 from app import app, db
 from app.models import User, Portfolio, PortfolioStock
-from app import Stocks
+from app import Stock, StockPrice
 import sqlalchemy as sa
 
 with app.app_context():
