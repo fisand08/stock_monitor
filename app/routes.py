@@ -142,6 +142,7 @@ def explore():
     return render_template('explore.html', portfolios = portfolios_query, stocks=stocks_query, stock_prices=stock_prices_query)
 
 
+
 @app.route('/manage_portfolio', methods=['GET', 'POST'])
 @login_required
 def manage_portfolio():
@@ -151,6 +152,84 @@ def manage_portfolio():
 
     portfolios = Portfolio.query.all()
     portfolio_choices = [(portfolio.id, portfolio.name) for portfolio in portfolios]
+
+    # Add default choice for each dropdown
+    stock_choices.insert(0, ('', 'Select'))
+    portfolio_choices.insert(0, ('', 'Select'))
+
+    form.stock.choices = stock_choices
+    form.portfolios.choices = portfolio_choices
+
+    current_stocks = {}
+
+    if not form.portfolios.data and portfolio_choices:
+        default_portfolio_id = portfolio_choices[0][0]
+        form.portfolios.data = default_portfolio_id
+        selected_portfolio = Portfolio.query.get(default_portfolio_id)
+        if selected_portfolio:
+            for ps in selected_portfolio.stocks:
+                current_stocks[ps.stock.full_name] = ps.amount
+
+    selected_portfolio_id = None  # Initialize selected portfolio ID
+
+    if form.validate_on_submit():
+        # Get form data
+        portfolio_id = form.portfolios.data
+        stock_id = form.stock.data
+        amount = form.amount.data
+        action = form.action.data
+
+        # Update PortfolioStock table based on form submission
+        if action == 'buy':
+            portfolio_stock = PortfolioStock.query.filter_by(portfolio_id=portfolio_id, stock_id=stock_id).first()
+            if portfolio_stock:
+                portfolio_stock.amount += amount
+            else:
+                portfolio_stock = PortfolioStock(portfolio_id=portfolio_id, stock_id=stock_id, amount=amount)
+                db.session.add(portfolio_stock)
+        elif action == 'sell':
+            portfolio_stock = PortfolioStock.query.filter_by(portfolio_id=portfolio_id, stock_id=stock_id).first()
+            if portfolio_stock:
+                portfolio_stock.amount -= amount
+                if portfolio_stock.amount <= 0:
+                    db.session.delete(portfolio_stock)
+
+        db.session.commit()
+
+        # Preserve the selected portfolio ID
+        selected_portfolio_id = portfolio_id
+
+    # Load the previously selected portfolio if available
+    elif request.method == 'GET' and 'selected_portfolio_id' in request.args:
+        selected_portfolio_id = request.args.get('selected_portfolio_id')
+        form.portfolios.data = int(selected_portfolio_id)
+        selected_portfolio = Portfolio.query.get(selected_portfolio_id)
+        if selected_portfolio:
+            for ps in selected_portfolio.stocks:
+                current_stocks[ps.stock.full_name] = ps.amount
+
+    # Set default choice for portfolio dropdown if no portfolio is selected
+    if selected_portfolio_id is None:
+        form.portfolios.default = ''  # or whatever value corresponds to "Select"
+        form.process()
+
+    return render_template('manage_portfolio.html', form=form, current_stocks=current_stocks, selected_portfolio_id=selected_portfolio_id)
+
+"""
+
+@app.route('/manage_portfolio', methods=['GET', 'POST'])
+@login_required
+def manage_portfolio():
+    form = PortfolioForm()
+    stocks = Stock.query.all()
+    stock_choices = [(stock.id, stock.full_name) for stock in stocks]
+
+    portfolios = Portfolio.query.all()
+    portfolio_choices = [(portfolio.id, portfolio.name) for portfolio in portfolios]
+
+    # Add default choice for each dropdown
+    stock_choices.insert(0, ('', 'Select'))
+    portfolio_choices.insert(0, ('', 'Select'))
 
     form.stock.choices = stock_choices
     form.portfolios.choices = portfolio_choices
@@ -203,7 +282,7 @@ def manage_portfolio():
                 current_stocks[ps.stock.full_name] = ps.amount
 
     return render_template('manage_portfolio.html', form=form, current_stocks=current_stocks, selected_portfolio_id=selected_portfolio_id)
-
+"""
 
 @app.route('/get_portfolio_data/<int:portfolio_id>', methods=['GET'])
 @login_required

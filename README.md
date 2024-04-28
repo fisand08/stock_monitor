@@ -4,20 +4,31 @@ Interface to check a stock portfolio against stock data to check for profit/loss
 
 ## Development:
 
-* Urgent
+* next:
+	* amount field should be reset after submission
+	* border around plot
+	* timeline seletion for plot
+	* less options on top of plot and less voic
+
+* Scheduled
 	* Change portfolio manager:
-		* make sure currently selected portfolio is displayed in table in right section
-		* make two tabls within the page - one for modification, one for adding a new one (only changing left tab)
-		* add a 3rd tab showing the current progression of the selected stock (plot) - give the plot some options
+		* finetune the plot
+* modify DB model to compute prices of n stocks of a company (think about it..)
+	* make a table for each portfolio how much is was worth at any time
+* Give a way to add a new portfolio
+* Start working in index tab
+
+
 
 * General
 
-	* modify index tab: make it lake yahoo
 	* improve css and looks (e.g. yahoo portfolio manager)
 	* Scraping manager
 		* check if the scraper dynamically checks input_stocks.txt 
 		* add functionality to portfolio manager to change this text file (also give some checking functionality visiting yahoo stocks if the provided code is valid)
+	* Define internal currency
 
+	
 ## Description
 
 Currently in development along Flask tutorial from https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-iii-web-forms

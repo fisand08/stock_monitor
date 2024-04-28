@@ -69,8 +69,8 @@ class EditProfileForm(FlaskForm):
         
 
 class PortfolioForm(FlaskForm):
-    portfolios = SelectField('Select Portfolio', choices=[])
-    stock = SelectField('Select Stock', choices=[])
+    portfolios = SelectField('Select Portfolio', choices=[], validators=[InputRequired()], default='')
+    stock = SelectField('Select Stock', choices=[], validators=[InputRequired()])
     amount = IntegerField('Amount', validators=[InputRequired()])
     action = RadioField('Action', choices=[('buy', 'Buy'), ('sell', 'Sell')], validators=[InputRequired()])
     submit = SubmitField('Submit')

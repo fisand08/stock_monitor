@@ -1,59 +1,58 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div class="left-section">
-        <h2>Add Portfolio</h2>
-        <form id="portfolio-form" method="POST">
-            {{ form.hidden_tag() }}
-            <input type="hidden" id="selected-portfolio" name="selected_portfolio_id" value="{{ selected_portfolio_id }}">
-            <div class="form-group">
-                <div class="label-wrapper">
-                    {{ form.portfolios.label(class="form-control-label") }}
-                </div>
-                {{ form.portfolios(class="form-control narrow", id="portfolio-dropdown") }}
+<div class="left-section">
+    <h2>Add Portfolio</h2>
+    <form id="portfolio-form" method="POST">
+        {{ form.hidden_tag() }}
+        <input type="hidden" id="selected-portfolio" name="selected_portfolio_id" value="{{ selected_portfolio_id }}">
+        <div class="form-group">
+            <div class="label-wrapper">
+                {{ form.portfolios.label(class="form-control-label") }}
             </div>
-            <div class="form-group">
-                <div class="label-wrapper">
-                    {{ form.stock.label(class="form-control-label") }}
-                </div>
-                {{ form.stock(class="form-control narrow", id="stock-dropdown") }}
-            </div>
-            <div class="form-group">
-                <div class="label-wrapper">
-                    {{ form.amount.label(class="form-control-label") }}
-                </div>
-                {{ form.amount(class="form-control narrow") }}
-            </div>
-            <div class="form-group">
-                <div class="label-wrapper">
-                    {{ form.action.label(class="form-control-label") }}
-                </div>        
-                <div>
-                    {% for subfield in form.action %}
-                        <div class="form-check form-check-inline">
-                            {{ subfield(class="form-check-input") }}
-                            {{ subfield.label(class="form-check-label") }}
-                        </div>
-                    {% endfor %}
-                </div>
-            </div>
-            <button type="submit" class="btn btn-primary">Submit</button>
-        </form>
-    </div>
-
-    <div class="middle-section">
-        <h2>Stocks in portfolio</h2>
-        <div id="current-stocks">
-            <!-- Dynamic content will be inserted here -->
+            {{ form.portfolios(class="form-control narrow", id="portfolio-dropdown") }}
         </div>
-    </div>
+        <div class="form-group">
+            <div class="label-wrapper">
+                {{ form.stock.label(class="form-control-label") }}
+            </div>
+            {{ form.stock(class="form-control narrow", id="stock-dropdown") }}
+        </div>
+        <div class="form-group">
+            <div class="label-wrapper">
+                {{ form.amount.label(class="form-control-label") }}
+            </div>
+            {{ form.amount(class="form-control narrow") }}
+        </div>
+        <div class="form-group">
+            <div class="label-wrapper">
+                {{ form.action.label(class="form-control-label") }}
+            </div>        
+            <div>
+                {% for subfield in form.action %}
+                    <div class="form-check form-check-inline">
+                        {{ subfield(class="form-check-input") }}
+                        {{ subfield.label(class="form-check-label") }}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
 
-    <div class="right-section">
-        <h2>Stock data</h2>
-        <p id="current_stock">  </p>
-        <div id="plot"></div>
+<div class="middle-section">
+    <h2>Stocks in portfolio</h2>
+    <div id="current-stocks">
+        <!-- Dynamic content will be inserted here -->
     </div>
+</div>
 
+<div class="right-section">
+    <h2>Stock data</h2>
+    <p id="current_stock"></p>
+    <div id="plot"></div>
+</div>
     <script src="{{ url_for('static', filename='js/plotly-latest.min.js') }}"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -63,11 +62,11 @@
             var currentStockElement = document.getElementById('current_stock');
             var plotContainer = document.getElementById('plot');
             
-            // Set the selected portfolio in the dropdown upon page load
-            if (selectedPortfolioInput.value) {
-                portfolioDropdown.value = selectedPortfolioInput.value;
+            // Set the default value to "Select" if no other value is selected
+            if (!portfolioDropdown.value) {
+                portfolioDropdown.value = '';
             }
-            
+    
             function updateCurrentStock(selectedStockId) {
                 // Make AJAX request to fetch selected stock's name
                 var stockXhr = new XMLHttpRequest();
