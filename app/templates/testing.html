@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block content %}
+    <div section="left-section">
+        <h3>Buy and sell</h3>
+        <form id="portfolio-form">
+            <label for="portfolios">Portfolios:</label><br>
+            <select name="portfolio-dropdown" id="portfolio-dropdown" required>
+                <option value="">Select</option>
+                {% for portfolio in portfolio_choices %}
+                    <option value="{{portfolio.id}}">{{portfolio.name}}</option>
+                {% endfor %}
+            </select>
+            <br>
+            <label for="stocks">Stocks:</label><br>
+            <select name="stock-dropdown" id="stock-dropdown" required>
+                <option value="">Select</option>
+                {% for stock in stock_choices %}
+                    <option value="{{stock.id}}">{{stock.full_name}}</option>
+                {% endfor %}
+            </select>
+            <br>
+            <label for="amount-input">Amount</label>
+            <input type="number" id="amount-input" name="amount-input" required>
+            <br>
+            <input type="radio" id="buy" name="buysell" value="buy" required>
+            <label for="buy"> buy</label> 
+            <input type="radio" id="sell" name="buysell" value="sell" required>
+            <label for="sell"> sell</label>
+            <button type="button" id="submitBtn">Submit</button>
+        </form>
+    </div>
+
+    <div section="middle-section">
+        <h3> Selected portfolio </h3>
+        <p id="selected-portfolio"></p>
+    </div>
+
+    <div section="right-section">
+        <h3> Plot </h3>
+    </div>
+
+    <script>
+        document.getElementById("submitBtn").addEventListener("click", function() {
+            var formData = new FormData(document.getElementById("portfolio-form"));
+            var portfolioId = document.getElementById('portfolio-dropdown').value; // Store selected portfolio ID
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "/process_form", true);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        console.log(xhr.responseText);
+                        document.getElementById('selected-portfolio').innerText = portfolioId; // Update selected portfolio
+                        document.getElementById("portfolio-dropdown").value = portfolioId; // Set portfolio dropdown to selected value
+                        document.getElementById("stock-dropdown").value = ""; // Reset stock to default
+                        document.getElementById("amount-input").value = ""; // Reset amount to default
+                        document.getElementById("buy").checked = true; // Reset buy/sell option to default
+                    } else {
+                        console.error('Error:', xhr.status);
+                    }
+                }
+            };
+            xhr.send(formData);
+        });
+    </script>
+{% endblock %}

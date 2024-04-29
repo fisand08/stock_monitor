@@ -143,6 +143,43 @@ def explore():
 
 
 
+
+@app.route('/testing',methods=['GET','POST'])
+def testing():
+    portfolio_choices = Portfolio.query.all()
+    stock_choices = Stock.query.all()
+
+    return render_template('testing.html',portfolio_choices=portfolio_choices, stock_choices=stock_choices)
+
+@app.route('/process_form', methods=['POST'])
+def process_form():
+    if request.method == 'POST':
+        portfolio_id = request.form['portfolio-dropdown']
+        stock_id = request.form['stock-dropdown']
+        amount = request.form['amount-input']  # corrected form field name
+        action = request.form['buysell']  # corrected form field name
+        print(f'portfolio_id {portfolio_id} stock_id {stock_id} amount {amount} action {action}')  # corrected print statement
+        if action == 'buy':
+            portfolio_stock = PortfolioStock.query.filter_by(portfolio_id=portfolio_id, stock_id=stock_id).first()
+            if portfolio_stock:
+                portfolio_stock.amount += int(amount)  # convert amount to integer
+            else:
+                portfolio_stock = PortfolioStock(portfolio_id=portfolio_id, stock_id=stock_id, amount=int(amount))  # convert amount to integer
+                db.session.add(portfolio_stock)
+        elif action == 'sell':
+            portfolio_stock = PortfolioStock.query.filter_by(portfolio_id=portfolio_id, stock_id=stock_id).first()
+            if portfolio_stock:
+                portfolio_stock.amount -= int(amount)  # convert amount to integer
+                if portfolio_stock.amount <= 0:
+                    db.session.delete(portfolio_stock)
+
+        db.session.commit()
+        return "Form submitted successfully!"
+
+
+
+
+
 @app.route('/manage_portfolio', methods=['GET', 'POST'])
 @login_required
 def manage_portfolio():
