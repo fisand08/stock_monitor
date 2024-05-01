@@ -433,6 +433,7 @@ div.descriptor .content {
 /* //////////////////////////////////// */
 
 
+
 .plot-border {
   border: 1px solid #ccc;
   padding: 10px;
@@ -440,10 +441,10 @@ div.descriptor .content {
 
 
 #plot {
-  /* Adjust margins and paddings */
   margin: 0;
   padding: 0;
 }
+
 
 /* //////////////////////////////////// */
 /* ///// DECPRECATED BUT USEFUL /////// */
