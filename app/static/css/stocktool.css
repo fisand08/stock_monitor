@@ -439,6 +439,12 @@ div.descriptor .content {
 }
 
 
+#plot {
+  /* Adjust margins and paddings */
+  margin: 0;
+  padding: 0;
+}
+
 /* //////////////////////////////////// */
 /* ///// DECPRECATED BUT USEFUL /////// */
 /* //////////////////////////////////// */
