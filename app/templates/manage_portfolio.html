@@ -53,127 +53,107 @@
     <p id="current_stock"></p>
     <div id="plot"></div>
 </div>
-    <script src="{{ url_for('static', filename='js/plotly-latest.min.js') }}"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            var selectedPortfolioInput = document.getElementById('selected-portfolio');
-            var portfolioDropdown = document.getElementById('portfolio-dropdown');
-            var stockDropdown = document.getElementById('stock-dropdown');
-            var currentStockElement = document.getElementById('current_stock');
-            var plotContainer = document.getElementById('plot');
-            
-            // Set the default value to "Select" if no other value is selected
-            if (!portfolioDropdown.value) {
-                portfolioDropdown.value = '';
-            }
-    
-            function updateCurrentStock(selectedStockId) {
-                // Make AJAX request to fetch selected stock's name
-                var stockXhr = new XMLHttpRequest();
-                stockXhr.open('GET', '/get_selected_stock_name/' + selectedStockId, true);
-                stockXhr.onreadystatechange = function () {
-                    if (stockXhr.readyState == 4 && stockXhr.status == 200) {
-                        var responseData = JSON.parse(stockXhr.responseText);
-                        var stockName = responseData.stock_name;
-                        currentStockElement.innerHTML = stockName;
-                    }
-                };
-                stockXhr.send();
-            }
-            
-            function updatePlot(selectedStockId, timeframe) {
-                // Make AJAX request to fetch stock price data
-                var pricesXhr = new XMLHttpRequest();
-                pricesXhr.open('GET', '/get_stock_prices/' + selectedStockId, true);
-                pricesXhr.onreadystatechange = function () {
-                    if (pricesXhr.readyState == 4 && pricesXhr.status == 200) {
-                        var pricesData = JSON.parse(pricesXhr.responseText);
-                        console.log('Prices data:', pricesData); // Log prices data to console
 
-                        var dates = pricesData.map(function (entry) {
-                            return entry.date;
-                        });
-                        console.log('Dates:', dates); // Log dates array to console
+<script src="{{ url_for('static', filename='js/plotly-latest.min.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var selectedPortfolioInput = document.getElementById('selected-portfolio');
+        var portfolioDropdown = document.getElementById('portfolio-dropdown');
+        var stockDropdown = document.getElementById('stock-dropdown');
+        var currentStockElement = document.getElementById('current_stock');
+        var plotContainer = document.getElementById('plot');
+        
+        // Set the default value to "Select" if no other value is selected
+        if (!portfolioDropdown.value) {
+            portfolioDropdown.value = '';
+        }
 
-                        var prices = pricesData.map(function (entry) {
-                            return entry.price;
-                        });
-                        console.log('Prices:', prices); // Log prices array to console
+        function updateCurrentStock(selectedStockId) {
+            // Make AJAX request to fetch selected stock's name
+            var stockXhr = new XMLHttpRequest();
+            stockXhr.open('GET', '/get_selected_stock_name/' + selectedStockId, true);
+            stockXhr.onreadystatechange = function () {
+                if (stockXhr.readyState == 4 && stockXhr.status == 200) {
+                    var responseData = JSON.parse(stockXhr.responseText);
+                    var stockName = responseData.stock_name;
+                    currentStockElement.textContent = stockName;
+                }
+            };
+            stockXhr.send();
+        }
+        
+        function updatePlot(selectedStockId, timeframe) {
+            // Make AJAX request to fetch stock price data
+            var pricesXhr = new XMLHttpRequest();
+            pricesXhr.open('GET', '/get_stock_prices/' + selectedStockId, true);
+            pricesXhr.onreadystatechange = function () {
+                if (pricesXhr.readyState == 4 && pricesXhr.status == 200) {
+                    var pricesData = JSON.parse(pricesXhr.responseText);
 
-                        // Determine start date based on timeframe
-                        var startDate;
-                        switch (timeframe) {
-                            case 'last5years':
-                                startDate = new Date();
-                                startDate.setFullYear(startDate.getFullYear() - 5);
-                                break;
-                            case 'lastyear':
-                                startDate = new Date();
-                                startDate.setFullYear(startDate.getFullYear() - 1);
-                                break;
-                            case 'last6m':
-                                startDate = new Date();
-                                startDate.setMonth(startDate.getMonth() - 6);
-                                break;
-                            case 'lastmonth':
-                                startDate = new Date();
-                                startDate.setMonth(startDate.getMonth() - 1);
-                                break;
-                            default:
-                                startDate = new Date(Math.min(...dates));
+                    var dates = pricesData.map(function (entry) {
+                        return entry.date;
+                    });
+
+                    var prices = pricesData.map(function (entry) {
+                        return entry.price;
+                    });
+
+                    // Plot the data using Plotly
+                    var data = [{
+                        x: dates,
+                        y: prices,
+                        type: 'scatter',
+                        mode: 'line', 
+                        name: 'Price'
+                    }];
+                    var layout = {
+                        xaxis: {
+                            type: 'date',
+                            range: [new Date(Math.min(...dates)), new Date()]
+                        },
+                        yaxis: {
+                            title: 'Price'
                         }
+                    };
+                    Plotly.newPlot(plotContainer, data, layout);
 
-                        // Plot the data using Plotly
-                        var data = [{
-                            x: dates,
-                            y: prices,
-                            type: 'scatter',
-                            mode: 'line', // Use markers instead of lines
-                            name: 'Price'
-                        }];
-                        var layout = {
-                            xaxis: {
-                                type: 'date', // Set x-axis type to date
-                                range: [startDate, new Date()] // Set x-axis range based on timeframe
-                            },
-                            yaxis: {
-                                title: 'Price' // Label for y-axis
-                            }
-                        };
-                        console.log('Plot data:', data); // Log plot data to console
-                        Plotly.newPlot(plotContainer, data, layout);
-                    }
-                };
+                    // Toggle plot border based on plot data availability
+                    plotContainer.classList.toggle('plot-border', dates.length > 0 && prices.length > 0);
+                }
+            };
+            pricesXhr.send();
+        }
 
-                pricesXhr.send();
-            }
+        function handlePortfolioChange() {
+            var selectedPortfolioId = portfolioDropdown.value;
+            selectedPortfolioInput.value = selectedPortfolioId;
             
-            portfolioDropdown.addEventListener('change', function () {
-                var selectedPortfolioId = this.value;
-                selectedPortfolioInput.value = selectedPortfolioId;
-                
-                // Make AJAX request to fetch updated data
-                var xhr = new XMLHttpRequest();
-                xhr.open('GET', '/get_portfolio_data/' + selectedPortfolioId, true);
-                xhr.onreadystatechange = function () {
-                    if (xhr.readyState == 4 && xhr.status == 200) {
-                        document.getElementById('current-stocks').innerHTML = xhr.responseText;
-                        var selectedStockId = stockDropdown.value;
-                        updateCurrentStock(selectedStockId);
-                        updatePlot(selectedStockId);
-                    }
-                };
-                xhr.send();
-            });
-            
-            stockDropdown.addEventListener('change', function () {
-                var selectedStockId = this.value;
-                updateCurrentStock(selectedStockId);
-                updatePlot(selectedStockId);
-            });
-            
-            // Trigger change event to load initial data
-            portfolioDropdown.dispatchEvent(new Event('change'));
-        });
-    </script>
+            // Make AJAX request to fetch updated data
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', '/get_portfolio_data/' + selectedPortfolioId, true);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    document.getElementById('current-stocks').innerHTML = xhr.responseText;
+                    var selectedStockId = stockDropdown.value;
+                    updateCurrentStock(selectedStockId);
+                    updatePlot(selectedStockId);
+                }
+            };
+            xhr.send();
+        }
+
+        function handleStockChange() {
+            var selectedStockId = stockDropdown.value;
+            updateCurrentStock(selectedStockId);
+            updatePlot(selectedStockId);
+        }
+
+        // Event listeners
+        portfolioDropdown.addEventListener('change', handlePortfolioChange);
+        stockDropdown.addEventListener('change', handleStockChange);
+        
+        // Trigger change event to load initial data
+        portfolioDropdown.dispatchEvent(new Event('change'));
+    });
+</script>
 {% endblock %}

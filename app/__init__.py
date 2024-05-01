@@ -51,6 +51,7 @@ class Stock(db.Model):
     prices = relationship("StockPrice", back_populates="stock")
     def __repr__(self):
         return f"Stock(abbreviation: {self.abbreviation}, full_name {self.full_name}"
+
 class StockPrice(db.Model):
     """
     table stores prices of stocks from csv
