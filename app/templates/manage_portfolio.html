@@ -49,7 +49,7 @@
 </div>
 
 <div class="right-section">
-    <h2>Stock data</h2>
+    <h2 id="stock-heading" style="display: none;">Stock data</h2>
     <p id="current_stock"></p>
     <div id="plot"></div>
 </div>
@@ -126,6 +126,8 @@
 
                     // Toggle plot border based on plot data availability
                     plotContainer.classList.toggle('plot-border', dates.length > 0 && prices.length > 0);
+                    document.getElementById('stock-heading').style.display = 'block';
+
                 }
             };
             pricesXhr.send();

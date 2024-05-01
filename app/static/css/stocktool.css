@@ -128,14 +128,14 @@ section#mainContainer.Toolsimple {
 }
 
 .middle-section {
-  width: 20%; /* Adjust this percentage as needed */
+  width: 30%; /* Adjust this percentage as needed */
   float: left;
   padding-left: 20px;
   padding-right: 20px;
 }
 
 .right-section {
-  width: 50%; /* Adjust this percentage as needed */
+  width: 60%; /* Adjust this percentage as needed */
   float: left;
   padding-left: 20px;
   /*padding-right: 20px;*/
