@@ -429,22 +429,30 @@ div.descriptor .content {
 
 
 /* //////////////////////////////////// */
-/* ///// DECPRECATED BUT USEFUL /////// */
+/* /////     SMALL CHANGES      /////// */
 /* //////////////////////////////////// */
 
 
-
 .plot-border {
+  /*Adds a border around the plot*/
   border: 1px solid #ccc;
   padding: 10px;
 }
 
 
 #plot {
+  /*adjusts margin around the plot*/
   margin: 0;
   padding: 0;
 }
 
+#plot-container {
+  /* Makes plot flexbox obj */
+  display: flex;
+  flex: 1;
+  width: 100%;
+  height: 100%;
+}
 
 /* //////////////////////////////////// */
 /* ///// DECPRECATED BUT USEFUL /////// */

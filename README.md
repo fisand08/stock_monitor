@@ -5,10 +5,7 @@ Interface to check a stock portfolio against stock data to check for profit/loss
 ## Development:
 
 * next:
-	* amount field should be reset after submission
-	* border around plot
 	* timeline seletion for plot
-	* less options on top of plot and less voic
 
 * Scheduled
 	* Change portfolio manager:
