@@ -48,26 +48,129 @@
     </div>
 </div>
 
-
+<!-- Plot section -->
 <div class="right-section">
     <h2 id="stock-heading" style="display: none;">Stock data</h2>
     <p id="current_stock"></p>
     <div id="plot" style="display: flex; flex: 1;"></div>
+    <!-- Add buttons for adjusting timespan -->
+    <br>
+    <div id="timespan-buttons" style="display: none;">
+        <button onclick="updatePlotTimespan('5y', selectedStockId)" class="button-29">5 Years</button>
+        <button onclick="updatePlotTimespan('1y', selectedStockId)"class="button-29">1 Year</button>
+        <button onclick="updatePlotTimespan('6m', selectedStockId)"class="button-29">6 Months</button>
+        <button onclick="updatePlotTimespan('1m', selectedStockId)"class="button-29">1 Month</button>
+        <button onclick="updatePlotTimespan('1w', selectedStockId)"class="button-29">1 Week</button>
+    </div>
 </div>
+
 
 <script src="{{ url_for('static', filename='js/plotly-latest.min.js') }}"></script>
 <script>
+    var selectedStockId; // Define selectedStockId globally
+
+    function updatePlotTimespan(timeframe = '1y') {
+        console.log("Selected updatePlotTimespan timeframe:", timeframe); // Add this line for debugging
+
+        // Ensure selectedStockId is accessible globally or pass it as a parameter
+        window.updatePlotFunctions.updatePlot(selectedStockId, timeframe);
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
         var selectedPortfolioInput = document.getElementById('selected-portfolio');
         var portfolioDropdown = document.getElementById('portfolio-dropdown');
         var stockDropdown = document.getElementById('stock-dropdown');
         var currentStockElement = document.getElementById('current_stock');
         var plotContainer = document.getElementById('plot');
-        
+
         // Set the default value to "Select" if no other value is selected
         if (!portfolioDropdown.value) {
             portfolioDropdown.value = '';
         }
+
+        // Define wrapper function to encapsulate updatePlot and updatePlotTimespan
+        window.updatePlotFunctions = function () {
+            function updatePlot(selectedStockId, timeframe) {
+                // Make AJAX request to fetch stock price data for the specified timeframe
+                console.log("Timeframe:", timeframe); // Add this line for debugging
+                var pricesXhr = new XMLHttpRequest();
+                pricesXhr.open('GET', '/get_stock_prices/' + selectedStockId + '?timespan=' + timeframe, true);
+                pricesXhr.onreadystatechange = function () {
+                    if (pricesXhr.readyState == 4 && pricesXhr.status == 200) {
+                        var pricesData = JSON.parse(pricesXhr.responseText);
+
+                        var dates = pricesData.map(function (entry) {
+                            return entry.date;
+                        });
+
+                        var prices = pricesData.map(function (entry) {
+                            return entry.price;
+                        });
+
+                        // Plot the data using Plotly
+                        var data = [{
+                            x: dates,
+                            y: prices,
+                            type: 'scatter',
+                            mode: 'line',
+                            name: 'Price'
+                        }];
+                        var layout = {
+                            xaxis: {
+                                type: 'date',
+                                range: [new Date(Math.min(...dates)), new Date()],
+                                title: 'Time'
+                            },
+                            yaxis: {
+                                title: 'Price'
+                            },
+                            margin: {
+                                l: 50, // left margin
+                                r: 50, // right margin
+                                t: 50, // top margin
+                                b: 50, // bottom margin
+                                pad: 4 // padding
+                            },
+                            modeBarButtonsToRemove: ['Compare data on hover', 'Show closest data on hover', 'Autoscale', 'Produced with Plotly', 'Download plot as a png', 'toImage', 'lasso2d', 'select2d', 'autoScale2d', 'toggleSpikelines', 'hoverClosestCartesian', 'hoverCompareCartesian', 'Toggle Spike Lines'],
+                            hovermode: 'closest'
+                        };
+
+                        // Create the plot
+                        Plotly.newPlot(plotContainer, data, layout).then(function (gd) {
+                            // Hide unwanted Plotly toolbar buttons
+                            var toolbar = gd._fullLayout._modeBar.element;
+                            var buttonsToRemove = ['Compare data on hover', 'Show closest data on hover', 'Autoscale', 'Produced with Plotly', 'Download plot as a png', 'toImage', 'lasso2d', 'select2d', 'autoScale2d', 'toggleSpikelines', 'hoverClosestCartesian', 'hoverCompareCartesian', 'Toggle Spike Lines'];
+                            buttonsToRemove.forEach(function (buttonId) {
+                                var button = toolbar.querySelector('[data-title="' + buttonId + '"]');
+                                if (button) {
+                                    button.style.display = 'none';
+                                }
+                            });
+
+                            // Toggle plot border based on plot data availability
+                            plotContainer.classList.toggle('plot-border', dates.length > 0 && prices.length > 0);
+                            document.getElementById('stock-heading').style.display = 'block';
+                            document.getElementById('timespan-buttons').style.display = 'block';
+                        }).catch(function (error) {
+                            console.error('Error creating plot:', error);
+                        });
+                    }
+                };
+                pricesXhr.send();
+            }
+
+            function updatePlotTimespan(timeframe = '1y') {
+                console.log("Selected updatePlotTimespan timeframe:", timeframe); // Add this line for debugging
+
+                // Ensure selectedStockId is accessible globally or pass it as a parameter
+                updatePlot(selectedStockId, timeframe);
+            }
+
+            return {
+                updatePlot: updatePlot,
+                updatePlotTimespan: updatePlotTimespan
+            };
+        }();
 
         function updateCurrentStock(selectedStockId) {
             // Make AJAX request to fetch selected stock's name
@@ -82,111 +185,41 @@
             };
             stockXhr.send();
         }
-        function updatePlot(selectedStockId, timeframe) {
-        // Make AJAX request to fetch stock price data for the specified timeframe
-        var pricesXhr = new XMLHttpRequest();
-        pricesXhr.open('GET', '/get_stock_prices/' + selectedStockId + '?timespan=' + timeframe, true);
-        pricesXhr.onreadystatechange = function () {
-            if (pricesXhr.readyState == 4 && pricesXhr.status == 200) {
-                var pricesData = JSON.parse(pricesXhr.responseText);
-
-                var dates = pricesData.map(function (entry) {
-                    return entry.date;
-                });
-
-                var prices = pricesData.map(function (entry) {
-                    return entry.price;
-                });
-
-                // Plot the data using Plotly
-                var data = [{
-                    x: dates,
-                    y: prices,
-                    type: 'scatter',
-                    mode: 'line', 
-                    name: 'Price'
-                }];
-                var layout = {
-                    xaxis: {
-                        type: 'date',
-                        range: [new Date(Math.min(...dates)), new Date()],
-                        title: 'Time'
-                    },
-                    yaxis: {
-                        title: 'Price'
-                    },
-                    margin: {
-                        l: 50, // left margin
-                        r: 50, // right margin
-                        t: 50, // top margin
-                        b: 50, // bottom margin
-                        pad: 4 // padding
-                    },
-                    modeBarButtonsToRemove: ['Compare data on hover','Show closest data on hover','Autoscale','Produced with Plotly','Download plot as a png','toImage', 'lasso2d', 'select2d', 'autoScale2d', 'toggleSpikelines', 'hoverClosestCartesian', 'hoverCompareCartesian', 'Toggle Spike Lines'],
-                    hovermode: 'closest'
-                };
-
-                // Create the plot
-                Plotly.newPlot(plotContainer, data, layout).then(function(gd) {
-                    // Hide unwanted Plotly toolbar buttons
-                    var toolbar = gd._fullLayout._modeBar.element;
-                    var buttonsToRemove = ['Compare data on hover','Show closest data on hover','Autoscale','Produced with Plotly','Download plot as a png','toImage', 'lasso2d', 'select2d', 'autoScale2d', 'toggleSpikelines', 'hoverClosestCartesian', 'hoverCompareCartesian', 'Toggle Spike Lines'];
-                    buttonsToRemove.forEach(function(buttonId) {
-                        console.log(buttonId);
-                        var button = toolbar.querySelector('[data-title="' + buttonId + '"]');
-                        if (button) {
-                            console.log("Found button")
-                            button.style.display = 'none';
-                        }
-                    });
-
-                    // Toggle plot border based on plot data availability
-                    plotContainer.classList.toggle('plot-border', dates.length > 0 && prices.length > 0);
-                    document.getElementById('stock-heading').style.display = 'block';
-                }).catch(function(error) {
-                    console.error('Error creating plot:', error);
-                });
-            }
-        };
-        pricesXhr.send();
-        }
-
 
         function handlePortfolioChange() {
             var selectedPortfolioId = portfolioDropdown.value;
             selectedPortfolioInput.value = selectedPortfolioId;
-        
+
             // Make AJAX request to fetch updated data
             var xhr = new XMLHttpRequest();
             xhr.open('GET', '/get_portfolio_data/' + selectedPortfolioId, true);
             xhr.onreadystatechange = function () {
                 if (xhr.readyState == 4 && xhr.status == 200) {
                     document.getElementById('current-stocks').innerHTML = xhr.responseText;
-                    var selectedStockId = stockDropdown.value;
+                    selectedStockId = stockDropdown.value; // Assign selectedStockId globally
                     updateCurrentStock(selectedStockId);
-                    updatePlot(selectedStockId);
-
+                    window.updatePlotFunctions.updatePlot(selectedStockId); // Call updatePlot
                     // Show the middle section heading
                     document.getElementById('middle-heading').style.display = 'block';
                 }
-        };
-        xhr.send();
+            };
+            xhr.send();
         }
 
-
         function handleStockChange() {
-                var selectedStockId = stockDropdown.value;
-                updateCurrentStock(selectedStockId);
-                updatePlot(selectedStockId);
+            selectedStockId = stockDropdown.value; // Assign selectedStockId globally
+            updateCurrentStock(selectedStockId);
+            window.updatePlotFunctions.updatePlot(selectedStockId); // Call updatePlot
         }
 
         // Event listeners
         portfolioDropdown.addEventListener('change', handlePortfolioChange);
         stockDropdown.addEventListener('change', handleStockChange);
-            
+
         // Trigger change event to load initial data
         portfolioDropdown.dispatchEvent(new Event('change'));
     });
-
 </script>
+
+
 {% endblock %}

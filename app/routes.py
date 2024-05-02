@@ -7,7 +7,7 @@ import sqlalchemy as sa
 from flask_login import current_user, login_user, logout_user, login_required
 from flask import request
 from urllib.parse import urlsplit
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from functools import wraps
 from flask import jsonify
 
@@ -142,14 +142,12 @@ def explore():
     return render_template('explore.html', portfolios = portfolios_query, stocks=stocks_query, stock_prices=stock_prices_query)
 
 
-
-
 @app.route('/testing',methods=['GET','POST'])
 def testing():
     portfolio_choices = Portfolio.query.all()
     stock_choices = Stock.query.all()
-
     return render_template('testing.html',portfolio_choices=portfolio_choices, stock_choices=stock_choices)
+
 
 @app.route('/process_form', methods=['POST'])
 def process_form():
@@ -175,9 +173,6 @@ def process_form():
 
         db.session.commit()
         return "Form submitted successfully!"
-
-
-
 
 
 @app.route('/manage_portfolio', methods=['GET', 'POST'])
@@ -341,20 +336,39 @@ def get_selected_stock_name(stock_id):
         return jsonify({'stock_name': stock.full_name})
     else:
         return jsonify({'error': 'Stock not found'}), 404
-    
+
 @app.route('/get_stock_prices/<int:stock_id>', methods=['GET'])
 def get_stock_prices(stock_id):
     stock = Stock.query.get(stock_id)
     stock_abbrev = stock.abbreviation + '_'
-    #print(f'Stock selected: ID "{stock}" Abbreviation "{stock.abbreviation}"')
+    
     if stock:
-        stock_prices = db.session.query(StockPrice).filter_by(stock_id=stock_abbrev).all()
-        #print(f'stock prices: {stock_prices}')
+        # Parse the timespan query parameter
+        timespan = request.args.get('timespan', '1y')  # Default to 1 year if not provided
+        end_date = datetime.now()
+        print(f'Using end date: {end_date}')
+        if timespan == '5y':
+            start_date = end_date - timedelta(days=5*365)
+        elif timespan == '1y':
+            start_date = end_date - timedelta(days=365)
+        elif timespan == '6m':
+            start_date = end_date - timedelta(days=30*6)
+        elif timespan == '1m':
+            start_date = end_date - timedelta(days=30)
+        elif timespan == '1w':
+            start_date = end_date - timedelta(weeks=1)
+        else:
+            start_date = end_date - timedelta(days=365)  # Default to 1 year if timespan is invalid
+        
+        stock_prices = db.session.query(StockPrice).filter(
+            StockPrice.stock_id == stock_abbrev,
+            StockPrice.date >= start_date,
+            StockPrice.date <= end_date
+        ).all()
+        
         prices_data = [{'date': price.date.strftime('%Y-%m-%d'), 'price': price.current_price} for price in stock_prices]
-        #print(prices_data)
         return jsonify(prices_data)
     return jsonify({'error': 'Stock not found'}), 404
-
 
 """
 /////////// ADMIN PANEL //////////////

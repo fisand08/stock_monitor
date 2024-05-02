@@ -5,15 +5,15 @@ Interface to check a stock portfolio against stock data to check for profit/loss
 ## Development:
 
 * next:
-	* timeline seletion for plot
+	* timeline seletion for plot: fix the 1-week button, maybe it doesnt work because there is not data for last week?
+	* modify DB model to compute prices of n stocks of a company (think about it..)
 
-* Scheduled
-	* Change portfolio manager:
-		* finetune the plot
-* modify DB model to compute prices of n stocks of a company (think about it..)
-	* make a table for each portfolio how much is was worth at any time
-* Give a way to add a new portfolio
-* Start working in index tab
+* planned:
+
+
+		* make a table for each portfolio how much is was worth at any time
+	* Give a way to add a new portfolio
+	* Start working in index tab
 
 
 
