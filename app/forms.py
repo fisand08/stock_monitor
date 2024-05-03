@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import IntegerField, SelectField, RadioField,  PasswordField, BooleanField, SubmitField, TextAreaField, StringField
-from wtforms.validators import InputRequired, ValidationError, DataRequired, Email, EqualTo, Length
+from wtforms import IntegerField, SelectField, RadioField, PasswordField, BooleanField, SubmitField, StringField
+from wtforms.validators import InputRequired, ValidationError, DataRequired, Email, EqualTo
 import sqlalchemy as sa
 from app import db
 from app.models import User
@@ -15,6 +15,7 @@ class LoginForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
     remember_me = BooleanField('Remember Me')
     submit = SubmitField('Sign In')
+
 
 class RegistrationForm(FlaskForm):
     """
@@ -42,7 +43,8 @@ class RegistrationForm(FlaskForm):
             User.email == email.data))
         if user is not None:
             raise ValidationError('Please use a different email address.')
-        
+
+
 class EditProfileForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Email()])
@@ -66,7 +68,7 @@ class EditProfileForm(FlaskForm):
             user = User.query.filter_by(email=email.data).first()
             if user:
                 raise ValidationError('Please use a different email address.')
-        
+
 
 class PortfolioForm(FlaskForm):
     portfolios = SelectField('Select Portfolio', choices=[], validators=[InputRequired()], default='')

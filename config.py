@@ -1,5 +1,6 @@
 import os
-basedir = os.path.abspath(os.path.dirname(__file__)) # defines base dir of the app
+basedir = os.path.abspath(os.path.dirname(__file__))  # defines base dir of the app
+
 
 class Config:
     # Secret key against Csrf

@@ -56,13 +56,16 @@
     <!-- Add buttons for adjusting timespan -->
     <br>
     <div id="timespan-buttons" style="display: none;">
+        <button onclick="showWholeData(selectedStockId)" class="button-29">All</button>
         <button onclick="updatePlotTimespan('5y', selectedStockId)" class="button-29">5 Years</button>
-        <button onclick="updatePlotTimespan('1y', selectedStockId)"class="button-29">1 Year</button>
-        <button onclick="updatePlotTimespan('6m', selectedStockId)"class="button-29">6 Months</button>
-        <button onclick="updatePlotTimespan('1m', selectedStockId)"class="button-29">1 Month</button>
-        <button onclick="updatePlotTimespan('1w', selectedStockId)"class="button-29">1 Week</button>
+        <button onclick="updatePlotTimespan('1y', selectedStockId)" class="button-29">1 Year</button>
+        <button onclick="updatePlotTimespan('6m', selectedStockId)" class="button-29">6 Months</button>
+        <button onclick="updatePlotTimespan('1m', selectedStockId)" class="button-29">1 Month</button>
+        <button onclick="updatePlotTimespan('1w', selectedStockId)" class="button-29">1 Week</button>
+        <!-- Button for showing whole data -->
     </div>
 </div>
+
 
 
 <script src="{{ url_for('static', filename='js/plotly-latest.min.js') }}"></script>
@@ -74,6 +77,11 @@
 
         // Ensure selectedStockId is accessible globally or pass it as a parameter
         window.updatePlotFunctions.updatePlot(selectedStockId, timeframe);
+    }
+
+    function showWholeData(selectedStockId) {
+        // Call updatePlotTimespan with no timeframe specified to show whole data
+        updatePlotTimespan('');
     }
 
     document.addEventListener('DOMContentLoaded', function () {
