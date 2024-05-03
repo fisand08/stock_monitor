@@ -1,5 +1,5 @@
 from app import app, db
-from flask import render_template, flash, redirect, url_for, request
+from flask import jsonify, render_template, flash, redirect, url_for, request
 from app.forms import LoginForm, RegistrationForm, EditProfileForm, PortfolioForm
 from app.models import User, Portfolio, PortfolioStock
 from app import Stock, StockPrice
@@ -8,7 +8,6 @@ from flask_login import current_user, login_user, logout_user, login_required
 from urllib.parse import urlsplit
 from datetime import datetime, timedelta
 from functools import wraps
-from flask import jsonify
 
 
 """
@@ -29,7 +28,7 @@ def before_request():
 def index():
 
     mock_user = {'username': 'Rikarda'}
-    alt_names = ['guati', 'schatzi', 'schatzus', 'schatzo']   
+    alt_names = ['guati', 'schatzi', 'schatzus', 'schatzo']
 
     return render_template('index.html', user=mock_user, alt_names=alt_names)
 
@@ -249,6 +248,18 @@ def manage_portfolio():
     return render_template('manage_portfolio.html', form=form, current_stocks=current_stocks, selected_portfolio_id=selected_portfolio_id)
 
 
+@app.route('/get_stock_info/<int:stock_id>')
+def get_stock_info(stock_id):
+    stock = Stock.query.get_or_404(stock_id)
+    stock_info = {
+        'abbreviation': stock.abbreviation,
+        'full_name': stock.full_name,
+        'market': stock.market,
+        'currency': stock.currency
+    }
+    return jsonify(stock_info)
+
+
 @app.route('/get_portfolio_data/<int:portfolio_id>', methods=['GET'])
 @login_required
 def get_portfolio_data(portfolio_id):
@@ -269,6 +280,7 @@ def get_selected_stock_name(stock_id):
         return jsonify({'stock_name': stock.full_name})
     else:
         return jsonify({'error': 'Stock not found'}), 404
+
 
 @app.route('/get_stock_prices/<int:stock_id>', methods=['GET'])
 def get_stock_prices(stock_id):

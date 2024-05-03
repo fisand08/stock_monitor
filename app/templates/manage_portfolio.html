@@ -41,12 +41,17 @@
     </form>
 </div>
 
+
 <div class="middle-section">
     <h2 id="middle-heading" style="display: none;">Stocks in portfolio</h2>
     <div id="current-stocks">
         <!-- Dynamic content will be inserted here -->
     </div>
+    <div id="stock-info">
+        <!-- Stock information table will be inserted here -->
+    </div>
 </div>
+
 
 <!-- Plot section -->
 <div class="right-section">
@@ -219,6 +224,37 @@
             updateCurrentStock(selectedStockId);
             window.updatePlotFunctions.updatePlot(selectedStockId); // Call updatePlot
         }
+
+
+        function updateStockInfo(selectedStockId) {
+            // Make AJAX request to fetch stock information
+            var stockInfoXhr = new XMLHttpRequest();
+            stockInfoXhr.open('GET', '/get_stock_info/' + selectedStockId, true);
+            stockInfoXhr.onreadystatechange = function () {
+                if (stockInfoXhr.readyState == 4 && stockInfoXhr.status == 200) {
+                    var stockInfo = JSON.parse(stockInfoXhr.responseText);
+                    var tableHtml = '<h3>Stock details</h3>';
+                    tableHtml += '<table class="table"><tbody>';
+                    tableHtml += '<tr><td>Abbreviation:</td><td>' + stockInfo.abbreviation + '</td></tr>';
+                    tableHtml += '<tr><td>Full Name:</td><td>' + stockInfo.full_name + '</td></tr>';
+                    tableHtml += '<tr><td>Market:</td><td>' + stockInfo.market + '</td></tr>';
+                    tableHtml += '<tr><td>Currency:</td><td>' + stockInfo.currency + '</td></tr>';
+                    tableHtml += '</tbody></table>';
+
+                    // Update the middle section with the stock information table
+                    document.getElementById('stock-info').innerHTML = tableHtml;
+                }
+            };
+            stockInfoXhr.send();
+        }
+
+        function handleStockChange() {
+            selectedStockId = stockDropdown.value;
+            updateCurrentStock(selectedStockId);
+            updateStockInfo(selectedStockId); // Call updateStockInfo
+            window.updatePlotFunctions.updatePlot(selectedStockId); // Call updatePlot
+        }
+
 
         // Event listeners
         portfolioDropdown.addEventListener('change', handlePortfolioChange);
