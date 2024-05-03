@@ -131,6 +131,7 @@ def edit_profile():
     return render_template('edit_profile.html', title='Edit Profile', form=form)
 
 
+
 @app.route('/explore')
 def explore():
     # Query for Stock objects
@@ -139,8 +140,12 @@ def explore():
     stock_prices_query = db.session.query(StockPrice).order_by(StockPrice.id.desc()).limit(10).all()
     # Portfolios
     portfolios_query = db.session.query(Portfolio).all()
-    return render_template('explore.html', portfolios=portfolios_query, stocks=stocks_query, stock_prices=stock_prices_query)
 
+    # Calculate profitability for each portfolio
+    for portfolio in portfolios_query:
+        portfolio.update_current_value()
+
+    return render_template('explore.html', portfolios=portfolios_query, stocks=stocks_query, stock_prices=stock_prices_query)
 
 @app.route('/testing', methods=['GET', 'POST'])
 def testing():

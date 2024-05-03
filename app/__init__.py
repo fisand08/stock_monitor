@@ -38,36 +38,28 @@ DB model here to avoid circular import problem
 
 
 class Stock(db.Model):
-    """
-    table stores information about each stock
-    """
     id = db.Column(db.Integer, primary_key=True)
     abbreviation = db.Column(db.String(10), nullable=False)
     full_name = db.Column(db.String(100), nullable=False)
     market = db.Column(db.String(50), nullable=False)
     currency = db.Column(db.String(10), nullable=False)
-    # Add more attributes as needed
-    prices = relationship("StockPrice", back_populates="stock")
+    prices = db.relationship('StockPrice', back_populates='stock')
 
     def __repr__(self):
-        return f"Stock(abbreviation: {self.abbreviation}, full_name {self.full_name}"
+        return f"Stock(abbreviation: {self.abbreviation}, full_name: {self.full_name})"
 
 
 class StockPrice(db.Model):
-    """
-    table stores prices of stocks from csv
-    """
     id = db.Column(db.Integer, primary_key=True)
     stock_id = db.Column(db.Integer, db.ForeignKey('stock.id'), nullable=False)
     date = db.Column(db.Date, nullable=False)
     current_price = db.Column(db.Float, nullable=False)
     current_volume = db.Column(db.Integer, nullable=False)
 
-    stock = relationship("Stock", back_populates="prices")
+    stock = db.relationship('Stock', back_populates='prices')
 
     def __repr__(self):
         return f"StockPrice(Stock ID: {self.stock_id}, Date: {self.date}, Price: {self.current_price}, Volume: {self.current_volume})"
-
 
 """
 SCHEDULER AND RELATED FUNCTIONS

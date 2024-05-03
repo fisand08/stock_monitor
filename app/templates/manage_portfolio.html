@@ -43,7 +43,7 @@
 
 
 <div class="middle-section">
-    <h2 id="middle-heading" style="display: none;">Stocks in portfolio</h2>
+    <h2 id="middle-heading" style="display: none;">Portfolio details</h2>
     <div id="current-stocks">
         <!-- Dynamic content will be inserted here -->
     </div>
@@ -233,7 +233,7 @@
             stockInfoXhr.onreadystatechange = function () {
                 if (stockInfoXhr.readyState == 4 && stockInfoXhr.status == 200) {
                     var stockInfo = JSON.parse(stockInfoXhr.responseText);
-                    var tableHtml = '<h3>Stock details</h3>';
+                    var tableHtml = '<h2>Stock details</h2>';
                     tableHtml += '<table class="table"><tbody>';
                     tableHtml += '<tr><td>Abbreviation:</td><td>' + stockInfo.abbreviation + '</td></tr>';
                     tableHtml += '<tr><td>Full Name:</td><td>' + stockInfo.full_name + '</td></tr>';

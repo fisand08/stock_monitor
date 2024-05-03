@@ -1,93 +1,42 @@
 {% extends "base.html" %}
-<!-- Start page; inherits from base.html -->
+
 {% block content %}
-<!-- Actual content of this page comes here: -->
+<div class="section">
+    {% if not current_user.is_anonymous %}
+    <h3> Hallo, {{ current_user.username }} (eingeloggt)</h3>
+    {% endif %}
 
-    <div class="section">
-        {% if not current_user.is_anonymous %} <!-- propmt only for logged in users -->
-        <h3> Hallo, {{ current_user.username}} (eingeloggt)</h3>
-        {% endif %}
-        
-
-        <h5> Title Section A </h5>
-        <br>
-
-        <h5>Portfolios</h5>
-        <ul>
-            {% for portfolio in portfolios %}
-                <li>{{ portfolio.name }} - {{ portfolio.timestamp }} - {{portfolio.user_id}} </li>
-            {% endfor %}
-        </ul>
-        
-        <br>
-        <img src="{{ url_for('static', filename='img/stock_icon.png') }}", width="100", height="100">
-
-    </div>
-
-    <div class="section">
-
-        <h5> Title Section B </h5>
-        <h5>Stocks</h5>
-        <ul>
-            {% for stock in stocks %}
-                <li>{{ stock.id }} - {{ stock.abbreviation }} - {{ stock.full_name }} - {{ stock.market }} - {{ stock.currency }}</li>
-            {% endfor %}
-        </ul>
-    
-        <h5>Stock Prices</h5>
-        <ul>
-            {% for stock_price in stock_prices %}
-                <li>{{ stock_price.id }} - Stock ID: {{ stock_price.stock_id }} - Date: {{ stock_price.date }} - Price: {{ stock_price.current_price }} - Volume: {{ stock_price.current_volume }}</li>
-            {% endfor %}
-
-
-    </div>                
-
-
-{% endblock %}
-
-
-<!--
-    <div class="section">
-        {% if not current_user.is_anonymous %} propmt only for logged in users 
-        <h3> Hallo, {{ current_user.username}} (eingeloggt)</h3>
-        {% endif %}
-        
-
-        <h5> Title Section B </h5>
-        <br>
-        <img src="{{ url_for('static', filename='img/stock_icon.png') }}", width="100", height="100">
-
-
-    </div>
-
-    <div class="section">
-
-        <h5> Title Section B </h5>
-        <br>
-
-
-    </div>                
-
--->
-
-
-<!--
-    {% for post in posts %}
-        <table>
-                <tr valign="top">
-                <td><img src="{{ post.author.avatar(36) }}"></td>
-                <td><a href="{{ url_for('user', username=post.author.username) }}">{{ post.author.username }}</a> says:<br>{{ post.body }}</td>
-                </tr>
-        </table>
-    {% endfor %}
-
--->
-
-
-<!--
-
-        {% for post in posts %}
-        <div><p>{{ post.author.username }} says: <b>{{ post.body }}</b></p></div>
+    <h5>Portfolios</h5>
+    <ul>
+        {% for portfolio in portfolios %}
+        <li>
+            {{ portfolio.name }} - {{ portfolio.timestamp }} - {{ portfolio.user_id }}
+            {% if portfolio.is_profitable() %}
+            <span style="color: green;">(Profitable)</span>
+            {% else %}
+            <span style="color: red;">(Not Profitable)</span>
+            {% endif %}
+        </li>
         {% endfor %}
--->
+    </ul>
+
+    <br>
+    <img src="{{ url_for('static', filename='img/stock_icon.png') }}" width="100" height="100">
+</div>
+
+<div class="section">
+    <h5>Stocks</h5>
+    <ul>
+        {% for stock in stocks %}
+        <li>{{ stock.id }} - {{ stock.abbreviation }} - {{ stock.full_name }} - {{ stock.market }} - {{ stock.currency }}</li>
+        {% endfor %}
+    </ul>
+
+    <h5>Stock Prices</h5>
+    <ul>
+        {% for stock_price in stock_prices %}
+        <li>{{ stock_price.id }} - Stock ID: {{ stock_price.stock_id }} - Date: {{ stock_price.date }} - Price: {{ stock_price.current_price }} - Volume: {{ stock_price.current_volume }}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

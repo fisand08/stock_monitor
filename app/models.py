@@ -2,8 +2,7 @@ from typing import Optional
 import sqlalchemy as sa
 import sqlalchemy.orm as so
 from sqlalchemy.orm import relationship
-
-from app import db, login
+from app import db, login, Stock, StockPrice
 from datetime import datetime, timezone
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
@@ -74,41 +73,56 @@ def load_user(id):
     """
     return db.session.get(User, int(id)) # needs to be converted to int as string 
 
-
-
-
 class Portfolio(db.Model):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True)
-    name: so.Mapped[Optional[str]] = so.mapped_column(sa.String(256), index=True, unique=True)  # each portfolio has a name which is Optional
-    timestamp: so.Mapped[datetime] = so.mapped_column(index=True, default=lambda: datetime.now(timezone.utc))  # use Datetime to get Swiss time
-    stock_list: so.Mapped[str] = so.mapped_column(sa.String(256))
-
-    user_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id),  index=True)
-    author: so.Mapped[User] = so.relationship(back_populates='portfolios')
-
-
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(256), index=True, unique=True, nullable=False)
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.now(timezone.utc))
+    stock_list = db.Column(db.String(256))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), index=True, nullable=False)
+    author = db.relationship('User', back_populates='portfolios')
     current_value = db.Column(db.Float, default=0)
     initial_value = db.Column(db.Float, default=0)
-
-    stocks = relationship("PortfolioStock", back_populates="portfolio", cascade="all, delete-orphan")
-
+    stocks = db.relationship('PortfolioStock', back_populates='portfolio', cascade='all, delete-orphan')
 
     def __repr__(self):
-        return '<Portfolio {}>'.format(self.name)
-    
+        return f'<Portfolio {self.name}>'
+
+    def update_current_value(self):
+        total_value = 0
+        for portfolio_stock in self.stocks:
+            latest_stock_price = db.session.query(StockPrice).filter_by(stock_id=portfolio_stock.stock_id).order_by(StockPrice.date.desc()).first()
+            if latest_stock_price:
+                total_value += latest_stock_price.current_price * portfolio_stock.amount
+        self.current_value = total_value
+        db.session.commit()
+
+    def is_profitable(self):
+        return self.current_value > self.initial_value
+
 
 class PortfolioStock(db.Model):
-
     id = db.Column(db.Integer, primary_key=True)
     portfolio_id = db.Column(db.Integer, db.ForeignKey('portfolio.id'), nullable=False)
     stock_id = db.Column(db.Integer, db.ForeignKey('stock.id'), nullable=False)
     amount = db.Column(db.Integer, default=0)
 
-    portfolio = relationship("Portfolio", back_populates="stocks")
-    stock = relationship("Stock")
+    portfolio = db.relationship('Portfolio', back_populates='stocks')
+    stock = db.relationship('Stock')
 
     def __repr__(self):
         return f"PortfolioStock(Portfolio ID: {self.portfolio_id}, Stock ID: {self.stock_id}, Amount: {self.amount})"
+
+    @staticmethod
+    def after_insert(mapper, connection, target):
+        target.portfolio.update_current_value()
+
+    @staticmethod
+    def after_update(mapper, connection, target):
+        target.portfolio.update_current_value()
+
+    @staticmethod
+    def after_delete(mapper, connection, target):
+        target.portfolio.update_current_value()
 
 
 
