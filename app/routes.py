@@ -1,7 +1,7 @@
 from app import app, db
 from flask import jsonify, render_template, flash, redirect, url_for, request
 from app.forms import LoginForm, RegistrationForm, EditProfileForm, PortfolioForm
-from app.models import User, Portfolio, PortfolioStock
+from app.models import User, Portfolio, PortfolioStock, PortfolioHistory
 from app import Stock, StockPrice
 import sqlalchemy as sa
 from flask_login import current_user, login_user, logout_user, login_required
@@ -131,7 +131,30 @@ def edit_profile():
     return render_template('edit_profile.html', title='Edit Profile', form=form)
 
 
+@app.route('/explore')
+def explore():
+    # Query for Stock objects
+    stocks_query = db.session.query(Stock).all()[:20]
+    # Query for StockPrice objects
+    stock_prices_query = db.session.query(StockPrice).order_by(StockPrice.id.desc()).limit(10).all()
+    # Portfolios
+    portfolios_query = db.session.query(Portfolio).all()
 
+    # Calculate profitability and initial price for each portfolio
+    for portfolio in portfolios_query:
+        portfolio.update_current_value()
+        portfolio.initial_value = portfolio.calculate_initial_price()
+        portfolio.profitable = portfolio.is_profitable()
+
+        # Check if portfolio history is already computed
+        if not PortfolioHistory.query.filter_by(portfolio_id=portfolio.id).first():
+            portfolio.compute_portfolio_history()
+        portfolio_history = PortfolioHistory.query.filter_by(portfolio_id=1).all()
+
+    return render_template('explore.html', portfolios=portfolios_query, stocks=stocks_query, stock_prices=stock_prices_query,portfolio_history=portfolio_history)
+
+
+"""
 @app.route('/explore')
 def explore():
     # Query for Stock objects
@@ -146,6 +169,8 @@ def explore():
         portfolio.update_current_value()
 
     return render_template('explore.html', portfolios=portfolios_query, stocks=stocks_query, stock_prices=stock_prices_query)
+"""
+
 
 @app.route('/testing', methods=['GET', 'POST'])
 def testing():

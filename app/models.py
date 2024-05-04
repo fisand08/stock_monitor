@@ -3,10 +3,11 @@ import sqlalchemy as sa
 import sqlalchemy.orm as so
 from sqlalchemy.orm import relationship
 from app import db, login, Stock, StockPrice
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from app.bin.helpers import get_random_color
+from sqlalchemy import event
 
 """
 Definition of DB
@@ -87,6 +88,14 @@ class Portfolio(db.Model):
     def __repr__(self):
         return f'<Portfolio {self.name}>'
 
+    def calculate_initial_price(self):
+        initial_price = 0
+        for portfolio_stock in self.stocks:
+            latest_stock_price = db.session.query(StockPrice).filter_by(stock_id=portfolio_stock.stock_id).order_by(StockPrice.date.asc()).first()
+            if latest_stock_price:
+                initial_price += latest_stock_price.current_price * portfolio_stock.amount
+        return initial_price
+
     def update_current_value(self):
         total_value = 0
         for portfolio_stock in self.stocks:
@@ -98,6 +107,22 @@ class Portfolio(db.Model):
 
     def is_profitable(self):
         return self.current_value > self.initial_value
+    
+    def compute_portfolio_history(self):
+        # Calculate portfolio value at different time points and store in PortfolioHistory table
+        start_date = self.timestamp.date()
+        end_date = datetime.utcnow().date()
+        current_date = start_date
+        while current_date <= end_date:
+            total_value = 0
+            for portfolio_stock in self.stocks:
+                stock_price = db.session.query(StockPrice).filter_by(stock_id=portfolio_stock.stock_id, date=current_date).first()
+                if stock_price:
+                    total_value += stock_price.current_price * portfolio_stock.amount
+            portfolio_history = PortfolioHistory(portfolio_id=self.id, timestamp=current_date, value=total_value)
+            db.session.add(portfolio_history)
+            current_date += timedelta(days=1)
+        db.session.commit()
 
 
 class PortfolioStock(db.Model):
@@ -124,7 +149,19 @@ class PortfolioStock(db.Model):
     def after_delete(mapper, connection, target):
         target.portfolio.update_current_value()
 
+class PortfolioHistory(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    portfolio_id = db.Column(db.Integer, db.ForeignKey('portfolio.id'), nullable=False)
+    timestamp = db.Column(db.DateTime, nullable=False)
+    value = db.Column(db.Float, nullable=False)
 
+    def __repr__(self):
+        return f'<PortfolioHistory Portfolio ID: {self.portfolio_id}, Timestamp: {self.timestamp}, Value: {self.value}>'
+
+
+@event.listens_for(Portfolio, 'after_insert')
+def compute_portfolio_history_after_insert(mapper, connection, target):
+    target.compute_portfolio_history()
 
 """
 
@@ -133,7 +170,8 @@ __DB Syntax__
 * Fire up the DB (at least from CLI)
 ``` 
 from app import app, db
-from app.models import User, Portfolio
+from app.models import User, Portfolio, PortfolioStock, PortfolioHistory
+from app import Stock, StockPrice
 import sqlalchemy as sa
 ```
 

@@ -1,30 +1,31 @@
 {% extends "base.html" %}
-
+<!-- Start page; inherits from base.html -->
 {% block content %}
+<!-- Actual content of this page comes here: -->
+
 <div class="section">
     {% if not current_user.is_anonymous %}
     <h3> Hallo, {{ current_user.username }} (eingeloggt)</h3>
     {% endif %}
 
+    <h5> Title Section A </h5>
+    <br>
+
     <h5>Portfolios</h5>
     <ul>
         {% for portfolio in portfolios %}
-        <li>
-            {{ portfolio.name }} - {{ portfolio.timestamp }} - {{ portfolio.user_id }}
-            {% if portfolio.is_profitable() %}
-            <span style="color: green;">(Profitable)</span>
-            {% else %}
-            <span style="color: red;">(Not Profitable)</span>
-            {% endif %}
-        </li>
+        <li>{{ portfolio.name }} - {{ portfolio.timestamp }} - {{ portfolio.user_id }} </li>
         {% endfor %}
     </ul>
 
     <br>
-    <img src="{{ url_for('static', filename='img/stock_icon.png') }}" width="100" height="100">
+    <img src="{{ url_for('static', filename='img/stock_icon.png') }}", width="100", height="100">
+
 </div>
 
 <div class="section">
+
+    <h5> Title Section B </h5>
     <h5>Stocks</h5>
     <ul>
         {% for stock in stocks %}
@@ -38,5 +39,20 @@
         <li>{{ stock_price.id }} - Stock ID: {{ stock_price.stock_id }} - Date: {{ stock_price.date }} - Price: {{ stock_price.current_price }} - Volume: {{ stock_price.current_volume }}</li>
         {% endfor %}
     </ul>
+
+    <!-- Display Portfolio History Data for ID 1 -->
+    <h5>Portfolio History Data</h5>
+    <ul>
+        {% for history_entry in portfolio_history %}
+        {% if history_entry.portfolio_id == 1 %}
+        <li>Portfolio ID: {{ history_entry.portfolio_id }}</li>
+        <li>Timestamp: {{ history_entry.timestamp }} Value: {{ history_entry.value }}</li>
+        <!-- Add more fields as needed -->
+        {% endif %}
+        {% endfor %}
+    </ul>
+
 </div>
+
+
 {% endblock %}

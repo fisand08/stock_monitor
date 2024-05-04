@@ -1,48 +1,7 @@
-2024-05-03 23:16:19,291 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:218]
-2024-05-03 23:16:20,699 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:218]
-2024-05-03 23:16:25,210 ERROR: Exception on /explore [GET] [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\venv\Lib\site-packages\flask\app.py:828]
-Traceback (most recent call last):
-  File "C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\venv\Lib\site-packages\flask\app.py", line 1463, in wsgi_app
-    response = self.full_dispatch_request()
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\venv\Lib\site-packages\flask\app.py", line 872, in full_dispatch_request
-    rv = self.handle_user_exception(e)
-         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\venv\Lib\site-packages\flask\app.py", line 870, in full_dispatch_request
-    rv = self.dispatch_request()
-         ^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\venv\Lib\site-packages\flask\app.py", line 855, in dispatch_request
-    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\routes.py", line 145, in explore
-    portfolio.update_current_value()
-  File "C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\models.py", line 95, in update_current_value
-    total_value += portfolio_stock.stock.current_price * portfolio_stock.amount
-                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-AttributeError: 'Stock' object has no attribute 'current_price'
-2024-05-03 23:17:59,996 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:218]
-2024-05-03 23:18:33,818 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:218]
-2024-05-03 23:18:54,306 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:218]
-2024-05-03 23:18:56,174 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:218]
-2024-05-03 23:19:03,171 ERROR: Exception on /explore [GET] [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\venv\Lib\site-packages\flask\app.py:828]
-Traceback (most recent call last):
-  File "C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\venv\Lib\site-packages\flask\app.py", line 1463, in wsgi_app
-    response = self.full_dispatch_request()
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\venv\Lib\site-packages\flask\app.py", line 872, in full_dispatch_request
-    rv = self.handle_user_exception(e)
-         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\venv\Lib\site-packages\flask\app.py", line 870, in full_dispatch_request
-    rv = self.dispatch_request()
-         ^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\venv\Lib\site-packages\flask\app.py", line 855, in dispatch_request
-    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\routes.py", line 146, in explore
-    portfolio.update_current_value()
-  File "C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\models.py", line 94, in update_current_value
-    latest_stock_price = db.session.query(StockPrice).filter_by(stock_id=portfolio_stock.stock_id).order_by(StockPrice.date.desc()).first()
-                                          ^^^^^^^^^^
-NameError: name 'StockPrice' is not defined
-2024-05-03 23:20:20,660 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:218]
-2024-05-03 23:20:23,001 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:218]
+2024-05-04 15:19:14,328 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:218]
+2024-05-04 15:19:16,175 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:218]
+2024-05-04 15:22:27,388 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:218]
+2024-05-04 15:22:49,670 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:218]
+2024-05-04 15:23:11,279 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:218]
+2024-05-04 15:23:12,983 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:218]
+2024-05-04 15:23:38,709 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:218]
