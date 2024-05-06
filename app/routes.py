@@ -153,24 +153,9 @@ def explore():
 
     return render_template('explore.html', portfolios=portfolios_query, stocks=stocks_query, stock_prices=stock_prices_query,portfolio_history=portfolio_history)
 
-
 """
-@app.route('/explore')
-def explore():
-    # Query for Stock objects
-    stocks_query = db.session.query(Stock).all()[:20]
-    # Query for StockPrice objects
-    stock_prices_query = db.session.query(StockPrice).order_by(StockPrice.id.desc()).limit(10).all()
-    # Portfolios
-    portfolios_query = db.session.query(Portfolio).all()
-
-    # Calculate profitability for each portfolio
-    for portfolio in portfolios_query:
-        portfolio.update_current_value()
-
-    return render_template('explore.html', portfolios=portfolios_query, stocks=stocks_query, stock_prices=stock_prices_query)
+//////   test environment /////
 """
-
 
 @app.route('/testing', methods=['GET', 'POST'])
 def testing():
@@ -205,6 +190,11 @@ def process_form():
         return "Form submitted successfully!"
 
 
+"""
+////   Portfolio Manager /////
+"""
+
+
 @app.route('/manage_portfolio', methods=['GET', 'POST'])
 @login_required
 def manage_portfolio():
@@ -218,6 +208,7 @@ def manage_portfolio():
     # Add default choice for each dropdown
     stock_choices.insert(0, ('', 'Select'))
     portfolio_choices.insert(0, ('', 'Select'))
+    #portfolio_choices.insert(1, ('new', 'New'))  # Insert the "New" option at the second place
 
     form.stock.choices = stock_choices
     form.portfolios.choices = portfolio_choices
@@ -348,11 +339,46 @@ def get_stock_prices(stock_id):
 
 
 """
-/////////// ADMIN PANEL //////////////
+////  ADD, RENAME, OR REMOVE PORTFOL /////
 """
+
+@app.route('/portfolio_editor', methods=['GET', 'POST'])
+def portfolio_editor():
+    portfolios = Portfolio.query.all()
+    return render_template('portfolio_editor.html',portfolios=portfolios)
+
+
+@app.route('/add_new_portfolio', methods=['POST'])
+def add_new_portfolio():
+    portfolio_name = request.form.get('portfolio_name')
+    print(f'Adding new portfolio named {portfolio_name}')
+    new_portfolio = Portfolio(name=portfolio_name, user_id=current_user.id)
+    db.session.add(new_portfolio)
+    db.session.commit()
+    return redirect(url_for('portfolio_editor'))
+
+
+@app.route('/delete_portfolio/<int:portfolio_id>', methods=['POST'])
+def delete_portfolio(portfolio_id):
+    """
+    description:
+        - POST method to delete a user from the DB
+    """
+    portfolio = Portfolio.query.get_or_404(portfolio_id)
+    print(f'Found portfolio {portfolio}')
+    db.session.delete(portfolio)
+    db.session.commit()
+    flash('Portfolio deleted successfully', 'success')
+    return redirect(url_for('portfolio_editor'))
+
+
+"""/////////// ADMIN PANEL //////////////"""
 
 
 def admin_required(f):
+    """
+    decorator for admin
+    """
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if not current_user.is_authenticated or not current_user.is_admin:
@@ -371,6 +397,10 @@ def admin_panel():
 @app.route('/admin/clear_table/<table_name>', methods=['POST'])
 @admin_required
 def clear_table(table_name):
+    """
+    description:
+        - POST method to clear a table from the DB
+    """
     tables = {
         'stocks': Stock,
         'stock_prices': StockPrice,
@@ -401,6 +431,10 @@ def edit_user(user_id):
 @app.route('/admin/user/<int:user_id>/delete', methods=['POST'])
 @admin_required
 def delete_user(user_id):
+    """
+    description:
+        - POST method to delete a user from the DB
+    """
     user = User.query.get_or_404(user_id)
     db.session.delete(user)
     db.session.commit()

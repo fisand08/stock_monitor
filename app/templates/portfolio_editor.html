@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="left-section">
+        <h2>Add Portfolio</h2>
+        <form id="portfolio-form" action="{{ url_for('add_new_portfolio') }}" method="post">
+            <label>Enter portfolio name:</label>
+            <input type="text" id="portfolio-name" name="portfolio_name"><br>
+            <button class="button-29" role="button" formaction="{{ url_for('add_new_portfolio')}}" type="submit" id="submit">Submit</button>
+        </form>
+    </div>
+
+    <div class="middle-section">
+        <h2>Remove Portfolio</h2>
+        {% for portfolio in portfolios %}
+            <div>{{portfolio.id}} {{portfolio.name}}</div>
+            <form action="{{ url_for('delete_portfolio', portfolio_id=portfolio.id) }}" method="post">
+                <label for="is_admin">Remove portfolio:</label>
+                <button class="button-29" role="button" formaction="{{ url_for('delete_portfolio', portfolio_id=portfolio.id) }}" type="submit">Delete</button>
+            </form>
+        {% endfor %}
+    </div>
+
+
+    <script>
+        // placeholder
+    </script>
+{% endblock %}

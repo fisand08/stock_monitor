@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="left-section">
-    <h2>Add Portfolio</h2>
+    <h2>Buy stocks </h2>
     <form id="portfolio-form" method="POST">
         {{ form.hidden_tag() }}
         <input type="hidden" id="selected-portfolio" name="selected_portfolio_id" value="{{ selected_portfolio_id }}">
@@ -11,6 +11,12 @@
                 {{ form.portfolios.label(class="form-control-label") }}
             </div>
             {{ form.portfolios(class="form-control narrow", id="portfolio-dropdown") }}
+        </div>
+        <div class="form-group" id="portfolio-name" style="display: none;">
+            <div class="label-wrapper">
+                <label for="portfolio-name" class="form-control-label">Portfolio Name</label>
+            </div>
+            <input type="text" id="portfolio-name" name="portfolio-name" class="form-control narrow">
         </div>
         <div class="form-group">
             <div class="label-wrapper">
@@ -37,9 +43,10 @@
                 {% endfor %}
             </div>
         </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
+        <button class="button-29" role="button" type="submit" class="btn btn-primary">Submit</button>
     </form>
 </div>
+
 
 
 <div class="middle-section">
@@ -72,7 +79,6 @@
 </div>
 
 
-
 <script src="{{ url_for('static', filename='js/plotly-latest.min.js') }}"></script>
 <script>
     var selectedStockId; // Define selectedStockId globally
@@ -92,6 +98,7 @@
     document.addEventListener('DOMContentLoaded', function () {
         var selectedPortfolioInput = document.getElementById('selected-portfolio');
         var portfolioDropdown = document.getElementById('portfolio-dropdown');
+        var nameInput = document.getElementById('portfolio-name');
         var stockDropdown = document.getElementById('stock-dropdown');
         var currentStockElement = document.getElementById('current_stock');
         var plotContainer = document.getElementById('plot');
@@ -100,6 +107,7 @@
         if (!portfolioDropdown.value) {
             portfolioDropdown.value = '';
         }
+
 
         // Define wrapper function to encapsulate updatePlot and updatePlotTimespan
         window.updatePlotFunctions = function () {

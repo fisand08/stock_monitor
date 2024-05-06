@@ -1,7 +1,0 @@
-- Create and start venv
-"python -m venv venv" in base directory of app
-cd into venv folder, Scripts, run activate script
-
-- run Flask app (can be set permanently with python-dotenv)
-	- "set FLASK_APP=app_main.py" in command line (exchange set for export in python)
-	- "flask run --reload" in command line
