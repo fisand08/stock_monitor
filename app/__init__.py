@@ -4,7 +4,7 @@ from config import Config
 from flask_sqlalchemy import SQLAlchemy
 import sqlalchemy as sa # noqa
 import sqlalchemy.orm as so # noqa
-from sqlalchemy.orm import relationship
+# from sqlalchemy.orm import relationship
 import csv
 from flask_migrate import Migrate
 from flask_login import LoginManager
@@ -62,6 +62,7 @@ class StockPrice(db.Model):
     def __repr__(self):
         return f"StockPrice(Stock ID: {self.stock_id}, Date: {self.date}, Price: {self.current_price}, Volume: {self.current_volume})"
 
+
 """
 SCHEDULER AND RELATED FUNCTIONS
 """
@@ -80,7 +81,7 @@ def update_stock_prices():
     task = 'stock prices'
     print(f'*** Scheduler: Starting update cylce of: "{task}" ***')
     # Assuming your CSV files are stored in a directory
-    csv_directory = os.path.join(os.getcwd(),'stock_data')
+    csv_directory = os.path.join(os.getcwd(), 'stock_data')
     # Loop through CSV files and update stock prices
     for csv_file in os.listdir(csv_directory):
         if csv_file.endswith('.csv'):
@@ -109,6 +110,7 @@ def populate_stock_prices_from_csv_efficient(csv_file_path):
                 try:
                     date = datetime.strptime(date_str, '%Y-%m-%d').date()  # Parse as datetime.date object
                 except Exception as e:  # flake8: noqa
+                    print(e)
                     date = datetime.strptime(date_str, '%m/%d/%Y').date()  # Parse as datetime.date object
 
                 # Skip entries before the latest update date
@@ -143,7 +145,7 @@ def populate_stock_prices_from_csv_efficient(csv_file_path):
 def call_overview_update():
     task = 'stock table'
     print(f'*** Scheduler: Starting update cylce of: "{task}" ***')
-    csv_file_path = os.path.join(os.getcwd(),'stocks_db.csv')
+    csv_file_path = os.path.join(os.getcwd(), 'stocks_db.csv')
     populate_stock_overview(csv_file_path)
     print(f'*** Scheduler: Finished update cylce of: "{task}" ***')
 

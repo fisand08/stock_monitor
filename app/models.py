@@ -1,8 +1,8 @@
 from typing import Optional
 import sqlalchemy as sa
 import sqlalchemy.orm as so
-from sqlalchemy.orm import relationship
-from app import db, login, Stock, StockPrice
+from sqlalchemy.orm import relationship # noqa
+from app import db, login, Stock, StockPrice # noqa
 from datetime import datetime, timezone, timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
@@ -13,32 +13,36 @@ Definition of DB
     - Classes correspond to tables
 """
 
+
 class User(UserMixin, db.Model):  # inherts from db.Model, the bas lass for all models in SQLAlhemy
     # also inhertis from UserMixin from flask-login covering the required functions is_authenticated, is_ative is_anonymus and get_id()
-    
+
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
-    username: so.Mapped[str] = so.mapped_column(sa.String(64), index=True,  unique=True)
+    username: so.Mapped[str] = so.mapped_column(sa.String(64), index=True, unique=True)
     email: so.Mapped[str] = so.mapped_column(sa.String(120), index=True, unique=True)
     portfolios: so.WriteOnlyMapped['Portfolio'] = so.relationship(back_populates='author', cascade='all, delete-orphan', passive_deletes=True)
     password_hash: so.Mapped[Optional[str]] = so.mapped_column(sa.String(256))
+
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
+
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
     about_me: so.Mapped[Optional[str]] = so.mapped_column(sa.String(140))
     is_admin = db.Column(db.Boolean, default=False)  # New field for admin status
 
-    def avatar(self,size):
+    def avatar(self, size):
         bg_color = get_random_color(self.username)
         return f'https://ui-avatars.com/api/?name={self.username[0]}+{self.username[1]}&?background={bg_color}&color=fff&?size={size}'
-        
+
     def __repr__(self):
         return '<User {}>'.format(self.username)
-    
 
-@login.user_loader 
+
+@login.user_loader
 def load_user(id):
     return db.session.get(User, int(id))
+
 
 class Portfolio(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -72,7 +76,7 @@ class Portfolio(db.Model):
 
     def is_profitable(self):
         return self.current_value > self.initial_value
-    
+
     def compute_portfolio_history(self):
         # Calculate portfolio value at different time points and store in PortfolioHistory table
         start_date = self.timestamp.date()
@@ -102,6 +106,7 @@ class PortfolioStock(db.Model):
     def __repr__(self):
         return f"PortfolioStock(Portfolio ID: {self.portfolio_id}, Stock ID: {self.stock_id}, Amount: {self.amount})"
 
+
 class PortfolioHistory(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     portfolio_id = db.Column(db.Integer, db.ForeignKey('portfolio.id'), nullable=False)
@@ -117,7 +122,7 @@ class PortfolioHistory(db.Model):
 __DB Syntax__
 
 * Fire up the DB (at least from CLI)
-``` 
+```
 from app import app, db
 from app.models import User, Portfolio, PortfolioStock, PortfolioHistory
 from app import Stock, StockPrice
@@ -138,7 +143,7 @@ users = db.session.scalers(query).all()
 print(users)
 ```
 
-* Conditioned query 
+* Conditioned query
 ```
 query = sa.select(User).where(User.username.like('s%'))
 s_users = db.session.scalars(query).all()
@@ -154,14 +159,15 @@ print(posts)
 ```
 
 * Adding a portfolio
-``` 
+
+```
 from app import app, db
 from app.models import User, Portfolio, PortfolioStock
 from app import Stock, StockPrice
 import sqlalchemy as sa
 
 with app.app_context():
-    user_instance = User.query.first() 
+    user_instance = User.query.first()
     stock_instance_1 = Stock.query.filter_by(id=5).first()
     stock_instance_2 = Stock.query.filter_by(id=3).first()
     quantity_1 = 15
@@ -188,5 +194,3 @@ followers = sa.Table(
               primary_key=True)
 )
 """
-
-
