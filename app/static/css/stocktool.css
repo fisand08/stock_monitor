@@ -491,40 +491,21 @@ div.descriptor .content {
 .button-29:focus {
     /*Focus of A good looking button*/
 
-  box-shadow: #3c4fe0 0 0 0 1.5px inset, rgba(45, 35, 66, .4) 0 2px 4px, rgba(45, 35, 66, .3) 0 7px 13px -3px, #3c4fe0 0 -3px 0 inset;
+  box-shadow: #2034b8 0 0 0 1.5px inset, rgba(45, 35, 66, .4) 0 2px 4px, rgba(45, 35, 66, .3) 0 7px 13px -3px, #3c4fe0 0 -3px 0 inset;
 }
 
 .button-29:hover {
   /*Hover effect of A good looking button*/
 
   box-shadow: rgba(45, 35, 66, .4) 0 4px 8px, rgba(45, 35, 66, .3) 0 7px 13px -3px, #3c4fe0 0 -3px 0 inset;
-  transform: translateY(-2px);
+  transform: translateY(-1px);
 }
 
 .button-29:active {
   /*Active of A good looking button*/
 
   box-shadow: #3c4fe0 0 3px 7px inset;
-  transform: translateY(2px);
-}
-
-/* CSS */
-.button-70 {
-  background-image: linear-gradient(#326be6, #052f63);
-  border: 0;
-  border-radius: 4px;
-  box-shadow: rgba(0, 0, 0, .3) 0 5px 15px;
-  box-sizing: border-box;
-  color: #fff;
-  cursor: pointer;
-  font-family: "DM Sans", "verdana", sans-serif;
-  font-size: .8em;
-  margin: 5px;
-  padding: 5px 15px;
-  text-align: center;
-  user-select: none;
-  -webkit-user-select: none;
-  touch-action: manipulation;
+  transform: translateY(1px);
 }
 
 

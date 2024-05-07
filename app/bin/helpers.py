@@ -15,3 +15,7 @@ def get_random_color(username):
     color_code = "#{:02x}{:02x}{:02x}".format(r, g, b)
     
     return color_code
+
+def add_stocks(abbv):
+    print('placeholder to add stock')
+    return 'out.txt'

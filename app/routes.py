@@ -8,6 +8,8 @@ from flask_login import current_user, login_user, logout_user, login_required
 from urllib.parse import urlsplit
 from datetime import datetime, timedelta
 from functools import wraps
+# Local imports
+from app.bin.helpers import add_stocks
 
 
 """
@@ -339,7 +341,7 @@ def get_stock_prices(stock_id):
 
 
 """
-////  ADD, RENAME, OR REMOVE PORTFOL /////
+////  ADD, RENAME, OR REMOVE PORTFOLIO /////
 """
 
 @app.route('/portfolio_editor', methods=['GET', 'POST'])
@@ -370,6 +372,36 @@ def delete_portfolio(portfolio_id):
     db.session.commit()
     flash('Portfolio deleted successfully', 'success')
     return redirect(url_for('portfolio_editor'))
+
+
+@app.route('/update_portfolio_name/<int:portfolio_id>', methods=['POST'])
+def update_portfolio_name(portfolio_id):
+    """
+    Update the name of a portfolio.
+    """
+    new_name = request.form.get('portfolio_name')
+    portfolio = Portfolio.query.get_or_404(portfolio_id)
+    portfolio.name = new_name
+    db.session.commit()
+    flash('Portfolio name updated successfully', 'success')
+    return redirect(url_for('portfolio_editor'))
+
+
+"""/////   SCRAPING MANAGER   /////"""
+
+
+@app.route('/scrape_manager', methods=['GET', 'POST'])
+def scrape_manager():
+    return render_template('scrape_manager.html')
+
+
+@app.route('/modify_scraper_input', methods=['POST'])
+def modify_scraper_input():
+    new_abbv = request.form.get('stock_abbrev')
+    if len(new_abbv.strip()) > 0:
+        out_file = add_stocks(new_abbv)
+        print(f'New abbreviation {new_abbv} added to {out_file}')
+    return redirect(url_for('scrape_manager'))
 
 
 """/////////// ADMIN PANEL //////////////"""

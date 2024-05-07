@@ -10,14 +10,19 @@
         </form>
     </div>
 
-    <div class="middle-section">
+    <div class="right-section">
         <h2>Remove Portfolio</h2>
         {% for portfolio in portfolios %}
-            <div>{{portfolio.id}} {{portfolio.name}}</div>
+            <div> <b>{{portfolio.name}} </b>  (id: {{portfolio.id}})</div>
+            <form action="{{ url_for('update_portfolio_name', portfolio_id=portfolio.id) }}" method="post">
+                <label for="portfolio_name_{{ portfolio.id }}">Portfolio Name:</label>
+                <input type="text" id="portfolio_name_{{ portfolio.id }}" name="portfolio_name" value="{{ portfolio.name }}">
+                <button class="button-29" type="submit">Update</button>
+            </form>
             <form action="{{ url_for('delete_portfolio', portfolio_id=portfolio.id) }}" method="post">
-                <label for="is_admin">Remove portfolio:</label>
                 <button class="button-29" role="button" formaction="{{ url_for('delete_portfolio', portfolio_id=portfolio.id) }}" type="submit">Delete</button>
             </form>
+            <br>
         {% endfor %}
     </div>
 
