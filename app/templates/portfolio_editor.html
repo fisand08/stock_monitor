@@ -8,6 +8,13 @@
             <input type="text" id="portfolio-name" name="portfolio_name"><br>
             <button class="button-29" role="button" formaction="{{ url_for('add_new_portfolio')}}" type="submit" id="submit">Submit</button>
         </form>
+
+        <h2> Add stock </h2>
+        <form action="{{ url_for('modify_scraper_input')}}" method="post">
+            <label >New stock abbreviation:</label>
+            <input type="text" id="stock_abbrev" name="stock_abbrev">
+            <button class="button-29" type="submit">Submit</button>
+        </form>
     </div>
 
     <div class="right-section">

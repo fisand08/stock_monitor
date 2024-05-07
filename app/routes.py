@@ -8,6 +8,7 @@ from flask_login import current_user, login_user, logout_user, login_required
 from urllib.parse import urlsplit
 from datetime import datetime, timedelta
 from functools import wraps
+import pandas as pd
 # Local imports
 from app.bin.helpers import add_stocks
 
@@ -117,22 +118,6 @@ def error_500():
     return render_template('500.html'), 500
 
 
-@app.route('/edit_profile', methods=['GET', 'POST'])
-@login_required
-def edit_profile():
-    form = EditProfileForm(current_user.username)
-    if form.validate_on_submit():
-        current_user.username = form.username.data
-        current_user.about_me = form.about_me.data
-        db.session.commit()
-        flash('Your changes have been saved.')
-        return redirect(url_for('edit_profile'))
-    elif request.method == 'GET':
-        form.username.data = current_user.username
-        form.about_me.data = current_user.about_me
-    return render_template('edit_profile.html', title='Edit Profile', form=form)
-
-
 @app.route('/explore')
 def explore():
     # Query for Stock objects
@@ -153,43 +138,7 @@ def explore():
             portfolio.compute_portfolio_history()
         portfolio_history = PortfolioHistory.query.filter_by(portfolio_id=1).all()
 
-    return render_template('explore.html', portfolios=portfolios_query, stocks=stocks_query, stock_prices=stock_prices_query,portfolio_history=portfolio_history)
-
-"""
-//////   test environment /////
-"""
-
-@app.route('/testing', methods=['GET', 'POST'])
-def testing():
-    portfolio_choices = Portfolio.query.all()
-    stock_choices = Stock.query.all()
-    return render_template('testing.html', portfolio_choices=portfolio_choices, stock_choices=stock_choices)
-
-
-@app.route('/process_form', methods=['POST'])
-def process_form():
-    if request.method == 'POST':
-        portfolio_id = request.form['portfolio-dropdown']
-        stock_id = request.form['stock-dropdown']
-        amount = request.form['amount-input']  # corrected form field name
-        action = request.form['buysell']  # corrected form field name
-        print(f'portfolio_id {portfolio_id} stock_id {stock_id} amount {amount} action {action}')  # corrected print statement
-        if action == 'buy':
-            portfolio_stock = PortfolioStock.query.filter_by(portfolio_id=portfolio_id, stock_id=stock_id).first()
-            if portfolio_stock:
-                portfolio_stock.amount += int(amount)  # convert amount to integer
-            else:
-                portfolio_stock = PortfolioStock(portfolio_id=portfolio_id, stock_id=stock_id, amount=int(amount))  # convert amount to integer
-                db.session.add(portfolio_stock)
-        elif action == 'sell':
-            portfolio_stock = PortfolioStock.query.filter_by(portfolio_id=portfolio_id, stock_id=stock_id).first()
-            if portfolio_stock:
-                portfolio_stock.amount -= int(amount)  # convert amount to integer
-                if portfolio_stock.amount <= 0:
-                    db.session.delete(portfolio_stock)
-
-        db.session.commit()
-        return "Form submitted successfully!"
+    return render_template('explore.html', portfolios=portfolios_query, stocks=stocks_query, stock_prices=stock_prices_query, portfolio_history=portfolio_history)
 
 
 """
@@ -210,7 +159,7 @@ def manage_portfolio():
     # Add default choice for each dropdown
     stock_choices.insert(0, ('', 'Select'))
     portfolio_choices.insert(0, ('', 'Select'))
-    #portfolio_choices.insert(1, ('new', 'New'))  # Insert the "New" option at the second place
+    # portfolio_choices.insert(1, ('new', 'New'))  # Insert the "New" option at the second place
 
     form.stock.choices = stock_choices
     form.portfolios.choices = portfolio_choices
@@ -344,10 +293,11 @@ def get_stock_prices(stock_id):
 ////  ADD, RENAME, OR REMOVE PORTFOLIO /////
 """
 
+
 @app.route('/portfolio_editor', methods=['GET', 'POST'])
 def portfolio_editor():
     portfolios = Portfolio.query.all()
-    return render_template('portfolio_editor.html',portfolios=portfolios)
+    return render_template('portfolio_editor.html', portfolios=portfolios)
 
 
 @app.route('/add_new_portfolio', methods=['POST'])
@@ -387,20 +337,19 @@ def update_portfolio_name(portfolio_id):
     return redirect(url_for('portfolio_editor'))
 
 
-"""/////   SCRAPING MANAGER   /////"""
-
-
-@app.route('/scrape_manager', methods=['GET', 'POST'])
-def scrape_manager():
-    return render_template('scrape_manager.html')
-
-
 @app.route('/modify_scraper_input', methods=['POST'])
 def modify_scraper_input():
     new_abbv = request.form.get('stock_abbrev')
+    df_current_stocks = pd.read_csv('stocks_db.csv')
+    current_stocks = list(df_current_stocks['STOCK_ID'])
     if len(new_abbv.strip()) > 0:
-        out_file = add_stocks(new_abbv)
-        print(f'New abbreviation {new_abbv} added to {out_file}')
+        if not new_abbv in current_stocks: # noqa
+            out_file = add_stocks(new_abbv, current_stocks)
+            print(f'New abbreviation {new_abbv} added to {out_file}')
+            flash('Your changes have been saved.')
+        else:
+            flash('Stock already in scope.')
+
     return redirect(url_for('scrape_manager'))
 
 
