@@ -121,24 +121,27 @@ def error_500():
 @app.route('/explore')
 def explore():
     # Query for Stock objects
-    stocks_query = db.session.query(Stock).all()[:20]
+    stocks_query = db.session.query(Stock).all()
+    
     # Query for StockPrice objects
     stock_prices_query = db.session.query(StockPrice).order_by(StockPrice.id.desc()).limit(10).all()
-    # Portfolios
+    
+    # Query for Portfolios
     portfolios_query = db.session.query(Portfolio).all()
 
-    # Calculate profitability and initial price for each portfolio
-    for portfolio in portfolios_query:
-        portfolio.update_current_value()
-        portfolio.initial_value = portfolio.calculate_initial_price()
-        portfolio.profitable = portfolio.is_profitable()
+    # Query historical values for specific portfolios (change to the IDs of the desired portfolios)
+    portfolio_1 = Portfolio.query.filter_by(id=1).first()
+    portfolio_2 = Portfolio.query.filter_by(id=2).first()
+    print(f'exploring {portfolio_1.name} and {portfolio_2.name}')
+    if portfolio_1 and portfolio_2:
+        historical_values_portfolio_1 = PortfolioHistory.query.filter_by(portfolio_id=portfolio_1.id).order_by(PortfolioHistory.timestamp.desc()).limit(10).all()
+        historical_values_portfolio_2 = PortfolioHistory.query.filter_by(portfolio_id=portfolio_2.id).order_by(PortfolioHistory.timestamp.desc()).limit(10).all()
+    else:
+        historical_values_portfolio_1 = []
+        historical_values_portfolio_2 = []
 
-        # Check if portfolio history is already computed
-        if not PortfolioHistory.query.filter_by(portfolio_id=portfolio.id).first():
-            portfolio.compute_portfolio_history()
-        portfolio_history = PortfolioHistory.query.filter_by(portfolio_id=1).all()
-
-    return render_template('explore.html', portfolios=portfolios_query, stocks=stocks_query, stock_prices=stock_prices_query, portfolio_history=portfolio_history)
+    return render_template('explore.html', portfolios=portfolios_query, stocks=stocks_query, stock_prices=stock_prices_query,
+                           historical_values_portfolio_1=historical_values_portfolio_1, historical_values_portfolio_2=historical_values_portfolio_2)
 
 
 """
@@ -353,6 +356,41 @@ def modify_scraper_input():
     return redirect(url_for('scrape_manager'))
 
 
+"""////////////  DB ROUTES: updating portfolio   ////////////"""
+
+
+@app.route('/update_portfolio_retro', methods=['POST'])
+def update_portfolio_retro():
+
+    # determine last date with data
+    portfolios = Portfolio.query.all()
+    for portfolio in portfolios:
+        # get date of initialization
+        init_date = portfolio.timestamp
+        print(f'computing history portfolio {portfolio.name} has initial date {init_date}')
+        # random stock queried: all dates beyond creation date
+        points_after_date = StockPrice.query.filter(StockPrice.date > init_date, StockPrice.stock_id == 'NVS_').all()
+        for entry in points_after_date:
+            entry_date = entry.date
+            print(f'entry date {entry_date}')
+            portfolio.calculate_portfolio_value(date=entry_date)  # Call the method on the portfolio instance
+    # db.session.commit()
+    return redirect(url_for('explore'))
+
+
+@app.route('/update_portfolio', methods=['POST'])
+def update_portfolio():
+
+    # determine last date with data (optimally in working scenario this would be today!)
+    date = StockPrice.query.all()[-1].date
+    print(f'Updating portfolio history for date {date}')
+    portfolios = Portfolio.query.all()
+    for portfolio in portfolios:
+        portfolio.calculate_portfolio_value(date=date)  # Call the method on the portfolio instance
+    db.session.commit()
+    return redirect(url_for('explore'))
+
+
 """/////////// ADMIN PANEL //////////////"""
 
 
@@ -386,7 +424,8 @@ def clear_table(table_name):
         'stocks': Stock,
         'stock_prices': StockPrice,
         'portfolio_stocks': PortfolioStock,
-        'portfolios': Portfolio
+        'portfolios': Portfolio,
+        'portfolio_history': PortfolioHistory
     }
     if table_name in tables:
         table = tables[table_name]

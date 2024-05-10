@@ -2,11 +2,15 @@ from typing import Optional
 import sqlalchemy as sa
 import sqlalchemy.orm as so
 from sqlalchemy.orm import relationship # noqa
-from app import db, login, Stock, StockPrice # noqa
-from datetime import datetime, timezone, timedelta
+from app import app, db, login, Stock, StockPrice # noqa
+from datetime import datetime, timezone, timedelta # noqa
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from app.bin.helpers import get_random_color
+from sqlalchemy import event # noqa
+from sqlalchemy.orm import sessionmaker # noqa
+from flask import Blueprint, jsonify # noqa
+
 
 """
 Definition of DB
@@ -44,6 +48,78 @@ def load_user(id):
     return db.session.get(User, int(id))
 
 
+portfolio_bp = Blueprint('portfolio', __name__)
+
+
+class Portfolio(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(256), index=True, unique=True, nullable=False)
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.now(timezone.utc))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), index=True, nullable=False)
+    author = db.relationship('User', back_populates='portfolios')
+    current_value = db.Column(db.Float, default=0)
+    initial_value = db.Column(db.Float, default=0)
+    stocks = db.relationship('PortfolioStock', back_populates='portfolio', cascade='all, delete-orphan')
+
+    def __repr__(self):
+        return f'<Portfolio {self.name}>'
+
+    def calculate_portfolio_value(self, date):
+        value = 0
+        print(f'stocks: {self.stocks}')
+        for portfolio_stock in self.stocks:
+            print(f'stock_id: {portfolio_stock.stock_id}')
+            stock_q = Stock.query.filter_by(id=portfolio_stock.stock_id).first()
+            stock_abbrev = stock_q.abbreviation + '_'
+            print(f'stock_abbrev: {stock_q}')
+            print(f'stock_abbrev: {stock_abbrev}')
+            stock_price = StockPrice.query.filter_by(stock_id=stock_abbrev, date=date).first()
+            if stock_price:
+                print(f'stok amount {portfolio_stock.amount} stock price {stock_price.current_price}')
+                value += stock_price.current_price * portfolio_stock.amount
+            else:
+                print('no stock price')
+
+        portfolio_history = PortfolioHistory(portfolio_id=self.id, timestamp=date, value=value)
+        db.session.add(portfolio_history)
+        print(f'portfolio {self.name} has value {value} at date {date}')
+        db.session.commit()
+        return value
+
+
+class PortfolioStock(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    portfolio_id = db.Column(db.Integer, db.ForeignKey('portfolio.id'), nullable=False)
+    stock_id = db.Column(db.Integer, db.ForeignKey('stock.id'), nullable=False)
+    amount = db.Column(db.Integer, default=0)
+
+    portfolio = db.relationship('Portfolio', back_populates='stocks')
+    stock = db.relationship('Stock')
+
+    def __repr__(self):
+        return f"PortfolioStock(Portfolio ID: {self.portfolio_id}, Stock ID: {self.stock_id}, Amount: {self.amount})"
+
+
+class PortfolioHistory(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    portfolio_id = db.Column(db.Integer, db.ForeignKey('portfolio.id'), nullable=False)
+    timestamp = db.Column(db.DateTime, nullable=False)
+    value = db.Column(db.Float, nullable=False)
+
+    def __repr__(self):
+        return f'<PortfolioHistory Portfolio ID: {self.portfolio_id}, Timestamp: {self.timestamp}, Value: {self.value}>'
+
+
+"""
+def update_portfolio_history(portfolio):
+    date = datetime.now().date()
+    value = portfolio.calculate_portfolio_value(date)
+    portfolio_history = PortfolioHistory(portfolio_id=portfolio.id, timestamp=datetime.now(), value=value)
+    db.session.add(portfolio_history)
+"""
+
+
+"""
 class Portfolio(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(256), index=True, unique=True, nullable=False)
@@ -93,32 +169,10 @@ class Portfolio(db.Model):
             current_date += timedelta(days=1)
         db.session.commit()
 
-
-class PortfolioStock(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    portfolio_id = db.Column(db.Integer, db.ForeignKey('portfolio.id'), nullable=False)
-    stock_id = db.Column(db.Integer, db.ForeignKey('stock.id'), nullable=False)
-    amount = db.Column(db.Integer, default=0)
-
-    portfolio = db.relationship('Portfolio', back_populates='stocks')
-    stock = db.relationship('Stock')
-
-    def __repr__(self):
-        return f"PortfolioStock(Portfolio ID: {self.portfolio_id}, Stock ID: {self.stock_id}, Amount: {self.amount})"
-
-
-class PortfolioHistory(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    portfolio_id = db.Column(db.Integer, db.ForeignKey('portfolio.id'), nullable=False)
-    timestamp = db.Column(db.DateTime, nullable=False)
-    value = db.Column(db.Float, nullable=False)
-
-    def __repr__(self):
-        return f'<PortfolioHistory Portfolio ID: {self.portfolio_id}, Timestamp: {self.timestamp}, Value: {self.value}>'
+"""
 
 
 """
-
 __DB Syntax__
 
 * Fire up the DB (at least from CLI)

@@ -6,13 +6,13 @@ Interface to check a stock portfolio against stock data to check for profit/loss
 
 * next:
 	
-	* modify DB model to compute prices of n stocks of a company (think about it..) -> check if it works
+	* add way to display profitability of a portfolio (initial vs latest dat in portfoliohistory)
+	* display current price of stock when buying
+	* allow user to specify amount of money to spend in a stock instead of just number - or at least display the amount before buying
 
 * planned:
 
 	* add little table with genral stock details like dividend
-	* make a db table for each portfolio how much is was worth at any time
-	* Give a way to add a new portfolio
 	* Start working in index tab
 
 
