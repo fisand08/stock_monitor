@@ -20,7 +20,7 @@
 
     <h3>Transactions</h3>
     {% for transaction in transactions %}
-        <div>{{transaction.action}} {{transaction.stock_id}} {{transaction.stock.abbreviation}} {{transaction.amount}} {{transaction.timestamp}} </div>
+        <div>{{transaction.action}} {{transaction.stock.full_name}}: {{transaction.amount}} ({{transaction.timestamp}}) - investment = {{transaction.investment}}</div>
     {% endfor %}
 
     <br>

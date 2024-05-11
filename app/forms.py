@@ -9,7 +9,7 @@ from app.models import User
 
 class LoginForm(FlaskForm):
     """
-    Class for login forms based on WTForms. 
+    Class for login forms based on WTForms.
     Validator DataRequired specified that field is not submitted empty
     """
     username = StringField('Username', validators=[DataRequired()])

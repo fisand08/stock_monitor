@@ -122,75 +122,46 @@ class Transaction(db.Model):
     portfolio_id = db.Column(db.Integer, db.ForeignKey('portfolio.id'), nullable=False)
     stock_id = db.Column(db.Integer, db.ForeignKey('stock.id'), nullable=False)
     stock = db.relationship('Stock', foreign_keys=[stock_id], backref='transactions')
-
     action = db.Column(db.String(50), nullable=False)  # e.g., 'BUY', 'SELL'
     amount = db.Column(db.Integer, nullable=False)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.now(timezone.utc))
+    investment = db.Column(db.Float)
+
+    def compute_investment(self):
+        stock_price = StockPrice.query.filter_by(stock_id=self.stock.abbreviation + '_').order_by(StockPrice.date.desc()).first()
+        if self.action == 'buy':
+            self.investment = -1 * stock_price.current_price * self.amount
+        elif self.action == 'sell':
+            self.investment = 1 * stock_price.current_price * self.amount
+        else:
+            print('error: action must be buy or sell')
 
     def __repr__(self):
         return f'<Transaction {self.action}: Stock {self.stock_id}, Amount {self.amount}, Timestamp {self.timestamp}>'
 
 
-"""
-def update_portfolio_history(portfolio):
-    date = datetime.now().date()
-    value = portfolio.calculate_portfolio_value(date)
-    portfolio_history = PortfolioHistory(portfolio_id=portfolio.id, timestamp=datetime.now(), value=value)
-    db.session.add(portfolio_history)
-"""
+# Maybe add in separate file later
+from collections import defaultdict  # noqa
 
 
-"""
-class Portfolio(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(256), index=True, unique=True, nullable=False)
-    timestamp = db.Column(db.DateTime, index=True, default=datetime.now(timezone.utc))
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), index=True, nullable=False)
-    author = db.relationship('User', back_populates='portfolios')
-    current_value = db.Column(db.Float, default=0)
-    initial_value = db.Column(db.Float, default=0)
-    stocks = db.relationship('PortfolioStock', back_populates='portfolio', cascade='all, delete-orphan')
+def calculate_portfolio_composition(portfolio_id, date):
+    # Retrieve transactions for the given portfolio before or on the given date
+    transactions = Transaction.query.filter_by(portfolio_id=portfolio_id).filter(Transaction.timestamp <= date).all()
 
-    def __repr__(self):
-        return f'<Portfolio {self.name}>'
+    # Initialize a dictionary to store the holdings of each stock
+    stock_holdings = defaultdict(int)
 
-    def calculate_initial_price(self):
-        initial_price = 0
-        for portfolio_stock in self.stocks:
-            latest_stock_price = db.session.query(StockPrice).filter_by(stock_id=portfolio_stock.stock_id).order_by(StockPrice.date.asc()).first()
-            if latest_stock_price:
-                initial_price += latest_stock_price.current_price * portfolio_stock.amount
-        return initial_price
+    # Process transactions to update holdings
+    for transaction in transactions:
+        if transaction.action == 'BUY':
+            stock_holdings[transaction.stock_id] += transaction.amount
+        elif transaction.action == 'SELL':
+            stock_holdings[transaction.stock_id] -= transaction.amount
 
-    def update_current_value(self):
-        total_value = 0
-        for portfolio_stock in self.stocks:
-            latest_stock_price = db.session.query(StockPrice).filter_by(stock_id=portfolio_stock.stock_id).order_by(StockPrice.date.desc()).first()
-            if latest_stock_price:
-                total_value += latest_stock_price.current_price * portfolio_stock.amount
-        self.current_value = total_value
-        db.session.commit()
+    # Convert stock holdings to a list of tuples for easier handling
+    portfolio_composition = [(stock_id, amount) for stock_id, amount in stock_holdings.items()]
 
-    def is_profitable(self):
-        return self.current_value > self.initial_value
-
-    def compute_portfolio_history(self):
-        # Calculate portfolio value at different time points and store in PortfolioHistory table
-        start_date = self.timestamp.date()
-        end_date = datetime.utcnow().date()
-        current_date = start_date
-        while current_date <= end_date:
-            total_value = 0
-            for portfolio_stock in self.stocks:
-                stock_price = db.session.query(StockPrice).filter_by(stock_id=portfolio_stock.stock_id, date=current_date).first()
-                if stock_price:
-                    total_value += stock_price.current_price * portfolio_stock.amount
-            portfolio_history = PortfolioHistory(portfolio_id=self.id, timestamp=current_date, value=total_value)
-            db.session.add(portfolio_history)
-            current_date += timedelta(days=1)
-        db.session.commit()
-
-"""
+    return portfolio_composition
 
 
 """
@@ -237,7 +208,7 @@ print(posts)
 
 ```
 from app import app, db
-from app.models import User, Portfolio, PortfolioStock
+from app.models import User, Portfolio, PortfolioStock, PortfolioHistory, Transaction
 from app import Stock, StockPrice
 import sqlalchemy as sa
 

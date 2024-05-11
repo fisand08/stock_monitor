@@ -1,7 +1,7 @@
 from app import app, db
 from flask import jsonify, render_template, flash, redirect, url_for, request
 from app.forms import LoginForm, RegistrationForm, EditProfileForm, PortfolioForm
-from app.models import Transaction, User, Portfolio, PortfolioStock, PortfolioHistory
+from app.models import Transaction, User, Portfolio, PortfolioStock, PortfolioHistory, calculate_portfolio_composition
 from app import Stock, StockPrice
 import sqlalchemy as sa
 from flask_login import current_user, login_user, logout_user, login_required
@@ -13,7 +13,6 @@ from sqlalchemy import desc
 from sqlalchemy.orm import joinedload
 # Local imports
 from app.bin.helpers import add_stocks
-
 
 
 """
@@ -33,10 +32,7 @@ def before_request():
 @login_required  # although it's index, we can set that here - not logged in person will be sent to login function
 def index():
 
-    mock_user = {'username': 'Rikarda'}
-    alt_names = ['guati', 'schatzi', 'schatzus', 'schatzo']
-
-    return render_template('index.html', user=mock_user, alt_names=alt_names)
+    return render_template('index.html')
 
 
 @app.route('/login', methods=['GET', 'POST'])  # view function accepts "methods" (POST: browser to webserver)
@@ -151,6 +147,9 @@ def explore():
         historical_values_portfolio_1 = []
         historical_values_portfolio_2 = []
 
+    # query composition
+    calculate_portfolio_composition
+
     return render_template('explore.html', portfolios=portfolios_query, stocks=stocks_query, stock_prices=stock_prices_query,
                            historical_values_portfolio_1=historical_values_portfolio_1, historical_values_portfolio_2=historical_values_portfolio_2,
                            transactions=transactions)
@@ -215,6 +214,8 @@ def manage_portfolio():
 
         transaction = Transaction(portfolio_id=portfolio_id, stock_id=stock_id, 
                                   action=action, amount=amount, timestamp=datetime.now())
+        transaction.calculate_profitability()
+
         db.session.add(transaction)
         db.session.commit()
 
