@@ -392,23 +392,21 @@ def update_portfolio_single():
         - only single date WITHOUT loop, only single portfolio
         - redirection wrong
     """
-    # determine last date with data
+    # Get the date sent from the frontend
     latest_stock_date = StockPrice.query.order_by(desc(StockPrice.date)).first().date
-    print(f'Newewst stock data is from {latest_stock_date}')
+    print(f'Latest stock data is from {latest_stock_date}')
+
     portfolio_id = request.form.get('selected_portfolio_id')
-    print(f'Recevied from frontend "portfolio_id" {portfolio_id}')
-    portfolios = Portfolio.query.filter(Portfolio.id == portfolio_id).all()
-    for portfolio in portfolios:
-        # get date of initialization
-        init_date = portfolio.timestamp
-        points_after_date = StockPrice.query.filter(StockPrice.date > init_date, StockPrice.stock_id == 'NVS_').all()
-        for entry in points_after_date:
-            entry_date = entry.date
-            if str(entry_date) == str(latest_stock_date):
-                portfolio.calculate_portfolio_value(date=entry_date)  # Call the method on the portfolio instance
+    print(f'Received from frontend "portfolio_id" {portfolio_id}')
+
+    portfolio = Portfolio.query.filter_by(id=portfolio_id).first()
+    if portfolio:
+        # Fetch the stock prices for the specified date
+        stock_price_entry = StockPrice.query.filter(StockPrice.date == latest_stock_date, StockPrice.stock_id == 'NVS_').first()
+        if stock_price_entry:
+            portfolio.calculate_portfolio_value(date=stock_price_entry.date)  # Call the method on the portfolio instance
+
     return redirect(url_for('admin_panel'))
-
-
 
 
 """/////////// ADMIN PANEL //////////////"""
