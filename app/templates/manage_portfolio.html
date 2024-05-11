@@ -109,6 +109,34 @@
         }
 
 
+        // Additional function to be called upon submitting buy/sell request
+        document.getElementById('portfolio-form').addEventListener('submit', function (event) {
+            event.preventDefault(); // Prevent default form submission behavior
+
+            var formData = new FormData(this); // Serialize form data
+            var xhr = new XMLHttpRequest(); // Create new XMLHttpRequest object
+
+            xhr.open('POST', '/update_portfolio_single', true); // Open POST request to update_portfolio endpoint
+            xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest'); // Set header for AJAX request
+
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        console.log(xhr.responseText);
+                    } else {
+                        console.error('Error:', xhr.status);
+                    }
+                }
+            };
+
+            xhr.send(formData); // Send form data with the request
+            this.submit();
+    });
+
+
+
+
+
         // Define wrapper function to encapsulate updatePlot and updatePlotTimespan
         window.updatePlotFunctions = function () {
             function updatePlot(selectedStockId, timeframe) {
@@ -191,87 +219,87 @@
                 updatePlot: updatePlot,
                 updatePlotTimespan: updatePlotTimespan
             };
-        }();
+            }();
 
-        function updateCurrentStock(selectedStockId) {
-            // Make AJAX request to fetch selected stock's name
-            var stockXhr = new XMLHttpRequest();
-            stockXhr.open('GET', '/get_selected_stock_name/' + selectedStockId, true);
-            stockXhr.onreadystatechange = function () {
-                if (stockXhr.readyState == 4 && stockXhr.status == 200) {
-                    var responseData = JSON.parse(stockXhr.responseText);
-                    var stockName = responseData.stock_name;
-                    currentStockElement.textContent = stockName;
-                }
-            };
-            stockXhr.send();
-        }
+            function updateCurrentStock(selectedStockId) {
+                // Make AJAX request to fetch selected stock's name
+                var stockXhr = new XMLHttpRequest();
+                stockXhr.open('GET', '/get_selected_stock_name/' + selectedStockId, true);
+                stockXhr.onreadystatechange = function () {
+                    if (stockXhr.readyState == 4 && stockXhr.status == 200) {
+                        var responseData = JSON.parse(stockXhr.responseText);
+                        var stockName = responseData.stock_name;
+                        currentStockElement.textContent = stockName;
+                    }
+                };
+                stockXhr.send();
+            }
 
-        function handlePortfolioChange() {
-            var selectedPortfolioId = portfolioDropdown.value;
-            selectedPortfolioInput.value = selectedPortfolioId;
+            function handlePortfolioChange() {
+                var selectedPortfolioId = portfolioDropdown.value;
+                selectedPortfolioInput.value = selectedPortfolioId;
 
-            // Make AJAX request to fetch updated data
-            var xhr = new XMLHttpRequest();
-            xhr.open('GET', '/get_portfolio_data/' + selectedPortfolioId, true);
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState == 4 && xhr.status == 200) {
-                    document.getElementById('current-stocks').innerHTML = xhr.responseText;
-                    selectedStockId = stockDropdown.value; // Assign selectedStockId globally
-                    updateCurrentStock(selectedStockId);
-                    window.updatePlotFunctions.updatePlot(selectedStockId); // Call updatePlot
-                    // Show the middle section heading
-                    document.getElementById('middle-heading').style.display = 'block';
-                }
-            };
-            xhr.send();
-        }
+                // Make AJAX request to fetch updated data
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', '/get_portfolio_data/' + selectedPortfolioId, true);
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState == 4 && xhr.status == 200) {
+                        document.getElementById('current-stocks').innerHTML = xhr.responseText;
+                        selectedStockId = stockDropdown.value; // Assign selectedStockId globally
+                        updateCurrentStock(selectedStockId);
+                        window.updatePlotFunctions.updatePlot(selectedStockId); // Call updatePlot
+                        // Show the middle section heading
+                        document.getElementById('middle-heading').style.display = 'block';
+                    }
+                };
+                xhr.send();
+            }
 
-        function handleStockChange() {
-            selectedStockId = stockDropdown.value; // Assign selectedStockId globally
-            updateCurrentStock(selectedStockId);
-            window.updatePlotFunctions.updatePlot(selectedStockId); // Call updatePlot
-        }
-
-
-        function updateStockInfo(selectedStockId) {
-            // Make AJAX request to fetch stock information
-            var stockInfoXhr = new XMLHttpRequest();
-            stockInfoXhr.open('GET', '/get_stock_info/' + selectedStockId, true);
-            stockInfoXhr.onreadystatechange = function () {
-                if (stockInfoXhr.readyState == 4 && stockInfoXhr.status == 200) {
-                    var stockInfo = JSON.parse(stockInfoXhr.responseText);
-                    var tableHtml = '<h2>Stock details</h2>';
-                    tableHtml += '<table class="table"><tbody>';
-                    tableHtml += '<tr><td>Abbreviation:</td><td>' + stockInfo.abbreviation + '</td></tr>';
-                    tableHtml += '<tr><td>Full Name:</td><td>' + stockInfo.full_name + '</td></tr>';
-                    tableHtml += '<tr><td>Market:</td><td>' + stockInfo.market + '</td></tr>';
-                    tableHtml += '<tr><td>Currency:</td><td>' + stockInfo.currency + '</td></tr>';
-                    tableHtml += '</tbody></table>';
-
-                    // Update the middle section with the stock information table
-                    document.getElementById('stock-info').innerHTML = tableHtml;
-                }
-            };
-            stockInfoXhr.send();
-        }
-
-        function handleStockChange() {
-            selectedStockId = stockDropdown.value;
-            updateCurrentStock(selectedStockId);
-            updateStockInfo(selectedStockId); // Call updateStockInfo
-            window.updatePlotFunctions.updatePlot(selectedStockId); // Call updatePlot
-        }
+            function handleStockChange() {
+                selectedStockId = stockDropdown.value; // Assign selectedStockId globally
+                updateCurrentStock(selectedStockId);
+                window.updatePlotFunctions.updatePlot(selectedStockId); // Call updatePlot
+            }
 
 
-        // Event listeners
-        portfolioDropdown.addEventListener('change', handlePortfolioChange);
-        stockDropdown.addEventListener('change', handleStockChange);
+            function updateStockInfo(selectedStockId) {
+                // Make AJAX request to fetch stock information
+                var stockInfoXhr = new XMLHttpRequest();
+                stockInfoXhr.open('GET', '/get_stock_info/' + selectedStockId, true);
+                stockInfoXhr.onreadystatechange = function () {
+                    if (stockInfoXhr.readyState == 4 && stockInfoXhr.status == 200) {
+                        var stockInfo = JSON.parse(stockInfoXhr.responseText);
+                        var tableHtml = '<h2>Stock details</h2>';
+                        tableHtml += '<table class="table"><tbody>';
+                        tableHtml += '<tr><td>Abbreviation:</td><td>' + stockInfo.abbreviation + '</td></tr>';
+                        tableHtml += '<tr><td>Full Name:</td><td>' + stockInfo.full_name + '</td></tr>';
+                        tableHtml += '<tr><td>Market:</td><td>' + stockInfo.market + '</td></tr>';
+                        tableHtml += '<tr><td>Currency:</td><td>' + stockInfo.currency + '</td></tr>';
+                        tableHtml += '</tbody></table>';
 
-        // Trigger change event to load initial data
-        portfolioDropdown.dispatchEvent(new Event('change'));
-    });
-</script>
+                        // Update the middle section with the stock information table
+                        document.getElementById('stock-info').innerHTML = tableHtml;
+                    }
+                };
+                stockInfoXhr.send();
+            }
+
+            function handleStockChange() {
+                selectedStockId = stockDropdown.value;
+                updateCurrentStock(selectedStockId);
+                updateStockInfo(selectedStockId); // Call updateStockInfo
+                window.updatePlotFunctions.updatePlot(selectedStockId); // Call updatePlot
+            }
+
+
+            // Event listeners
+            portfolioDropdown.addEventListener('change', handlePortfolioChange);
+            stockDropdown.addEventListener('change', handleStockChange);
+
+            // Trigger change event to load initial data
+            portfolioDropdown.dispatchEvent(new Event('change'));
+        });
+    </script>
 
 
 {% endblock %}

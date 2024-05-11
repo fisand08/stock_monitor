@@ -7,9 +7,6 @@ from datetime import datetime, timezone, timedelta # noqa
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from app.bin.helpers import get_random_color
-from sqlalchemy import event # noqa
-from sqlalchemy.orm import sessionmaker # noqa
-from flask import Blueprint, jsonify # noqa
 
 
 """
@@ -48,9 +45,6 @@ def load_user(id):
     return db.session.get(User, int(id))
 
 
-portfolio_bp = Blueprint('portfolio', __name__)
-
-
 class Portfolio(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(256), index=True, unique=True, nullable=False)
@@ -66,25 +60,38 @@ class Portfolio(db.Model):
 
     def calculate_portfolio_value(self, date):
         value = 0
+        add = True  # boolean to record if stock price was found
         print(f'stocks: {self.stocks}')
         for portfolio_stock in self.stocks:
             print(f'stock_id: {portfolio_stock.stock_id}')
             stock_q = Stock.query.filter_by(id=portfolio_stock.stock_id).first()
             stock_abbrev = stock_q.abbreviation + '_'
-            print(f'stock_abbrev: {stock_q}')
-            print(f'stock_abbrev: {stock_abbrev}')
+            # print(f'stock_abbrev: {stock_q}')
+            # print(f'stock_abbrev: {stock_abbrev}')
+            print(f'date {date}')
             stock_price = StockPrice.query.filter_by(stock_id=stock_abbrev, date=date).first()
             if stock_price:
-                print(f'stok amount {portfolio_stock.amount} stock price {stock_price.current_price}')
+                # print(f'stok amount {portfolio_stock.amount} stock price {stock_price.current_price}')
                 value += stock_price.current_price * portfolio_stock.amount
             else:
-                print('no stock price')
+                print(f'no stock price found for {stock_abbrev} at date {date}')
+                add = False
+        if add:  # stock price was not found - only if calculation is proper, db will be updated
+            existing_record = PortfolioHistory.query.filter_by(portfolio_id=self.id, timestamp=datetime.combine(date, datetime.min.time())).first()
 
-        portfolio_history = PortfolioHistory(portfolio_id=self.id, timestamp=date, value=value)
-        db.session.add(portfolio_history)
-        print(f'portfolio {self.name} has value {value} at date {date}')
-        db.session.commit()
-        return value
+            # existing_record = PortfolioHistory.query.filter_by(portfolio_id=self.id, timestamp=date).first()
+            if existing_record:
+                print('replacing value')
+                existing_record.value = value  # Update the value
+            else:
+                print('record does not exist yet')
+                # If no record exists, create a new one
+                portfolio_history = PortfolioHistory(portfolio_id=self.id, timestamp=date, value=value)
+                db.session.add(portfolio_history)
+
+            print(f'portfolio {self.name} with id={self.id} has value {value} at date {date}')
+            db.session.commit()
+            return value
 
 
 class PortfolioStock(db.Model):

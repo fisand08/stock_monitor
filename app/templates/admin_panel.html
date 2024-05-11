@@ -19,6 +19,12 @@
         {% endfor %}
     </div>
     <div class="section">
+        <h3>Update portfolio history</h3>
+        <form action="/update_portfolio_retro" method="post">
+            <button class="button-29" role="button" type="submit">Update</button>
+        </form>
+        <br> <br> 
+
         <h3>Clear Table</h3>
         <form action="/admin/clear_table/stocks" method="post">
             <button class="button-29" role="button" type="submit">Clear Stocks</button>
@@ -35,7 +41,7 @@
         <form action="/admin/clear_table/portfolios" method="post">
             <button class="button-29" role="button" type="submit">Clear Portfolios</button>
         </form>
-        
+        <br>
         <form action="/admin/clear_table/portfolio_history" method="post">
             <button class="button-29" role="button" type="submit">Clear PortfolioHistory</button>
         </form>

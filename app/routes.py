@@ -11,6 +11,7 @@ from functools import wraps
 import pandas as pd
 # Local imports
 from app.bin.helpers import add_stocks
+from sqlalchemy import desc
 
 
 """
@@ -122,10 +123,10 @@ def error_500():
 def explore():
     # Query for Stock objects
     stocks_query = db.session.query(Stock).all()
-    
+
     # Query for StockPrice objects
     stock_prices_query = db.session.query(StockPrice).order_by(StockPrice.id.desc()).limit(10).all()
-    
+
     # Query for Portfolios
     portfolios_query = db.session.query(Portfolio).all()
 
@@ -134,8 +135,8 @@ def explore():
     portfolio_2 = Portfolio.query.filter_by(id=2).first()
     print(f'exploring {portfolio_1.name} and {portfolio_2.name}')
     if portfolio_1 and portfolio_2:
-        historical_values_portfolio_1 = PortfolioHistory.query.filter_by(portfolio_id=portfolio_1.id).order_by(PortfolioHistory.timestamp.desc()).limit(10).all()
-        historical_values_portfolio_2 = PortfolioHistory.query.filter_by(portfolio_id=portfolio_2.id).order_by(PortfolioHistory.timestamp.desc()).limit(10).all()
+        historical_values_portfolio_1 = PortfolioHistory.query.filter_by(portfolio_id=portfolio_1.id).order_by(PortfolioHistory.timestamp.desc()).all()  # .limit(10).all()
+        historical_values_portfolio_2 = PortfolioHistory.query.filter_by(portfolio_id=portfolio_2.id).order_by(PortfolioHistory.timestamp.desc()).all()  # .limit(10).all()
     else:
         historical_values_portfolio_1 = []
         historical_values_portfolio_2 = []
@@ -361,34 +362,75 @@ def modify_scraper_input():
 
 @app.route('/update_portfolio_retro', methods=['POST'])
 def update_portfolio_retro():
-
+    """
+    description:
+        - function to be called to compute the history of the portfolio from admin panel
+    dev:
+        - none
+    """
     # determine last date with data
     portfolios = Portfolio.query.all()
     for portfolio in portfolios:
         # get date of initialization
         init_date = portfolio.timestamp
-        print(f'computing history portfolio {portfolio.name} has initial date {init_date}')
+        # print(f'computing history portfolio {portfolio.name} has initial date {init_date}')
         # random stock queried: all dates beyond creation date
         points_after_date = StockPrice.query.filter(StockPrice.date > init_date, StockPrice.stock_id == 'NVS_').all()
         for entry in points_after_date:
             entry_date = entry.date
-            print(f'entry date {entry_date}')
+            # print(f'entry date {entry_date}')
             portfolio.calculate_portfolio_value(date=entry_date)  # Call the method on the portfolio instance
-    # db.session.commit()
-    return redirect(url_for('explore'))
+    return redirect(url_for('admin_panel'))
+
+
+@app.route('/update_portfolio_single', methods=['POST'])
+def update_portfolio_single():
+    """
+    description:
+        - function to be called to compute the history of the portfolio from admin panel
+    dev:
+        - only single date, only single portfolio
+    """
+    # determine last date with data
+    latest_stock_date = StockPrice.query.order_by(desc(StockPrice.date)).first().date
+
+    portfolios = Portfolio.query.all()
+    for portfolio in portfolios:
+        # get date of initialization
+        init_date = portfolio.timestamp
+        points_after_date = StockPrice.query.filter(StockPrice.date > init_date, StockPrice.stock_id == 'NVS_').all()
+        for entry in points_after_date:
+            entry_date = entry.date
+            if str(entry_date) == str(latest_stock_date):
+                portfolio.calculate_portfolio_value(date=entry_date)  # Call the method on the portfolio instance
+    return redirect(url_for('admin_panel'))
+
 
 
 @app.route('/update_portfolio', methods=['POST'])
 def update_portfolio():
-
+    """
+    descripton:
+        - function to be called to update the latest value
+        - to be attached when portfolio is modified
+    dev:
+        - currently, not "today" is used but the last date where stockpice was recorded,
+          optimally, this would be today
+    """
     # determine last date with data (optimally in working scenario this would be today!)
     date = StockPrice.query.all()[-1].date
     print(f'Updating portfolio history for date {date}')
     portfolios = Portfolio.query.all()
     for portfolio in portfolios:
         portfolio.calculate_portfolio_value(date=date)  # Call the method on the portfolio instance
-    db.session.commit()
-    return redirect(url_for('explore'))
+
+    if request.referrer and request.referrer.startswith(request.host_url):
+        return redirect(request.referrer)
+    else:
+        # If the referrer is None or not safe, redirect to a default page
+        return redirect(url_for('home'))
+
+    # return redirect(url_for('explore'))
 
 
 """/////////// ADMIN PANEL //////////////"""
