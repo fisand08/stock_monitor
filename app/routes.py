@@ -389,12 +389,15 @@ def update_portfolio_single():
     description:
         - function to be called to compute the history of the portfolio from admin panel
     dev:
-        - only single date, only single portfolio
+        - only single date WITHOUT loop, only single portfolio
+        - redirection wrong
     """
     # determine last date with data
     latest_stock_date = StockPrice.query.order_by(desc(StockPrice.date)).first().date
-
-    portfolios = Portfolio.query.all()
+    print(f'Newewst stock data is from {latest_stock_date}')
+    portfolio_id = request.form.get('selected_portfolio_id')
+    print(f'Recevied from frontend "portfolio_id" {portfolio_id}')
+    portfolios = Portfolio.query.filter(Portfolio.id == portfolio_id).all()
     for portfolio in portfolios:
         # get date of initialization
         init_date = portfolio.timestamp
@@ -406,31 +409,6 @@ def update_portfolio_single():
     return redirect(url_for('admin_panel'))
 
 
-
-@app.route('/update_portfolio', methods=['POST'])
-def update_portfolio():
-    """
-    descripton:
-        - function to be called to update the latest value
-        - to be attached when portfolio is modified
-    dev:
-        - currently, not "today" is used but the last date where stockpice was recorded,
-          optimally, this would be today
-    """
-    # determine last date with data (optimally in working scenario this would be today!)
-    date = StockPrice.query.all()[-1].date
-    print(f'Updating portfolio history for date {date}')
-    portfolios = Portfolio.query.all()
-    for portfolio in portfolios:
-        portfolio.calculate_portfolio_value(date=date)  # Call the method on the portfolio instance
-
-    if request.referrer and request.referrer.startswith(request.host_url):
-        return redirect(request.referrer)
-    else:
-        # If the referrer is None or not safe, redirect to a default page
-        return redirect(url_for('home'))
-
-    # return redirect(url_for('explore'))
 
 
 """/////////// ADMIN PANEL //////////////"""

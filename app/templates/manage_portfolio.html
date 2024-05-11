@@ -114,6 +114,9 @@
             event.preventDefault(); // Prevent default form submission behavior
 
             var formData = new FormData(this); // Serialize form data
+            var selectedPortfolioId = document.getElementById('portfolio-dropdown').value; // Get selected portfolio ID
+            formData.append('selected_portfolio_id', selectedPortfolioId); // Append selected portfolio ID to form data
+
             var xhr = new XMLHttpRequest(); // Create new XMLHttpRequest object
 
             xhr.open('POST', '/update_portfolio_single', true); // Open POST request to update_portfolio endpoint
@@ -131,7 +134,7 @@
 
             xhr.send(formData); // Send form data with the request
             this.submit();
-    });
+        });
 
 
 
