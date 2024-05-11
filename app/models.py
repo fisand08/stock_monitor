@@ -117,6 +117,20 @@ class PortfolioHistory(db.Model):
         return f'<PortfolioHistory Portfolio ID: {self.portfolio_id}, Timestamp: {self.timestamp}, Value: {self.value}>'
 
 
+class Transaction(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    portfolio_id = db.Column(db.Integer, db.ForeignKey('portfolio.id'), nullable=False)
+    stock_id = db.Column(db.Integer, db.ForeignKey('stock.id'), nullable=False)
+    stock = db.relationship('Stock', foreign_keys=[stock_id], backref='transactions')
+
+    action = db.Column(db.String(50), nullable=False)  # e.g., 'BUY', 'SELL'
+    amount = db.Column(db.Integer, nullable=False)
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.now(timezone.utc))
+
+    def __repr__(self):
+        return f'<Transaction {self.action}: Stock {self.stock_id}, Amount {self.amount}, Timestamp {self.timestamp}>'
+
+
 """
 def update_portfolio_history(portfolio):
     date = datetime.now().date()

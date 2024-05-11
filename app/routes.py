@@ -1,7 +1,7 @@
 from app import app, db
 from flask import jsonify, render_template, flash, redirect, url_for, request
 from app.forms import LoginForm, RegistrationForm, EditProfileForm, PortfolioForm
-from app.models import User, Portfolio, PortfolioStock, PortfolioHistory
+from app.models import Transaction, User, Portfolio, PortfolioStock, PortfolioHistory
 from app import Stock, StockPrice
 import sqlalchemy as sa
 from flask_login import current_user, login_user, logout_user, login_required
@@ -9,9 +9,11 @@ from urllib.parse import urlsplit
 from datetime import datetime, timedelta
 from functools import wraps
 import pandas as pd
+from sqlalchemy import desc
+from sqlalchemy.orm import joinedload
 # Local imports
 from app.bin.helpers import add_stocks
-from sqlalchemy import desc
+
 
 
 """
@@ -119,6 +121,11 @@ def error_500():
     return render_template('500.html'), 500
 
 
+"""
+/// Test environment ///
+"""
+
+
 @app.route('/explore')
 def explore():
     # Query for Stock objects
@@ -129,6 +136,9 @@ def explore():
 
     # Query for Portfolios
     portfolios_query = db.session.query(Portfolio).all()
+
+    # Query for transactions
+    transactions = Transaction.query.options(joinedload(Transaction.stock)).all()
 
     # Query historical values for specific portfolios (change to the IDs of the desired portfolios)
     portfolio_1 = Portfolio.query.filter_by(id=1).first()
@@ -142,7 +152,8 @@ def explore():
         historical_values_portfolio_2 = []
 
     return render_template('explore.html', portfolios=portfolios_query, stocks=stocks_query, stock_prices=stock_prices_query,
-                           historical_values_portfolio_1=historical_values_portfolio_1, historical_values_portfolio_2=historical_values_portfolio_2)
+                           historical_values_portfolio_1=historical_values_portfolio_1, historical_values_portfolio_2=historical_values_portfolio_2,
+                           transactions=transactions)
 
 
 """
@@ -202,6 +213,9 @@ def manage_portfolio():
                 if portfolio_stock.amount <= 0:
                     db.session.delete(portfolio_stock)
 
+        transaction = Transaction(portfolio_id=portfolio_id, stock_id=stock_id, 
+                                  action=action, amount=amount, timestamp=datetime.now())
+        db.session.add(transaction)
         db.session.commit()
 
         # Preserve the selected portfolio ID

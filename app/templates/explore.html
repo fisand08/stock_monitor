@@ -18,6 +18,10 @@
         {% endfor %}
     </ul>
 
+    <h3>Transactions</h3>
+    {% for transaction in transactions %}
+        <div>{{transaction.action}} {{transaction.stock_id}} {{transaction.stock.abbreviation}} {{transaction.amount}} {{transaction.timestamp}} </div>
+    {% endfor %}
 
     <br>
     <img src="{{ url_for('static', filename='img/stock_icon.png') }}", width="100", height="100">
