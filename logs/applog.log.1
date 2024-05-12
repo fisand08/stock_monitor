@@ -1,19 +1,8 @@
-2024-05-11 13:10:09,223 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:221]
-2024-05-11 13:10:16,563 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:221]
-2024-05-11 13:10:56,401 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:221]
-2024-05-11 13:11:26,708 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:221]
-2024-05-11 13:11:33,385 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:221]
-2024-05-11 13:11:41,053 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:221]
-2024-05-11 13:11:51,223 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:221]
-2024-05-11 13:11:57,981 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:221]
-2024-05-11 13:13:27,396 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:221]
-2024-05-11 13:13:34,175 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:221]
-2024-05-11 13:13:40,100 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:221]
-2024-05-11 13:13:44,787 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:221]
-2024-05-11 13:13:53,001 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:221]
-2024-05-11 13:13:55,700 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:221]
-2024-05-11 13:15:47,770 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:221]
-2024-05-11 13:15:49,544 ERROR: Exception on /explore [GET] [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\venv\Lib\site-packages\flask\app.py:828]
+2024-05-12 16:04:15,895 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:221]
+2024-05-12 16:04:18,697 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:221]
+2024-05-12 16:10:38,175 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:221]
+2024-05-12 16:10:41,053 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:221]
+2024-05-12 16:11:17,756 ERROR: Exception on /manage_portfolio [POST] [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\venv\Lib\site-packages\flask\app.py:828]
 Traceback (most recent call last):
   File "C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\venv\Lib\site-packages\flask\app.py", line 1463, in wsgi_app
     response = self.full_dispatch_request()
@@ -27,12 +16,25 @@ Traceback (most recent call last):
   File "C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\venv\Lib\site-packages\flask\app.py", line 855, in dispatch_request
     return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\routes.py", line 140, in explore
-    transactions = Transaction.query.options(joinedload(Transaction.stock)).all()
-                                             ^^^^^^^^^^
-NameError: name 'joinedload' is not defined
-2024-05-11 13:16:06,009 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:221]
-2024-05-11 13:16:08,336 ERROR: Exception on /explore [GET] [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\venv\Lib\site-packages\flask\app.py:828]
+  File "C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\venv\Lib\site-packages\flask_login\utils.py", line 290, in decorated_view
+    return current_app.ensure_sync(func)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\routes.py", line 216, in manage_portfolio
+    stock_abbv = Stock.query.filter(stock_id=stock_id).all().abbreviation
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: Query.filter() got an unexpected keyword argument 'stock_id'
+2024-05-12 16:12:18,747 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:221]
+2024-05-12 16:12:25,400 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:221]
+2024-05-12 16:12:27,576 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:221]
+2024-05-12 16:12:35,896 ERROR: Exception on /manage_portfolio [POST] [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\venv\Lib\site-packages\flask\app.py:828]
+Traceback (most recent call last):
+  File "C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\venv\Lib\site-packages\sqlalchemy\sql\base.py", line 2176, in _entity_namespace_key
+    return getattr(ns, key)  # type: ignore
+           ^^^^^^^^^^^^^^^^
+AttributeError: type object 'Stock' has no attribute 'stock_id'
+
+The above exception was the direct cause of the following exception:
+
 Traceback (most recent call last):
   File "C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\venv\Lib\site-packages\flask\app.py", line 1463, in wsgi_app
     response = self.full_dispatch_request()
@@ -46,11 +48,26 @@ Traceback (most recent call last):
   File "C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\venv\Lib\site-packages\flask\app.py", line 855, in dispatch_request
     return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\routes.py", line 142, in explore
-    transactions = Transaction.query.options(joinedload(Transaction.stock)).all()
-                                                        ^^^^^^^^^^^^^^^^^
-AttributeError: type object 'Transaction' has no attribute 'stock'
-2024-05-11 13:16:10,484 ERROR: Exception on /explore [GET] [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\venv\Lib\site-packages\flask\app.py:828]
+  File "C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\venv\Lib\site-packages\flask_login\utils.py", line 290, in decorated_view
+    return current_app.ensure_sync(func)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\routes.py", line 216, in manage_portfolio
+    stock_abbv = Stock.query.filter_by(stock_id=stock_id).all().abbreviation
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\venv\Lib\site-packages\sqlalchemy\orm\query.py", line 1983, in filter_by
+    clauses = [
+              ^
+  File "C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\venv\Lib\site-packages\sqlalchemy\orm\query.py", line 1984, in <listcomp>
+    _entity_namespace_key(from_entity, key) == value
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\venv\Lib\site-packages\sqlalchemy\sql\base.py", line 2178, in _entity_namespace_key
+    raise exc.InvalidRequestError(
+sqlalchemy.exc.InvalidRequestError: Entity namespace for "stock" has no property "stock_id"
+2024-05-12 16:14:03,584 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:221]
+2024-05-12 16:14:06,026 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:221]
+2024-05-12 16:26:12,475 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:221]
+2024-05-12 16:26:15,518 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:221]
+2024-05-12 16:26:27,274 ERROR: Exception on /explore [GET] [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\venv\Lib\site-packages\flask\app.py:828]
 Traceback (most recent call last):
   File "C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\venv\Lib\site-packages\flask\app.py", line 1463, in wsgi_app
     response = self.full_dispatch_request()
@@ -64,36 +81,35 @@ Traceback (most recent call last):
   File "C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\venv\Lib\site-packages\flask\app.py", line 855, in dispatch_request
     return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\routes.py", line 142, in explore
-    transactions = Transaction.query.options(joinedload(Transaction.stock)).all()
-                                                        ^^^^^^^^^^^^^^^^^
-AttributeError: type object 'Transaction' has no attribute 'stock'
-2024-05-11 13:16:50,421 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:221]
-2024-05-11 13:16:57,264 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:221]
-2024-05-11 13:17:03,941 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:221]
-2024-05-11 13:17:07,063 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:221]
-2024-05-11 13:18:38,983 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:221]
-2024-05-11 13:18:41,539 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:221]
-2024-05-11 13:18:52,119 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:221]
-2024-05-11 13:20:00,871 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:221]
-2024-05-11 13:20:26,480 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:221]
-2024-05-11 13:20:35,587 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:221]
-2024-05-11 13:21:06,455 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:221]
-2024-05-11 13:23:36,432 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:221]
-2024-05-11 13:23:59,564 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:221]
-2024-05-11 13:24:03,926 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:221]
-2024-05-11 13:24:13,564 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:221]
-2024-05-11 14:16:58,833 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:221]
-2024-05-11 14:21:00,436 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:221]
-2024-05-11 14:21:01,989 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:221]
-2024-05-11 14:49:20,510 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:221]
-2024-05-11 14:49:22,680 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:221]
-2024-05-11 17:06:29,540 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:221]
-2024-05-11 17:07:36,764 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:221]
-2024-05-11 17:07:47,306 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:221]
-2024-05-11 17:10:09,342 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:221]
-2024-05-11 17:10:48,810 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:221]
-2024-05-11 17:12:01,460 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:221]
-2024-05-11 17:12:17,094 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:221]
-2024-05-11 17:13:41,292 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:221]
-2024-05-11 17:13:56,687 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:221]
+  File "C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\routes.py", line 153, in explore
+    return render_template('explore.html', portfolios=portfolios_query, stocks=stocks_query, stock_prices=stock_prices_query,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\venv\Lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\venv\Lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\venv\Lib\site-packages\jinja2\environment.py", line 1301, in render
+    self.environment.handle_exception()
+  File "C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\venv\Lib\site-packages\jinja2\environment.py", line 936, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\templates\explore.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\templates\base.html", line 157, in top-level template code
+    {% block content %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\templates\explore.html", line 21, in block 'content'
+    <li>{{transaction.action}}: {{transaction.stock.full_name}}: {{transaction.amount}} ({{transaction.timestamp.strftime('%Y-%m-%d')}}) - investment = {{ '%.2f'|format(transaction.investment)}}</li>
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\venv\Lib\site-packages\jinja2\filters.py", line 1016, in do_format
+    return soft_str(value) % (kwargs or args)
+           ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
+TypeError: must be real number, not str
+2024-05-12 16:30:09,417 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:221]
+2024-05-12 16:30:11,571 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:221]
+2024-05-12 16:35:10,856 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:221]
+2024-05-12 16:44:16,770 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:221]
+2024-05-12 16:44:34,069 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:221]
+2024-05-12 16:44:39,452 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:221]
+2024-05-12 16:44:54,584 INFO: App startup [in C:\Users\117940\OneDrive - DSM\Documents\PRIV\from_scratch\app\__init__.py:221]

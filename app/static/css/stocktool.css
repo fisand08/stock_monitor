@@ -433,7 +433,9 @@ div.descriptor .content {
 /* //////////////////////////////////// */
 
 
-
+.small-text{
+  size: 10;
+}
 
 .plot-border {
   /*Adds a border around the plot*/

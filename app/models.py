@@ -61,37 +61,63 @@ class Portfolio(db.Model):
     def calculate_portfolio_value(self, date):
         value = 0
         add = True  # boolean to record if stock price was found
-        print(f'stocks: {self.stocks}')
-        for portfolio_stock in self.stocks:
-            print(f'stock_id: {portfolio_stock.stock_id}')
-            stock_q = Stock.query.filter_by(id=portfolio_stock.stock_id).first()
+
+        # Retrieve the portfolio composition using the provided function
+        print(f'Computing history of portfolio "{self.name}" with id "{self.id}" at {date}')
+        portfolio_composition = calculate_portfolio_composition(self.id, date)
+        print(portfolio_composition)
+        # Iterate over portfolio composition to calculate portfolio value
+        for stock_id, amount in portfolio_composition:
+            stock_q = Stock.query.get(stock_id)
+            if not stock_q:
+                print(f'Stock with ID {stock_id} not found.')
+                continue
+
             stock_abbrev = stock_q.abbreviation + '_'
-            # print(f'stock_abbrev: {stock_q}')
-            # print(f'stock_abbrev: {stock_abbrev}')
-            print(f'date {date}')
             stock_price = StockPrice.query.filter_by(stock_id=stock_abbrev, date=date).first()
+
             if stock_price:
-                # print(f'stok amount {portfolio_stock.amount} stock price {stock_price.current_price}')
-                value += stock_price.current_price * portfolio_stock.amount
+                value += stock_price.current_price * amount
             else:
-                print(f'no stock price found for {stock_abbrev} at date {date}')
+                print(f'No stock price found for {stock_abbrev} at date {date}')
                 add = False
-        if add:  # stock price was not found - only if calculation is proper, db will be updated
+
+        if add:
             existing_record = PortfolioHistory.query.filter_by(portfolio_id=self.id, timestamp=datetime.combine(date, datetime.min.time())).first()
 
-            # existing_record = PortfolioHistory.query.filter_by(portfolio_id=self.id, timestamp=date).first()
             if existing_record:
-                print('replacing value')
-                existing_record.value = value  # Update the value
+                existing_record.value = value
             else:
-                print('record does not exist yet')
-                # If no record exists, create a new one
                 portfolio_history = PortfolioHistory(portfolio_id=self.id, timestamp=date, value=value)
                 db.session.add(portfolio_history)
 
-            print(f'portfolio {self.name} with id={self.id} has value {value} at date {date}')
+            print(f'Portfolio {self.name} with id={self.id} has value {value} at date {date}')
             db.session.commit()
             return value
+
+
+# Maybe add in separate file later
+from collections import defaultdict  # noqa
+
+
+def calculate_portfolio_composition(portfolio_id, date):
+    # Retrieve transactions for the given portfolio before or on the given date
+    transactions = Transaction.query.filter_by(portfolio_id=portfolio_id).filter(Transaction.timestamp <= date).all()
+
+    # Initialize a dictionary to store the holdings of each stock
+    stock_holdings = defaultdict(int)
+
+    # Process transactions to update holdings
+    for transaction in transactions:
+        if transaction.action == 'buy':
+            stock_holdings[transaction.stock_id] += transaction.amount
+        elif transaction.action == 'sell':
+            stock_holdings[transaction.stock_id] -= transaction.amount
+
+    # Convert stock holdings to a list of tuples for easier handling
+    portfolio_composition = [(stock_id, amount) for stock_id, amount in stock_holdings.items()]
+
+    return portfolio_composition
 
 
 class PortfolioStock(db.Model):
@@ -128,6 +154,7 @@ class Transaction(db.Model):
     investment = db.Column(db.Float)
 
     def compute_investment(self):
+        print(f'*************investment: id {self.id}  stock_id {self.stock_id} stock {self.stock}')
         stock_price = StockPrice.query.filter_by(stock_id=self.stock.abbreviation + '_').order_by(StockPrice.date.desc()).first()
         if self.action == 'buy':
             self.investment = -1 * stock_price.current_price * self.amount
@@ -138,30 +165,6 @@ class Transaction(db.Model):
 
     def __repr__(self):
         return f'<Transaction {self.action}: Stock {self.stock_id}, Amount {self.amount}, Timestamp {self.timestamp}>'
-
-
-# Maybe add in separate file later
-from collections import defaultdict  # noqa
-
-
-def calculate_portfolio_composition(portfolio_id, date):
-    # Retrieve transactions for the given portfolio before or on the given date
-    transactions = Transaction.query.filter_by(portfolio_id=portfolio_id).filter(Transaction.timestamp <= date).all()
-
-    # Initialize a dictionary to store the holdings of each stock
-    stock_holdings = defaultdict(int)
-
-    # Process transactions to update holdings
-    for transaction in transactions:
-        if transaction.action == 'BUY':
-            stock_holdings[transaction.stock_id] += transaction.amount
-        elif transaction.action == 'SELL':
-            stock_holdings[transaction.stock_id] -= transaction.amount
-
-    # Convert stock holdings to a list of tuples for easier handling
-    portfolio_composition = [(stock_id, amount) for stock_id, amount in stock_holdings.items()]
-
-    return portfolio_composition
 
 
 """

@@ -1,7 +1,7 @@
 from app import app, db
 from flask import jsonify, render_template, flash, redirect, url_for, request
 from app.forms import LoginForm, RegistrationForm, EditProfileForm, PortfolioForm
-from app.models import Transaction, User, Portfolio, PortfolioStock, PortfolioHistory, calculate_portfolio_composition
+from app.models import Transaction, User, Portfolio, PortfolioStock, PortfolioHistory
 from app import Stock, StockPrice
 import sqlalchemy as sa
 from flask_login import current_user, login_user, logout_user, login_required
@@ -134,7 +134,7 @@ def explore():
     portfolios_query = db.session.query(Portfolio).all()
 
     # Query for transactions
-    transactions = Transaction.query.options(joinedload(Transaction.stock)).all()
+    transactions = Transaction.query.options(joinedload(Transaction.stock)).order_by(desc(Transaction.timestamp)).limit(10).all()
 
     # Query historical values for specific portfolios (change to the IDs of the desired portfolios)
     portfolio_1 = Portfolio.query.filter_by(id=1).first()
@@ -147,12 +147,26 @@ def explore():
         historical_values_portfolio_1 = []
         historical_values_portfolio_2 = []
 
-    # query composition
-    calculate_portfolio_composition
-
+    # //// query profitability ////
+    profitabilities = []
+    # get all investements for a portfolio
+    portfolios = Portfolio.query.all()
+    for portfolio in portfolios[:2]:
+        print(f'computing profitability for portfolio_id {portfolio.id}')
+        investment_sum = 0
+        # get al transactions -> investments
+        transactions = Transaction.query.filter_by(portfolio_id=portfolio.id).all()
+        value = PortfolioHistory.query.filter_by(portfolio_id=portfolio.id).order_by(PortfolioHistory.timestamp.desc()).first().value
+        for t in transactions:
+            investment_sum = investment_sum + t.investment
+        net_profit = value + investment_sum
+        profitability_dict = {'Name': portfolio.name, 'Investment': investment_sum,
+                              'Value': value, 'Profit': net_profit}
+        profitabilities.append(profitability_dict)
+        print(profitability_dict)
     return render_template('explore.html', portfolios=portfolios_query, stocks=stocks_query, stock_prices=stock_prices_query,
                            historical_values_portfolio_1=historical_values_portfolio_1, historical_values_portfolio_2=historical_values_portfolio_2,
-                           transactions=transactions)
+                           transactions=transactions, profit_test=profitability_dict)
 
 
 """
@@ -196,7 +210,7 @@ def manage_portfolio():
         stock_id = form.stock.data
         amount = form.amount.data
         action = form.action.data
-
+        print(f'stock form submitted - portfolio_id {portfolio_id} stock_id {stock_id} amount {amount} ({action})')
         # Update PortfolioStock table based on form submission
         if action == 'buy':
             portfolio_stock = PortfolioStock.query.filter_by(portfolio_id=portfolio_id, stock_id=stock_id).first()
@@ -212,9 +226,18 @@ def manage_portfolio():
                 if portfolio_stock.amount <= 0:
                     db.session.delete(portfolio_stock)
 
-        transaction = Transaction(portfolio_id=portfolio_id, stock_id=stock_id, 
-                                  action=action, amount=amount, timestamp=datetime.now())
-        transaction.calculate_profitability()
+        # compute investment for transaction
+        stock_abbv = Stock.query.filter_by(id=stock_id).first().abbreviation
+        print(f'Found stock abbv {stock_abbv}')
+        stock_price = StockPrice.query.filter_by(stock_id=stock_abbv + '_').order_by(StockPrice.date.desc()).first()
+        if action == 'buy':
+            investment = -1 * stock_price.current_price * amount
+        elif action == 'sell':
+            investment = 1 * stock_price.current_price * amount
+
+        transaction = Transaction(portfolio_id=portfolio_id, stock_id=stock_id,
+                                  action=action, amount=amount, investment=investment,
+                                  timestamp=datetime.now())
 
         db.session.add(transaction)
         db.session.commit()
