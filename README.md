@@ -5,24 +5,24 @@ Interface to check a stock portfolio against stock data to check for profit/loss
 ## Development:
 
 * next:
-	
+
 	* add way to display profitability of a portfolio (initial vs latest dat in portfoliohistory)
+		-> can be done in the portfolio value computation - based on transaction history, a function like "calculate_portfolio_composition" can be used to get the actual composition of the portfolio -> the value claulation has to consider that.
+		-> then, the prtofitbility can be simply computed with value and investments
+
 	* display current price of stock when buying
 	* allow user to specify amount of money to spend in a stock instead of just number - or at least display the amount before buying
+	* fix currency issues (maybe while scraping)
+	* scrape newest data and check if it works
+	* then: index tab (recent investments, profitability, courses, ...)
 
-* planned:
+* later:
 
 	* add little table with genral stock details like dividend
 	* Start working in index tab
-
-
-
-* General
-
+		* portfolio contents, protitability (incl how much), graph
+	* make flash message not appear on whole width
 	* improve css and looks (e.g. yahoo portfolio manager)
-	* Scraping manager
-		* check if the scraper dynamically checks input_stocks.txt 
-		* add functionality to portfolio manager to change this text file (also give some checking functionality visiting yahoo stocks if the provided code is valid)
 	* Define internal currency
 
 	
