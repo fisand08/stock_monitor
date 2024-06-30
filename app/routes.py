@@ -11,6 +11,7 @@ from functools import wraps
 import pandas as pd
 from sqlalchemy import desc
 from sqlalchemy.orm import joinedload
+import os
 # Local imports
 from app.bin.helpers import add_stocks
 
@@ -124,6 +125,10 @@ def error_500():
 
 @app.route('/explore')
 def explore():
+    """
+    note: the code to compute profitability does not consider latest changes to portfolio
+    - it only accounts for the timefame where it had data for stock value!
+    """
     # Query for Stock objects
     stocks_query = db.session.query(Stock).all()
 
@@ -149,24 +154,34 @@ def explore():
 
     # //// query profitability ////
     profitabilities = []
+    transaction_list = []
     # get all investements for a portfolio
     portfolios = Portfolio.query.all()
-    for portfolio in portfolios[:2]:
-        print(f'computing profitability for portfolio_id {portfolio.id}')
+    for portfolio in portfolios:
+        print(f'\ncomputing profitability for portfolio_id {portfolio.id}')
         investment_sum = 0
-        # get al transactions -> investments
+        # get date of last stock update
+        # latest_stock_date = StockPrice.query.order_by(desc(StockPrice.date)).first().date
+        # transactions = Transaction.query.filter(Transaction.portfolio_id == portfolio.id).filter(Transaction.timestamp <= latest_stock_date).all()
         transactions = Transaction.query.filter_by(portfolio_id=portfolio.id).all()
         value = PortfolioHistory.query.filter_by(portfolio_id=portfolio.id).order_by(PortfolioHistory.timestamp.desc()).first().value
         for t in transactions:
+            print(t)
+            print(t.investment)
             investment_sum = investment_sum + t.investment
         net_profit = value + investment_sum
         profitability_dict = {'Name': portfolio.name, 'Investment': investment_sum,
                               'Value': value, 'Profit': net_profit}
+        transaction_dict = {'Name': portfolio.name, 'Transactions': transactions}
         profitabilities.append(profitability_dict)
+        transaction_list.append(transaction_dict)
         print(profitability_dict)
+        print(transaction_dict)
+    print(profitabilities)
+
     return render_template('explore.html', portfolios=portfolios_query, stocks=stocks_query, stock_prices=stock_prices_query,
                            historical_values_portfolio_1=historical_values_portfolio_1, historical_values_portfolio_2=historical_values_portfolio_2,
-                           transactions=transactions, profit_test=profitability_dict)
+                           transactions=transactions, profitabilities=profitabilities)
 
 
 """
@@ -229,6 +244,7 @@ def manage_portfolio():
         # compute investment for transaction
         stock_abbv = Stock.query.filter_by(id=stock_id).first().abbreviation
         print(f'Found stock abbv {stock_abbv}')
+        
         stock_price = StockPrice.query.filter_by(stock_id=stock_abbv + '_').order_by(StockPrice.date.desc()).first()
         if action == 'buy':
             investment = -1 * stock_price.current_price * amount
@@ -395,6 +411,12 @@ def modify_scraper_input():
     return redirect(url_for('scrape_manager'))
 
 
+@app.route('/scrape_manager', methods=['GET', 'POST'])
+def scrape_manager():
+
+    return render_template('scrape_manager.html')
+
+
 """////////////  DB ROUTES: updating portfolio   ////////////"""
 
 
@@ -445,6 +467,28 @@ def update_portfolio_single():
             portfolio.calculate_portfolio_value(date=stock_price_entry.date)  # Call the method on the portfolio instance
 
     return redirect(url_for('admin_panel'))
+
+
+
+
+
+@app.route('/augment_stockdata', methods=['POST'])
+def augment_stockdata():
+    date_format = '%Y-%m-%d'
+    today = datetime.now()
+    today_str = today.strftime(date_format)
+    csv_path = os.path.join( os.getcwd(), 'stock_data')
+    stock_csv_files = [os.path.join(csv_path,x) for x in os.listdir(csv_path)]
+    for f in stock_csv_files:
+        df = pd.read_csv(f)
+        latest_date_str = str(df.iloc[-1]['Date'])
+        latest_date =  datetime.strptime(latest_date_str, date_format)
+        same = today.year == latest_date.year and today.month == latest_date.month and today.day == latest_date.day
+        if not same:
+            print('need to add new rows')
+
+
+
 
 
 """/////////// ADMIN PANEL //////////////"""

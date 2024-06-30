@@ -64,7 +64,7 @@ class Portfolio(db.Model):
 
         # Retrieve the portfolio composition using the provided function
         print(f'Computing history of portfolio "{self.name}" with id "{self.id}" at {date}')
-        portfolio_composition = calculate_portfolio_composition(self.id, date)
+        portfolio_composition = calculate_portfolio_composition(self.id, date)  # (self.id, datetime.now())
         print(portfolio_composition)
         # Iterate over portfolio composition to calculate portfolio value
         for stock_id, amount in portfolio_composition:
@@ -152,16 +152,6 @@ class Transaction(db.Model):
     amount = db.Column(db.Integer, nullable=False)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.now(timezone.utc))
     investment = db.Column(db.Float)
-
-    def compute_investment(self):
-        print(f'*************investment: id {self.id}  stock_id {self.stock_id} stock {self.stock}')
-        stock_price = StockPrice.query.filter_by(stock_id=self.stock.abbreviation + '_').order_by(StockPrice.date.desc()).first()
-        if self.action == 'buy':
-            self.investment = -1 * stock_price.current_price * self.amount
-        elif self.action == 'sell':
-            self.investment = 1 * stock_price.current_price * self.amount
-        else:
-            print('error: action must be buy or sell')
 
     def __repr__(self):
         return f'<Transaction {self.action}: Stock {self.stock_id}, Amount {self.amount}, Timestamp {self.timestamp}>'

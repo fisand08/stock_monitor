@@ -23,7 +23,8 @@ Interface to check a stock portfolio against stock data to check for profit/loss
 		* portfolio contents, protitability (incl how much), graph
 	* make flash message not appear on whole width
 	* improve css and looks (e.g. yahoo portfolio manager)
-	* Define internal currency
+	* Define internal currency 8at transaction?)
+	* fix error of stock_id in stockprice being abbreviation; populate_stock_prices_from_csv_efficient function in init.py
 
 	
 ## Description
