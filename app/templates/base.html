@@ -19,8 +19,11 @@
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/stocktool.css') }}" type="text/css"> 
 
 	<!-- JavaScript includes -->
-	<script type="text/javascript" src="{{ url_for('static', filename='js/jquery.js') }}"></script>
-	<script type="text/javascript" src="{{ url_for('static', filename='js/aspf.js') }}"></script>
+	<!-- <script type="text/javascript" src="{{ url_for('static', filename='js/jquery.js') }}"></script> -->
+	<script src="{{ url_for('static', filename='js/jquery-3.5.1.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/jquery-ui.min.js') }}"></script>
+
+	<!-- <script type="text/javascript" src="{{ url_for('static', filename='js/aspf.js') }}"></script> -->
 
 	<!-- Local JavaScript-->
 	<script type="text/javascript">
@@ -221,6 +224,20 @@
                 }
             }
         });
+
+
+		jQuery.noConflict();
+
+(function($){
+
+$("#mainContainer").addClass("Toolsimple");
+
+
+
+
+
+})(jQuery);
+
     });
 </script>
 

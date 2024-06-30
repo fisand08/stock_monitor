@@ -1,13 +1,108 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div class="right-section">
+    <head>
+        <!-- <script type="text/javascript" src="{{ url_for('static', filename='js/jquery.js') }}"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='js/aspf.js') }}"></script>     -->
+        <script src="{{ url_for('static', filename='js/jquery-3.5.1.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/jquery-ui.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/jquery.dataTables.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/dataTables.select.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/dataTables.cellEdit.js') }}"></script>
+    </head>
 
-        <h2> Scrape manager  </h2>
+    <!-- <div class="right-section">
+
+        <h3>Current Scraper Status</h3>
+
+        <h3>Add Stock to Scraper</h3>
         <form action="{{ url_for('modify_scraper_input')}}" method="post">
             <label >Stock abbreviation:</label>
             <input type="text" id="stock_abbrev" name="stock_abbrev">
             <button class="button-29" type="submit">Update</button>
         </form>
-    </div>
+    </div> -->
+    
+
+    <table>
+        <tr>
+            <td>
+                <h3>Scraper Status</h3>
+                <table>
+                    <tr>
+                        <td>
+                            Last update:
+                        </td>
+                        <td id="scraper_last_update">
+                            placeholder
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Next scheduled update
+                        </td>
+                        <td id="scraper_next_update">
+                            placeholder
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>&ensp;</td>
+                        <td>
+                            <button class="custom-button1-narrow">Run</button>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+
+            <td>
+                <h3>Add Stock to Scraper</h3>
+                <form action="{{ url_for('modify_scraper_input')}}" method="post">
+                    <label >Stock abbreviation:</label>
+                    <input type="text" id="stock_abbrev" name="stock_abbrev">
+                    <button class="custom-button1-narrow" type="submit">Update</button>
+                </form>
+            </td>
+            
+
+        </tr>
+
+        <tr>
+            <td>
+                <table id="csv_stock_table">
+                <thead>
+                        <tr>
+                            <th>STOCK_ID</th>
+                            <th>STOCK_NAME</th>
+                            <th>MARKET</th>
+                            <th>CURRENCY</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+
+    </table>
+<!-- 
+    <script>
+        $(document).ready(function() {
+            $('#csv_stock_table').DataTable({
+                "ajax": {
+                    "url": "/get_stockdb_table",
+                    "dataSrc": function (data) {
+                        let lines = data.split("\n");
+                        let result = [];
+                        for (let i = 1; i < lines.length; i++) {
+                            let row = lines[i].split(",");
+                            if (row.length === 3) {
+                                result.push(row);
+                            }
+                        }
+                        return result;
+                    }
+                }
+            });
+        });
+    </script> -->
 {% endblock %}

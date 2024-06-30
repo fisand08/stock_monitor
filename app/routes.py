@@ -1,5 +1,5 @@
 from app import app, db
-from flask import jsonify, render_template, flash, redirect, url_for, request
+from flask import jsonify, render_template, flash, redirect, url_for, request, send_file
 from app.forms import LoginForm, RegistrationForm, EditProfileForm, PortfolioForm
 from app.models import Transaction, User, Portfolio, PortfolioStock, PortfolioHistory
 from app import Stock, StockPrice
@@ -12,6 +12,8 @@ import pandas as pd
 from sqlalchemy import desc
 from sqlalchemy.orm import joinedload
 import os
+import io
+import csv
 # Local imports
 from app.bin.helpers import add_stocks
 
@@ -244,7 +246,7 @@ def manage_portfolio():
         # compute investment for transaction
         stock_abbv = Stock.query.filter_by(id=stock_id).first().abbreviation
         print(f'Found stock abbv {stock_abbv}')
-        
+
         stock_price = StockPrice.query.filter_by(stock_id=stock_abbv + '_').order_by(StockPrice.date.desc()).first()
         if action == 'buy':
             investment = -1 * stock_price.current_price * amount
@@ -420,6 +422,25 @@ def scrape_manager():
 """////////////  DB ROUTES: updating portfolio   ////////////"""
 
 
+@app.route('/get_stockdb_table', methods=['GET', 'POST'])
+def get_stockdb_table():
+    # read the csv
+    # df_table = pd.read_csv('stocks_db.csv')
+    csv_path = 'stocks_db.csv'  # Path to your CSV file
+    csv_data = io.StringIO()
+    with open(csv_path, newline='') as csvfile:
+        reader = csv.reader(csvfile)
+        writer = csv.writer(csv_data)
+        for row in reader:
+            writer.writerow(row)
+
+    csv_data.seek(0)
+    return send_file(csv_data, mimetype='text/csv', as_attachment=True, attachment_filename='data.csv')
+
+
+"""////////////  DB ROUTES: updating portfolio   ////////////"""
+
+
 @app.route('/update_portfolio_retro', methods=['POST'])
 def update_portfolio_retro():
     """
@@ -469,26 +490,21 @@ def update_portfolio_single():
     return redirect(url_for('admin_panel'))
 
 
-
-
-
 @app.route('/augment_stockdata', methods=['POST'])
 def augment_stockdata():
     date_format = '%Y-%m-%d'
     today = datetime.now()
     today_str = today.strftime(date_format)
-    csv_path = os.path.join( os.getcwd(), 'stock_data')
-    stock_csv_files = [os.path.join(csv_path,x) for x in os.listdir(csv_path)]
+    print(f'today str: {today_str}')
+    csv_path = os.path.join(os.getcwd(), 'stock_data')
+    stock_csv_files = [os.path.join(csv_path, x) for x in os.listdir(csv_path)]
     for f in stock_csv_files:
         df = pd.read_csv(f)
         latest_date_str = str(df.iloc[-1]['Date'])
-        latest_date =  datetime.strptime(latest_date_str, date_format)
+        latest_date = datetime.strptime(latest_date_str, date_format)
         same = today.year == latest_date.year and today.month == latest_date.month and today.day == latest_date.day
         if not same:
             print('need to add new rows')
-
-
-
 
 
 """/////////// ADMIN PANEL //////////////"""

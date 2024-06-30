@@ -458,6 +458,11 @@ div.descriptor .content {
   height: 100%;
 }
 
+/* //////////////////////////////////// */
+/* /////          BUTTONS       /////// */
+/* //////////////////////////////////// */
+
+
 .button-29 {
   /*A good looking button*/
   align-items: center;
@@ -509,6 +514,144 @@ div.descriptor .content {
   box-shadow: #3c4fe0 0 3px 7px inset;
   transform: translateY(1px);
 }
+
+
+
+/* button 1 */
+.custom-button1 {
+  --primary-color: #012385;
+  --secondary-color: #fff;
+  --hover-color: #4665ec;
+  box-sizing: border-box;
+  border: 1;
+  border-radius: 5px;
+  color: var(--secondary-color);
+  padding: 0.2em 0.8em;
+  background: var(--primary-color);
+  transition: 0.2s background;
+  align-items: center;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.custom-button1:hover {
+  background-color: var(--hover-color);
+}
+
+.custom-button1:hover .arrow {
+  background: var(--secondary-color);
+}
+
+.custom-button1:hover .arrow:before {
+  right: 0;
+}
+/* button 1 wide */
+.custom-button1-wide {
+  --primary-color: #012385;
+  --secondary-color: #fff;
+  --hover-color: #4665ec;
+  box-sizing: border-box;
+  border: 1;
+  border-radius: 5px;
+  color: var(--secondary-color);
+  padding: 0.3em 0.8em;
+  background: var(--primary-color);
+  transition: 0.2s background;
+  align-items: center;
+  font-weight: bold;
+  font-size: 12px;
+  min-width: 140px;
+  width: auto;
+}
+
+.custom-button1-wide:hover {
+  background-color: var(--hover-color);
+}
+
+.custom-button1-wide:hover .arrow {
+  background: var(--secondary-color);
+}
+
+.custom-button1-wide:hover .arrow:before {
+  right: 0;
+}
+/* button 1 narrow */
+.custom-button1-narrow {
+  --primary-color: #012385;
+  --secondary-color: #fff;
+  --hover-color: #4665ec;
+  --active-color: #4665ec;
+  box-sizing: border-box;
+  border: 1;
+  border-radius: 5px;
+  color: var(--secondary-color);
+  padding: 0.2em 0.8em;
+  background: var(--primary-color);
+  transition: 0.2s background;
+  align-items: center;
+  font-weight: bold;
+  font-size: 12px;
+  min-width: 60px;
+  width: auto;
+}
+
+/* .custom-button1-narrow.active-button:focus {
+  background-color: var(--active-color); 
+}
+.custom-button1-narrow.active-button:active {
+  background-color: var(--active-color); 
+}
+.custom-button1-narrow.active-button:visited {
+  background-color: var(--active-color); 
+} */
+
+.custom-button1-narrow-clicked {
+  background: #012385;
+  text-decoration: underline;
+}
+
+.custom-button1-narrow:hover {
+  background-color: var(--hover-color);
+}
+
+.custom-button1-narrow:hover .arrow {
+  background: var(--secondary-color);
+}
+
+.custom-button1-narrow:hover .arrow:before {
+  right: 0;
+}
+
+/* button 2 */
+.custom-button2 {
+  --primary-color: #277e6e;
+  --secondary-color: #fff;
+  --hover-color: #012385;
+  box-sizing: border-box;
+  border: 1;
+  border-radius: 3px;
+  color: var(--secondary-color);
+  padding: 0.1em 0.6em;
+  background: var(--primary-color);
+  transition: 0.2s background;
+  align-items: center;
+  /* font-weight: bold; */
+  font-size: 10px;
+  margin-left: 5px;
+}
+
+.custom-button2:hover {
+  background-color: var(--hover-color);
+}
+
+.custom-button2:hover .arrow {
+  background: var(--secondary-color);
+}
+
+.custom-button2:hover .arrow:before {
+  right: 0;
+}
+
 
 
 /* //////////////////////////////////// */
